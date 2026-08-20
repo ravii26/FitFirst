@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: fitfirst_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: fitfirst
+      POSTGRES_PASSWORD: fitfirst_dev
+      POSTGRES_DB: fitfirst
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fitfirst"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis stub — not used until Phase 4 (BullMQ job queues)
+  # Uncomment when needed:
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: fitfirst_redis
+  #   restart: unless-stopped
+  #   ports:
+  #     - "6379:6379"
+
+volumes:
+  postgres_data:

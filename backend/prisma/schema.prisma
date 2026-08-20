@@ -1,0 +1,185 @@
+// This is your Prisma schema file.
+// Learn more about it at https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum Category {
+  KURTA
+  SAREE
+  SALWAR_KAMEEZ
+  LEHENGA
+  SHERWANI
+  DHOTI
+  DUPATTA
+  SHIRT
+  TROUSERS
+  JEANS
+  DRESS
+  SKIRT
+  JACKET
+  KIDS_KURTA
+  KIDS_SHIRT
+  KIDS_TROUSERS
+  KIDS_DRESS
+  ACCESSORIES
+}
+
+enum ColorFamily {
+  WHITE
+  CREAM_IVORY
+  LIGHT_PASTELS    // light pink, baby blue, mint, lavender
+  WARM_EARTH       // beige, camel, brown, rust
+  BRIGHT_WARM      // red, orange, coral, gold, yellow
+  BRIGHT_COOL      // royal blue, purple, magenta, emerald
+  DARK_NEUTRAL     // navy, charcoal, black, dark green
+  JEWEL_TONES      // teal, maroon, burgundy, mustard
+  MULTICOLOR
+}
+
+enum Pattern {
+  SOLID
+  STRIPES
+  CHECKS
+  FLORAL
+  GEOMETRIC
+  PAISLEY
+  EMBROIDERED
+  BLOCK_PRINT
+  ABSTRACT
+  ANIMAL_PRINT
+}
+
+enum FitType {
+  SLIM
+  REGULAR
+  RELAXED_LOOSE
+  FLARED_ANARKALI
+  STRAIGHT_CUT
+  A_LINE
+  WRAPAROUND
+  TAILORED_STRUCTURED
+}
+
+enum SkinToneBucket {
+  FAIR        // Very light skin, cool/neutral undertones
+  WHEATISH    // Light-medium, warm/golden undertones — most common in Indian context
+  MEDIUM      // Medium brown, warm-neutral
+  DEEP        // Deep brown to dark, warm/cool range
+}
+
+enum BodyShapeBucket {
+  RECTANGLE   // Shoulders ≈ hips, minimal waist definition
+  TRIANGLE    // Hips wider than shoulders (pear)
+  INVERTED_T  // Shoulders wider than hips
+  HOURGLASS   // Shoulders ≈ hips, defined waist
+}
+
+enum Gender {
+  MEN
+  WOMEN
+  KIDS
+  UNISEX
+}
+
+// ─── Core Models ─────────────────────────────────────────────────────────────
+
+model Product {
+  id            String      @id @default(cuid())
+  sku           String      @unique
+  name          String
+  description   String?
+  category      Category
+  gender        Gender
+  colorFamily   ColorFamily
+  pattern       Pattern
+  fitType       FitType
+  sizeRange     String[]    // e.g. ["S","M","L","XL"] or ["36","38","40"]
+  price         Int         // in INR (paise-level not needed for Phase 1)
+  stockQty      Int         @default(0)
+  daysInStock   Int         @default(0) // updated daily by staff or cron
+  imageUrl      String?
+  isActive      Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  recommendations Recommendation[]
+  purchaseEvents  PurchaseEvent[]
+}
+
+model CustomerSession {
+  id              String          @id @default(cuid())
+  skinToneBucket  SkinToneBucket
+  bodyShapeBucket BodyShapeBucket
+  gender          Gender
+  sizeInput       String          // the size the customer entered
+  preferenceTags  String[]        // category names or pattern names they selected
+  createdAt       DateTime        @default(now())
+
+  recommendations Recommendation[]
+  purchaseEvents  PurchaseEvent[]
+}
+
+model Recommendation {
+  id          String          @id @default(cuid())
+  session     CustomerSession @relation(fields: [sessionId], references: [id])
+  sessionId   String
+  product     Product         @relation(fields: [productId], references: [id])
+  productId   String
+  score       Float           // final composite score 0.0–1.0
+  rank        Int             // 1 = top recommendation
+  createdAt   DateTime        @default(now())
+
+  @@index([sessionId])
+  @@index([productId])
+}
+
+model PurchaseEvent {
+  id              String          @id @default(cuid())
+  session         CustomerSession @relation(fields: [sessionId], references: [id])
+  sessionId       String
+  product         Product         @relation(fields: [productId], references: [id])
+  productId       String
+  wasRecommended  Boolean         // true = appeared in kiosk recommendations
+  amount          Int             // in INR
+  staffId         String?         // optional staff identifier for future accountability
+  createdAt       DateTime        @default(now())
+
+  @@index([sessionId])
+  @@index([productId])
+  @@index([createdAt])
+}
+
+// Phase 0: Baseline data capture — used to compute before/after delta
+model DailyBaseline {
+  id                    String   @id @default(cuid())
+  date                  DateTime @unique @db.Date
+  totalTransactions     Int
+  totalRevenue          Int      // in INR
+  avgBasketValue        Float    // computed: totalRevenue / totalTransactions
+  avgUnitsPerCustomer   Float
+  notes                 String?
+  isKioskActive         Boolean  @default(false) // false = pre-kiosk baseline, true = kiosk period
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+// Kill-threshold configuration — written before pilot starts, never edited after
+model KillThreshold {
+  id                          String   @id @default(cuid())
+  minBasketValueLiftPct        Float    // e.g. 15 = require 15% lift in basket value
+  minRecommendedPurchaseRate   Float    // e.g. 0.30 = 30% of kiosk sessions must lead to purchase
+  minUsageRatePct              Float    // e.g. 0.40 = kiosk must be used with ≥40% of customers
+  pilotWeeks                   Int      // pilot duration for evaluation
+  lockedAt                     DateTime // once set, treated as immutable
+  lockedBy                     String   // who committed to this
+  createdAt                    DateTime @default(now())
+}
