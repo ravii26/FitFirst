@@ -9,8 +9,8 @@ const MEN_PREFS = [
   { tag: "SOLID", label: "Solid Tones" },
   { tag: "CHECKS", label: "Structured Checks" },
   { tag: "EMBROIDERED", label: "Hand Embroidered" },
-  { tag: "CASUAL", label: "Casual Everyday" },
-  { tag: "FORMAL", label: "Evening Formal" },
+  { tag: "BLOCK_PRINT", label: "Block Print" },
+  { tag: "STRIPES", label: "Classic Stripes" },
 ];
 
 const WOMEN_PREFS = [
@@ -37,7 +37,7 @@ const KIDS_PREFS = [
   { tag: "CASUAL", label: "Daily Comfort" },
 ];
 
-function getPrefs(gender: "MEN" | "WOMEN" | "KIDS" | null) {
+function getPrefs(gender: "MEN" | "WOMEN" | "KIDS" | "UNISEX" | null) {
   if (gender === "WOMEN") return WOMEN_PREFS;
   if (gender === "KIDS") return KIDS_PREFS;
   return MEN_PREFS;
@@ -49,7 +49,7 @@ export default function StylePreferences({
   onChange,
   onNext,
 }: {
-  gender: "MEN" | "WOMEN" | "KIDS" | null;
+  gender: "MEN" | "WOMEN" | "KIDS" | "UNISEX" | null;
   selected: string[];
   onChange: (tags: string[]) => void;
   onNext: () => void;

@@ -3,10 +3,10 @@ import { z } from "zod";
 import { PrismaClient } from "@prisma/client";
 
 const SessionSchema = z.object({
-  skinToneBucket: z.enum(["FAIR", "WHEATISH", "MEDIUM", "DEEP"]),
-  bodyShapeBucket: z.enum(["RECTANGLE", "TRIANGLE", "INVERTED_T", "HOURGLASS"]),
-  gender: z.enum(["MEN", "WOMEN", "KIDS", "UNISEX"]),
-  sizeInput: z.string().min(1).max(10),
+  skinToneBucket: z.enum(["FAIR", "WHEATISH", "MEDIUM", "DEEP"]).default("WHEATISH"),
+  bodyShapeBucket: z.enum(["RECTANGLE", "TRIANGLE", "INVERTED_T", "HOURGLASS"]).default("HOURGLASS"),
+  gender: z.enum(["MEN", "WOMEN", "KIDS", "UNISEX"]).default("WOMEN"),
+  sizeInput: z.string().min(1).max(10).default("M"),
   preferenceTags: z.array(z.string()).default([]),
 });
 
@@ -44,8 +44,20 @@ export async function sessionsRoutes(app: FastifyInstance) {
       orderBy: { createdAt: "desc" },
       take: 100,
       include: {
-        recommendations: { select: { rank: true, score: true, productId: true } },
-        purchaseEvents: { select: { wasRecommended: true, amount: true } },
+        recommendations: {
+          orderBy: { rank: "asc" },
+          select: {
+            rank: true,
+            score: true,
+            productId: true,
+            product: {
+              select: { name: true, sku: true, price: true },
+            },
+          },
+        },
+        purchaseEvents: {
+          select: { wasRecommended: true, amount: true, productId: true },
+        },
       },
     });
     return sessions;

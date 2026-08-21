@@ -8,9 +8,54 @@ const CATEGORIES = [
   "KIDS_KURTA","KIDS_SHIRT","KIDS_TROUSERS","KIDS_DRESS","ACCESSORIES",
 ];
 
-const COLOR_FAMILIES = ["RED", "BLUE", "GREEN", "YELLOW", "PINK", "PURPLE", "BLACK", "WHITE", "GOLD", "SILVER", "BEIGE", "MAROON", "TEAL", "NAVY", "CORAL"];
-const FIT_TYPES = ["REGULAR", "SLIM", "TAILORED", "RELAXED", "LOOSE", "OVERSIZED"];
-const PATTERNS = ["SOLID", "PRINTED", "STRIPED", "CHECKS", "EMBROIDERED", "FLORAL", "PAISLEY", "BLOCK_PRINT"];
+// ── Enum values must exactly match schema.prisma ──────────────────────────────
+const COLOR_FAMILIES = [
+  "WHITE", "CREAM_IVORY", "LIGHT_PASTELS", "WARM_EARTH",
+  "BRIGHT_WARM", "BRIGHT_COOL", "DARK_NEUTRAL", "JEWEL_TONES", "MULTICOLOR",
+];
+const COLOR_FAMILY_LABELS: Record<string, string> = {
+  WHITE:          "White",
+  CREAM_IVORY:    "Cream / Ivory",
+  LIGHT_PASTELS:  "Light Pastels (Pink, Mint, Lavender)",
+  WARM_EARTH:     "Warm Earth (Beige, Camel, Rust)",
+  BRIGHT_WARM:    "Bright Warm (Red, Orange, Gold, Yellow)",
+  BRIGHT_COOL:    "Bright Cool (Royal Blue, Purple, Magenta)",
+  DARK_NEUTRAL:   "Dark Neutral (Navy, Charcoal, Black)",
+  JEWEL_TONES:    "Jewel Tones (Teal, Maroon, Burgundy, Mustard)",
+  MULTICOLOR:     "Multicolor / Mixed",
+};
+
+const FIT_TYPES = [
+  "SLIM", "REGULAR", "RELAXED_LOOSE", "FLARED_ANARKALI",
+  "STRAIGHT_CUT", "A_LINE", "WRAPAROUND", "TAILORED_STRUCTURED",
+];
+const FIT_TYPE_LABELS: Record<string, string> = {
+  SLIM:                "Slim Fit",
+  REGULAR:             "Regular Fit",
+  RELAXED_LOOSE:       "Relaxed / Loose",
+  FLARED_ANARKALI:     "Flared / Anarkali",
+  STRAIGHT_CUT:        "Straight Cut",
+  A_LINE:              "A-Line",
+  WRAPAROUND:          "Wraparound",
+  TAILORED_STRUCTURED: "Tailored / Structured",
+};
+
+const PATTERNS = [
+  "SOLID", "STRIPES", "CHECKS", "FLORAL", "GEOMETRIC",
+  "PAISLEY", "EMBROIDERED", "BLOCK_PRINT", "ABSTRACT", "ANIMAL_PRINT",
+];
+const PATTERN_LABELS: Record<string, string> = {
+  SOLID:        "Solid",
+  STRIPES:      "Stripes",
+  CHECKS:       "Checks / Plaid",
+  FLORAL:       "Floral Print",
+  GEOMETRIC:    "Geometric",
+  PAISLEY:      "Paisley",
+  EMBROIDERED:  "Embroidered / Zari",
+  BLOCK_PRINT:  "Hand Block Print",
+  ABSTRACT:     "Abstract",
+  ANIMAL_PRINT: "Animal Print",
+};
 
 const CameraIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -66,7 +111,7 @@ export default function Inventory() {
     name: "",
     category: "KURTA",
     gender: "WOMEN",
-    colorFamily: "RED",
+    colorFamily: "JEWEL_TONES",
     pattern: "EMBROIDERED",
     fitType: "REGULAR",
     sizeRange: "S, M, L, XL",
@@ -314,8 +359,8 @@ export default function Inventory() {
                   <td className="primary">{p.name}</td>
                   <td>{categoryLabel(p.category)}</td>
                   <td><span className={`badge ${genderBadge[p.gender] ?? "badge-gray"}`}>{p.gender}</span></td>
-                  <td style={{ fontSize: 12 }}>{p.colorFamily.replace(/_/g, " ")}</td>
-                  <td style={{ fontSize: 12 }}>{p.fitType.replace(/_/g, " ")}</td>
+                  <td style={{ fontSize: 12 }}>{COLOR_FAMILY_LABELS[p.colorFamily] ?? p.colorFamily.replace(/_/g, " ")}</td>
+                  <td style={{ fontSize: 12 }}>{FIT_TYPE_LABELS[p.fitType] ?? p.fitType.replace(/_/g, " ")}</td>
                   <td style={{ fontWeight: 600, color: "var(--accent)" }}>{"₹" + p.price.toLocaleString("en-IN")}</td>
                   <td>
                     {editingStock === p.id ? (
@@ -536,7 +581,7 @@ export default function Inventory() {
                     value={newProduct.colorFamily}
                     onChange={(e) => setNewProduct({ ...newProduct, colorFamily: e.target.value })}
                   >
-                    {COLOR_FAMILIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                    {COLOR_FAMILIES.map((c) => <option key={c} value={c}>{COLOR_FAMILY_LABELS[c] ?? c}</option>)}
                   </select>
                 </div>
                 <div className="form-group">
@@ -545,7 +590,7 @@ export default function Inventory() {
                     value={newProduct.fitType}
                     onChange={(e) => setNewProduct({ ...newProduct, fitType: e.target.value })}
                   >
-                    {FIT_TYPES.map((f) => <option key={f} value={f}>{f}</option>)}
+                    {FIT_TYPES.map((f) => <option key={f} value={f}>{FIT_TYPE_LABELS[f] ?? f}</option>)}
                   </select>
                 </div>
                 <div className="form-group">
@@ -554,7 +599,7 @@ export default function Inventory() {
                     value={newProduct.pattern}
                     onChange={(e) => setNewProduct({ ...newProduct, pattern: e.target.value })}
                   >
-                    {PATTERNS.map((p) => <option key={p} value={p}>{p}</option>)}
+                    {PATTERNS.map((p) => <option key={p} value={p}>{PATTERN_LABELS[p] ?? p}</option>)}
                   </select>
                 </div>
                 <div className="form-group">

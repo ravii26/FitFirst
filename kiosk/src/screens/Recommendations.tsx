@@ -51,7 +51,6 @@ export default function Recommendations({
   const [recs, setRecs] = useState<RecommendedProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [loggedPurchases, setLoggedPurchases] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     let sessionId = session.sessionId;
@@ -63,10 +62,10 @@ export default function Recommendations({
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              skinToneBucket: session.skinToneBucket,
-              bodyShapeBucket: session.bodyShapeBucket,
-              gender: session.gender,
-              sizeInput: session.sizeInput,
+              skinToneBucket: session.skinToneBucket || "WHEATISH",
+              bodyShapeBucket: session.bodyShapeBucket || "HOURGLASS",
+              gender: session.gender || "WOMEN",
+              sizeInput: session.sizeInput || "M",
               preferenceTags: session.preferenceTags,
             }),
           });
@@ -90,20 +89,6 @@ export default function Recommendations({
     run();
   }, []);
 
-  const logPurchase = async (productId: string, amount: number) => {
-    if (!session.sessionId) return;
-    await fetch(`${API}/purchase-events`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        sessionId: session.sessionId,
-        productId,
-        wasRecommended: true,
-        amount,
-      }),
-    });
-    setLoggedPurchases((prev) => new Set([...prev, productId]));
-  };
 
   if (loading) {
     return (
@@ -132,6 +117,31 @@ export default function Recommendations({
           <h2 className="h2" style={{ marginBottom: 12 }}>Unable to Load Collection</h2>
           <p className="subtitle" style={{ marginBottom: 32 }}>{error}</p>
           <button className="btn-kiosk btn-primary" onClick={onReset}>Try Again</button>
+        </div>
+      </div>
+    );
+  }
+
+  if (recs.length === 0) {
+    return (
+      <div className="screen" id="screen-recommendations">
+        <div style={{ textAlign: "center", maxWidth: 480 }}>
+          <div style={{ fontSize: 56, marginBottom: 20 }}>🔍</div>
+          <h2 className="h2" style={{ marginBottom: 12 }}>No Exact Matches Right Now</h2>
+          <p className="subtitle" style={{ marginBottom: 8 }}>
+            We don't currently have items in your size and style in stock — but our stylist can help.
+          </p>
+          <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 32, lineHeight: 1.7 }}>
+            Try adjusting your size or style preferences, or speak with a store stylist who can show you available options.
+          </p>
+          <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
+            <button className="btn-kiosk btn-primary" onClick={onReset}>
+              Try Different Preferences
+            </button>
+            <button className="btn-kiosk btn-ghost" onClick={onDone}>
+              Speak with a Stylist →
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -222,24 +232,6 @@ export default function Recommendations({
 
                 <div style={{ marginTop: "auto", paddingTop: 8, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <span className="product-sku">SKU: {rec.product.sku}</span>
-                  {!purchased ? (
-                    <button
-                      className="btn-kiosk btn-ghost"
-                      style={{
-                        padding: "6px 14px",
-                        minHeight: 36,
-                        fontSize: 12,
-                        borderRadius: 8,
-                      }}
-                      onClick={() => logPurchase(rec.product.id, rec.product.price)}
-                    >
-                      Selected ✓
-                    </button>
-                  ) : (
-                    <span style={{ fontSize: 12, color: "var(--success)", fontWeight: 700 }}>
-                      ✓ Added to Fitting
-                    </span>
-                  )}
                 </div>
               </div>
             </div>
