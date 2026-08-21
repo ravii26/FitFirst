@@ -1,6 +1,6 @@
 // Gender Selection Screen — Luxury Boutique Vector UI
 
-type Gender = "MEN" | "WOMEN" | "KIDS";
+type Gender = "MEN" | "WOMEN" | "KIDS" | "UNISEX";
 
 const SVGMen = () => (
   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">

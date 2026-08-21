@@ -5,6 +5,7 @@ import GenderSelect from "./screens/GenderSelect";
 import SizeEntry from "./screens/SizeEntry";
 import StylePreferences from "./screens/StylePreferences";
 import AttributeEntry from "./screens/AttributeEntry";
+import CameraScan from "./screens/CameraScan";
 import Recommendations from "./screens/Recommendations";
 import StaffHandoff from "./screens/StaffHandoff";
 
@@ -17,6 +18,7 @@ export type Screen =
   | "SIZE"
   | "PREFS"
   | "ATTRIBUTES"
+  | "CAMERA"
   | "RECOMMENDATIONS"
   | "HANDOFF";
 
@@ -24,7 +26,7 @@ export type Screen =
 const STEP_SCREENS: Screen[] = ["GENDER", "SIZE", "PREFS", "ATTRIBUTES", "RECOMMENDATIONS"];
 
 export interface KioskSession {
-  gender: "MEN" | "WOMEN" | "KIDS" | null;
+  gender: "MEN" | "WOMEN" | "KIDS" | "UNISEX" | null;
   sizeInput: string;
   preferenceTags: string[];
   skinToneBucket: "FAIR" | "WHEATISH" | "MEDIUM" | "DEEP" | null;
@@ -41,7 +43,7 @@ const EMPTY_SESSION: KioskSession = {
   sessionId: null,
 };
 
-// Idle timeout — reset to welcome after 3 min of inactivity on HANDOFF
+// Idle timeout — reset to welcome after 90s of inactivity on HANDOFF
 const HANDOFF_AUTO_RESET_SECS = 90;
 
 export default function App() {
@@ -73,7 +75,7 @@ export default function App() {
   };
 
   // Step progress
-  const stepIndex = STEP_SCREENS.indexOf(screen);
+  const stepIndex = STEP_SCREENS.indexOf(screen === "CAMERA" ? "ATTRIBUTES" : screen);
   const totalSteps = STEP_SCREENS.length;
 
   const progressPct =
@@ -116,7 +118,13 @@ export default function App() {
 
       {/* Screens */}
       {screen === "WELCOME" && <Welcome onStart={() => go("PRIVACY")} />}
-      {screen === "PRIVACY" && <PrivacyNotice onContinue={() => go("GENDER")} onDecline={reset} />}
+      {screen === "PRIVACY" && (
+        <PrivacyNotice
+          onContinue={() => go("GENDER")}
+          onCameraScan={() => go("CAMERA")}
+          onDecline={reset}
+        />
+      )}
       {screen === "GENDER" && (
         <GenderSelect
           value={session.gender}
@@ -146,6 +154,17 @@ export default function App() {
             updateSession({ skinToneBucket: skin, bodyShapeBucket: body });
             go("RECOMMENDATIONS");
           }}
+          onStartCamera={() => go("CAMERA")}
+        />
+      )}
+      {screen === "CAMERA" && (
+        <CameraScan
+          initialGender={session.gender}
+          onDetected={(skin, body, gender) => {
+            updateSession({ skinToneBucket: skin, bodyShapeBucket: body, gender });
+            go("RECOMMENDATIONS");
+          }}
+          onCancel={() => go("ATTRIBUTES")}
         />
       )}
       {screen === "RECOMMENDATIONS" && (

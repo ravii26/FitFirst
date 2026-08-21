@@ -59,10 +59,12 @@ export default function AttributeEntry({
   skinTone: initialSkin,
   bodyShape: initialBody,
   onDone,
+  onStartCamera,
 }: {
   skinTone: SkinTone | null;
   bodyShape: BodyShape | null;
   onDone: (skin: SkinTone, body: BodyShape) => void;
+  onStartCamera?: () => void;
 }) {
   const [skin, setSkin] = useState<SkinTone | null>(initialSkin);
   const [body, setBody] = useState<BodyShape | null>(initialBody);
@@ -74,14 +76,31 @@ export default function AttributeEntry({
   const canContinue = skin !== null && body !== null;
 
   return (
-    <div className="screen screen-scrollable" id="screen-attributes" style={{ paddingTop: 90, paddingBottom: 80 }}>
-      <h2 className="h2" style={{ marginBottom: 8 }}>Personal Tone & Cut Profile</h2>
-      <p className="subtitle" style={{ marginBottom: 40 }}>
-        Our scoring engine pairs your skin undertone with complementary fabric dyes and matches garment silhouettes to your body shape.
-      </p>
+    <div className="screen screen-scrollable" id="screen-attributes" style={{ paddingTop: 84, paddingBottom: 80 }}>
+      <div style={{ textAlign: "center", marginBottom: 20 }}>
+        {onStartCamera && (
+          <button
+            className="btn-kiosk btn-primary"
+            onClick={onStartCamera}
+            style={{
+              marginBottom: 16,
+              fontSize: 14,
+              padding: "0 28px",
+              minHeight: 44,
+              background: "linear-gradient(135deg, #D4AF37 0%, #AA820A 100%)",
+            }}
+          >
+            ⚡ Use Fast On-Device Camera Scan
+          </button>
+        )}
+        <h2 className="h2" style={{ marginBottom: 6 }}>Personal Tone & Cut Profile</h2>
+        <p className="subtitle" style={{ fontSize: 15 }}>
+          Select manually below or use instant camera scan above.
+        </p>
+      </div>
 
       {/* Skin Tone */}
-      <div style={{ width: "100%", maxWidth: 760, marginBottom: 40 }}>
+      <div style={{ width: "100%", maxWidth: 760, marginBottom: 36 }}>
         <div style={{
           fontSize: 12, fontWeight: 700, color: "var(--gold-warm)",
           textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 16, textAlign: "center"

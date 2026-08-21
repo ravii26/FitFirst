@@ -4,7 +4,7 @@ const MEN_SIZES = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "28", "30", "32", "3
 const WOMEN_SIZES = ["XS", "S", "M", "L", "XL", "2XL", "24", "26", "28", "30", "32"];
 const KIDS_SIZES = ["2Y", "4Y", "6Y", "8Y", "10Y", "12Y", "14Y"];
 
-function getSizes(gender: "MEN" | "WOMEN" | "KIDS" | null) {
+function getSizes(gender: "MEN" | "WOMEN" | "KIDS" | "UNISEX" | null) {
   if (gender === "WOMEN") return WOMEN_SIZES;
   if (gender === "KIDS") return KIDS_SIZES;
   return MEN_SIZES;
@@ -15,7 +15,7 @@ export default function SizeEntry({
   value,
   onSelect,
 }: {
-  gender: "MEN" | "WOMEN" | "KIDS" | null;
+  gender: "MEN" | "WOMEN" | "KIDS" | "UNISEX" | null;
   value: string;
   onSelect: (size: string) => void;
 }) {
