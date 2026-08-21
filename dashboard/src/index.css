@@ -1,37 +1,37 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   FitFirst — Modern Atelier Design System
-   Fashion Technology · Retail Operations · Editorial Architecture
+   FitFirst — Editorial Atelier Design System
+   High-Fashion Technology · Retail Operations · Warm Alabaster Architecture
    ═══════════════════════════════════════════════════════════════════════════ */
 
 :root {
   /* ── Atmosphere & Canvas ── */
-  --atelier-bg:              #0E0D0B;
-  --atelier-surface:         #161512;
-  --atelier-surface-sub:     #1E1D19;
-  --atelier-surface-pop:     #282621;
+  --atelier-bg:              #FBF9F5;
+  --atelier-surface:         #FFFFFF;
+  --atelier-surface-sub:     #F3EFE6;
+  --atelier-surface-pop:     #ECE6D8;
 
   /* ── Typography & Ink ── */
-  --atelier-text-title:      #F7F3EA;
-  --atelier-text-body:       #C4BCAE;
-  --atelier-text-muted:      #827A6C;
+  --atelier-text-title:      #161412;
+  --atelier-text-body:       #484238;
+  --atelier-text-muted:      #888072;
 
-  /* ── Atelier Accents ── */
-  --atelier-brass:           #C89B53;
-  --atelier-brass-light:     #E4BD7D;
-  --atelier-brass-ghost:     rgba(200, 155, 83, 0.10);
-  --atelier-brass-line:      rgba(200, 155, 83, 0.35);
+  /* ── Atelier Accents & Materials ── */
+  --atelier-brass:           #161412;
+  --atelier-brass-light:     #8C6D3B;
+  --atelier-brass-ghost:     rgba(140, 109, 59, 0.08);
+  --atelier-brass-line:      #D4C8B5;
 
   /* ── Operational Signals ── */
-  --atelier-sage:            #8CA374;
-  --atelier-sage-ghost:      rgba(140, 163, 116, 0.14);
-  --atelier-terracotta:      #BD6353;
-  --atelier-terracotta-ghost:rgba(189, 99, 83, 0.14);
-  --atelier-amber:           #D49C55;
-  --atelier-amber-ghost:     rgba(212, 156, 85, 0.14);
+  --atelier-sage:            #366538;
+  --atelier-sage-ghost:      rgba(54, 101, 56, 0.08);
+  --atelier-terracotta:      #9E3224;
+  --atelier-terracotta-ghost:rgba(158, 50, 36, 0.08);
+  --atelier-amber:           #A8681A;
+  --atelier-amber-ghost:     rgba(168, 104, 26, 0.08);
 
   /* ── Architectural Borders & Dividers ── */
-  --atelier-hairline:        rgba(247, 243, 234, 0.08);
-  --atelier-hairline-pop:    rgba(247, 243, 234, 0.16);
+  --atelier-hairline:        #E8E2D6;
+  --atelier-hairline-pop:    #D5CDC0;
 
   /* ── Back-compat variables mapped to Atelier system ── */
   --ink:              var(--atelier-bg);
@@ -41,8 +41,8 @@
   --paper:            var(--atelier-text-title);
   --stone:            var(--atelier-text-body);
   --stone-dim:        var(--atelier-text-muted);
-  --brass:            var(--atelier-brass);
-  --brass-bright:     var(--atelier-brass-light);
+  --brass:            var(--atelier-brass-light);
+  --brass-bright:     #A07F48;
   --brass-dim:        var(--atelier-brass-ghost);
   --brass-border:     var(--atelier-brass-line);
   --moss:             var(--atelier-sage);
@@ -57,10 +57,10 @@
   --bg-surface:       var(--atelier-surface);
   --bg-card:          var(--atelier-surface);
   --bg-hover:         var(--atelier-surface-sub);
-  --accent:           var(--atelier-brass);
-  --accent-light:     var(--atelier-brass-light);
+  --accent:           #161412;
+  --accent-light:     #8C6D3B;
   --accent-dim:       var(--atelier-brass-ghost);
-  --accent-glow:      rgba(200, 155, 83, 0.15);
+  --accent-glow:      rgba(22, 20, 18, 0.06);
   --success:          var(--atelier-sage);
   --success-dim:      var(--atelier-sage-ghost);
   --danger:           var(--atelier-terracotta);
@@ -68,9 +68,9 @@
   --text-primary:     var(--atelier-text-title);
   --text-secondary:   var(--atelier-text-body);
   --text-muted:       var(--atelier-text-muted);
-  --text-accent:      var(--atelier-brass-light);
+  --text-accent:      #8C6D3B;
   --border:           var(--atelier-hairline);
-  --border-accent:    var(--atelier-brass-line);
+  --border-accent:    var(--atelier-hairline-pop);
 
   /* Typography */
   --font-serif:       'Fraunces', Georgia, serif;
@@ -363,26 +363,27 @@ html, body, #root {
 }
 
 .page-title {
-  font-family: var(--font-display);
+  font-family: var(--font-serif);
   font-weight: 500;
-  font-size: 28px;
-  color: var(--paper);
-  margin-bottom: var(--space-xs);
+  font-size: 30px;
+  letter-spacing: -0.01em;
+  color: var(--atelier-text-title);
+  margin-bottom: 6px;
 }
 
 .page-subtitle {
-  color: var(--stone);
-  font-size: 13px;
-  font-family: var(--font-mono);
+  color: var(--atelier-text-muted);
+  font-size: 14px;
+  font-family: var(--font-sans);
+  line-height: 1.5;
 }
 
 /* ── Cards & Stats ────────────────────────────────────────────────────────── */
 .card {
-  background: var(--ink-2);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
+  background: var(--atelier-surface);
+  border: 1px solid var(--atelier-hairline);
+  border-radius: var(--radius-md);
   padding: var(--space-lg);
-  box-shadow: var(--shadow-card);
 }
 
 .stats-grid {
@@ -504,38 +505,39 @@ table {
 }
 
 th {
-  background: var(--ink-3);
+  background: var(--atelier-surface-sub);
   padding: 12px 16px;
   font-family: var(--font-mono);
   font-size: 10.5px;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--stone-dim);
-  border-bottom: 1px solid var(--line);
+  color: var(--atelier-text-muted);
+  border-bottom: 1px solid var(--atelier-hairline);
 }
 
 td {
-  padding: 13px 16px;
+  padding: 14px 16px;
   font-size: 13.5px;
-  border-bottom: 1px solid var(--line);
-  color: var(--paper);
+  border-bottom: 1px solid var(--atelier-hairline);
+  color: var(--atelier-text-title);
+  background: var(--atelier-surface);
 }
 
 tr:last-child td { border-bottom: none; }
 
-tbody tr:hover {
-  background: var(--ink-3);
+tbody tr:hover td {
+  background: var(--atelier-surface-sub);
 }
 
 td.primary {
   font-weight: 600;
-  color: var(--paper);
+  color: var(--atelier-text-title);
 }
 
 .monospace {
   font-family: var(--font-mono);
-  color: var(--stone);
+  color: var(--atelier-text-body);
 }
 
 /* ── Badges ───────────────────────────────────────────────────────────────── */
@@ -549,10 +551,10 @@ td.primary {
   letter-spacing: 0.02em;
 }
 
-.badge-green { background: var(--moss-dim); color: #9BAD84; }
-.badge-amber { background: var(--warning-dim); color: var(--warning); }
-.badge-blue  { background: var(--info-dim); color: var(--info); }
-.badge-gray  { background: var(--ink-3); color: var(--stone); }
+.badge-green { background: var(--atelier-sage-ghost); color: var(--atelier-sage); }
+.badge-amber { background: var(--atelier-amber-ghost); color: var(--atelier-amber); }
+.badge-blue  { background: rgba(36, 75, 120, 0.08); color: #244B78; }
+.badge-gray  { background: var(--atelier-surface-sub); color: var(--atelier-text-muted); }
 
 /* ── Buttons & Form Elements ──────────────────────────────────────────────── */
 .btn {
@@ -561,51 +563,53 @@ td.primary {
   justify-content: center;
   gap: 8px;
   padding: 10px 20px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   font-weight: 600;
   font-size: 13.5px;
   cursor: pointer;
-  border: none;
-  transition: var(--transition);
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
   font-family: var(--font-sans);
 }
 
 .btn-primary {
-  background: var(--brass);
-  color: var(--ink);
+  background: #161412;
+  color: #FFFFFF;
+  border-color: #161412;
 }
 
 .btn-primary:hover {
-  background: var(--brass-bright);
+  background: #2E2A25;
+  border-color: #2E2A25;
   transform: translateY(-1px);
 }
 
 .btn-secondary {
-  background: var(--ink-3);
-  color: var(--paper);
-  border: 1px solid var(--line);
+  background: var(--atelier-surface);
+  color: var(--atelier-text-title);
+  border: 1px solid var(--atelier-hairline);
 }
 
 .btn-secondary:hover {
-  background: var(--ink-4);
-  border-color: var(--line-strong);
+  background: var(--atelier-surface-sub);
+  border-color: var(--atelier-hairline-pop);
 }
 
 .btn-danger {
-  background: var(--crimson-dim);
-  color: #D68577;
-  border: 1px solid rgba(168, 69, 58, 0.35);
+  background: var(--atelier-terracotta-ghost);
+  color: var(--atelier-terracotta);
+  border: 1px solid rgba(158, 50, 36, 0.2);
 }
 
 .btn-danger:hover {
-  background: var(--crimson);
-  color: var(--paper);
+  background: var(--atelier-terracotta);
+  color: #FFFFFF;
 }
 
 .btn-sm {
-  padding: 6px 12px;
+  padding: 6px 14px;
   font-size: 12px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-xs);
 }
 
 /* ── Forms ────────────────────────────────────────────────────────────────── */
@@ -624,7 +628,7 @@ td.primary {
 .form-group label {
   font-size: 12px;
   font-weight: 600;
-  color: var(--stone);
+  color: var(--atelier-text-title);
 }
 
 input[type="text"],
@@ -633,20 +637,20 @@ input[type="date"],
 input[type="password"],
 select,
 textarea {
-  background: var(--ink-3);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
+  background: var(--atelier-surface);
+  border: 1px solid var(--atelier-hairline);
+  border-radius: var(--radius-sm);
   padding: 10px 14px;
-  color: var(--paper);
+  color: var(--atelier-text-title);
   font-family: var(--font-sans);
   font-size: 13.5px;
   outline: none;
-  transition: var(--transition);
+  transition: all var(--transition-fast);
 }
 
 input:focus, select:focus, textarea:focus {
-  border-color: var(--brass);
-  box-shadow: 0 0 0 3px var(--brass-dim);
+  border-color: #161412;
+  box-shadow: 0 0 0 3px rgba(22, 20, 18, 0.08);
 }
 
 /* ── Login Screen ──────────────────────────────────────────────────────────── */

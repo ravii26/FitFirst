@@ -1,4 +1,4 @@
-// Recommendations Screen — Hero Pick + Ranked List
+// Recommendations Screen — Curated Showroom Collection & Lookbook
 
 import { useEffect, useState } from "react";
 import type { KioskSession } from "../App";
@@ -21,7 +21,11 @@ const CATEGORY_IMAGES: Record<string, string> = {
   KIDS_SHIRT: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&auto=format&fit=crop&q=80",
 };
 
-const LOADING_STAGES = ["Reading your profile", "Matching store inventory", "Ranking by fit"];
+const LOADING_STAGES = [
+  "Analyzing silhouette & undertone",
+  "Filtering showroom floor inventory",
+  "Curating tailored lookbook",
+];
 
 interface RecommendedProduct {
   rank: number;
@@ -107,22 +111,27 @@ export default function Recommendations({
   if (loading) {
     return (
       <div className="screen" id="screen-recommendations">
-        <div style={{ textAlign: "center" }}>
+        <div style={{ textAlign: "center", maxWidth: 440 }}>
           <div
             style={{
-              width: 56,
-              height: 56,
-              border: "3px solid var(--line-strong)",
-              borderTopColor: "var(--brass)",
+              width: 48,
+              height: 48,
+              border: "2px solid var(--line)",
+              borderTopColor: "var(--brass-bright)",
               borderRadius: "50%",
               animation: "spin 0.8s linear infinite",
               margin: "0 auto 24px",
             }}
           />
-          <h2 className="h2" style={{ marginBottom: 12 }}>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--brass)", marginBottom: 8 }}>
+            Curating Collection
+          </div>
+          <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 28, color: "var(--paper)", fontWeight: 400, marginBottom: 8 }}>
             {LOADING_STAGES[loadingStage]}&hellip;
           </h2>
-          <p className="subtitle">Matching color tones, fit cuts, and live availability.</p>
+          <p style={{ fontSize: 13, color: "var(--stone-dim)" }}>
+            Cross-referencing floor inventory in Size {session.sizeInput || "Standard"}
+          </p>
         </div>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
@@ -132,10 +141,12 @@ export default function Recommendations({
   if (error) {
     return (
       <div className="screen" id="screen-recommendations">
-        <div style={{ textAlign: "center" }}>
-          <h2 className="h2" style={{ marginBottom: 12 }}>Unable to Load Collection</h2>
-          <p className="subtitle" style={{ marginBottom: 32 }}>{error}</p>
-          <button className="btn-kiosk btn-primary" onClick={onReset}>Try Again</button>
+        <div style={{ textAlign: "center", maxWidth: 480 }}>
+          <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 28, color: "var(--paper)", marginBottom: 12 }}>
+            Unable to Load Floor Collection
+          </h2>
+          <p style={{ color: "var(--stone)", marginBottom: 28, fontSize: 14 }}>{error}</p>
+          <button className="btn-kiosk btn-primary" onClick={onReset}>Restart Consultation</button>
         </div>
       </div>
     );
@@ -144,20 +155,22 @@ export default function Recommendations({
   if (recs.length === 0) {
     return (
       <div className="screen" id="screen-recommendations">
-        <div style={{ textAlign: "center", maxWidth: 480 }}>
-          <h2 className="h2" style={{ marginBottom: 12 }}>No Exact Matches Right Now</h2>
-          <p className="subtitle" style={{ marginBottom: 8 }}>
-            We don't currently have items in your size and style in stock — but our stylist can help.
-          </p>
-          <p style={{ fontSize: 13, color: "var(--stone-dim)", marginBottom: 32, lineHeight: 1.7 }}>
-            Try adjusting your size or style preferences, or speak with a store stylist who can show you available options.
+        <div style={{ textAlign: "center", maxWidth: 520 }}>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--brass)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 8 }}>
+            Floor Inventory Update
+          </div>
+          <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 32, color: "var(--paper)", marginBottom: 12 }}>
+            No Exact Matches in Size {session.sizeInput}
+          </h2>
+          <p style={{ fontSize: 14, color: "var(--stone)", marginBottom: 32, lineHeight: 1.6 }}>
+            Our current showroom inventory has limited stock for this specific combination. Our floor stylists can check upcoming delivery racks or recommend alternative silhouettes.
           </p>
           <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
-            <button className="btn-kiosk btn-primary" onClick={onReset}>
-              Try Different Preferences
+            <button className="btn-kiosk btn-secondary" onClick={onReset}>
+              Adjust Preferences
             </button>
-            <button className="btn-kiosk btn-ghost" onClick={onDone}>
-              Speak with a Stylist &rarr;
+            <button className="btn-kiosk btn-primary" onClick={onDone}>
+              Get Stylist Handoff Code &rarr;
             </button>
           </div>
         </div>
@@ -166,74 +179,173 @@ export default function Recommendations({
   }
 
   const [topPick, ...rest] = recs;
-  const topMatch = Math.round(topPick.score * 100);
 
   return (
     <div
       className="screen screen-scrollable"
       id="screen-recommendations"
-      style={{ paddingTop: 76, paddingBottom: 40, justifyContent: "flex-start", alignItems: "center" }}
+      style={{ padding: "32px 48px", justifyContent: "flex-start", alignItems: "center" }}
     >
-      <div className="recs-header">
-        <div>
-          <div className="recs-eyebrow">Your Matches</div>
-          <div className="recs-title">Chosen from today's floor</div>
-        </div>
-        <div className="recs-count">
-          {recs.length} piece{recs.length === 1 ? "" : "s"} &middot; size {session.sizeInput}
-        </div>
-      </div>
-
-      <div className="recs-grid">
-        {/* Hero pick */}
-        <div className="hero-card" id="rec-card-1">
-          <div className="hero-image">
-            <img
-              src={imageFor(topPick)}
-              alt={topPick.product.name}
-              onError={(e) => { (e.target as HTMLElement).style.display = "none"; }}
-            />
-            <div className="hero-match-badge">{topMatch}% match</div>
-          </div>
-          <div className="hero-body">
-            <div className="hero-rank">Top pick</div>
-            <div className="hero-name">{topPick.product.name}</div>
-            {topPick.reasons[0] && <div className="hero-why">{topPick.reasons[0]}</div>}
-            <div className="hero-price">&#8377;{topPick.product.price.toLocaleString("en-IN")}</div>
-          </div>
-        </div>
-
-        {/* Ranked list */}
-        <div className="rec-list">
-          {rest.map((rec) => (
-            <div className="rec-row" key={rec.product.id} id={`rec-card-${rec.rank}`}>
-              <div className="rec-row-n">{String(rec.rank).padStart(2, "0")}</div>
-              <img
-                className="rec-row-thumb"
-                src={imageFor(rec)}
-                alt={rec.product.name}
-                onError={(e) => { (e.target as HTMLElement).style.visibility = "hidden"; }}
-              />
-              <div>
-                <div className="rec-row-name">{rec.product.name}</div>
-                <div className="rec-row-reason">{rec.reasons[0] || `SKU ${rec.product.sku}`}</div>
-              </div>
-              <div className="rec-row-price">&#8377;{rec.product.price.toLocaleString("en-IN")}</div>
+      <div style={{ width: "100%", maxWidth: 1040 }}>
+        {/* Header */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 24, borderBottom: "1px solid var(--line)", paddingBottom: 16 }}>
+          <div>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--brass)", marginBottom: 4 }}>
+              Curated Lookbook &bull; Size {session.sizeInput}
             </div>
-          ))}
+            <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 32, color: "var(--paper)", fontWeight: 400, letterSpacing: "-0.01em" }}>
+              In-Stock Showroom Recommendations
+            </h2>
+          </div>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--stone-dim)" }}>
+            {recs.length} Pieces Available on Floor Today
+          </div>
         </div>
-      </div>
 
-      {/* Footer CTA */}
-      <div style={{ marginTop: 28, textAlign: "center" }}>
-        <button
-          id="recs-done-btn"
-          className="btn-kiosk btn-primary"
-          onClick={onDone}
-          style={{ fontSize: 17, padding: "0 48px" }}
-        >
-          Complete & Get Stylist Handoff Code &rarr;
-        </button>
+        {/* 2-Column Curated Lookbook */}
+        <div style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 28, marginBottom: 28 }}>
+          {/* Primary Top Pick */}
+          <div
+            id="rec-card-1"
+            style={{
+              background: "var(--ink-2)",
+              border: "1px solid var(--brass-bright)",
+              borderRadius: "var(--radius-lg)",
+              overflow: "hidden",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <div style={{ height: 260, position: "relative", overflow: "hidden", background: "var(--ink-3)" }}>
+              <img
+                src={imageFor(topPick)}
+                alt={topPick.product.name}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                onError={(e) => { (e.target as HTMLElement).style.display = "none"; }}
+              />
+              <div style={{
+                position: "absolute",
+                top: 14,
+                left: 14,
+                background: "rgba(14, 13, 11, 0.85)",
+                backdropFilter: "blur(6px)",
+                border: "1px solid var(--brass)",
+                borderRadius: "var(--radius-sm)",
+                padding: "4px 10px",
+                fontFamily: "var(--font-mono)",
+                fontSize: 11,
+                fontWeight: 600,
+                color: "var(--brass-bright)",
+                letterSpacing: "0.06em",
+                textTransform: "uppercase",
+              }}>
+                Primary Showroom Recommendation
+              </div>
+            </div>
+
+            <div style={{ padding: "24px", display: "flex", flexDirection: "column", justifyContent: "space-between", flex: 1 }}>
+              <div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
+                  <div style={{ fontFamily: "var(--font-serif)", fontSize: 24, color: "var(--paper)", fontWeight: 500 }}>
+                    {topPick.product.name}
+                  </div>
+                  <div style={{ fontFamily: "var(--font-mono)", fontSize: 20, color: "var(--brass-bright)", fontWeight: 600 }}>
+                    &#8377;{topPick.product.price.toLocaleString("en-IN")}
+                  </div>
+                </div>
+
+                <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--stone-dim)", marginBottom: 14 }}>
+                  SKU: {topPick.product.sku} &bull; Category: {topPick.product.category.replace(/_/g, " ")}
+                </div>
+
+                {topPick.reasons.length > 0 && (
+                  <div style={{
+                    background: "rgba(200, 155, 83, 0.08)",
+                    borderLeft: "2px solid var(--brass)",
+                    padding: "10px 14px",
+                    fontSize: 13,
+                    color: "var(--paper-soft)",
+                    lineHeight: 1.5,
+                  }}>
+                    {topPick.reasons[0]}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Secondary Curated Pieces List */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--stone-dim)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+              Alternative Floor Matches
+            </div>
+
+            {rest.map((rec) => (
+              <div
+                key={rec.product.id}
+                id={`rec-card-${rec.rank}`}
+                style={{
+                  background: "var(--ink-2)",
+                  border: "1px solid var(--line)",
+                  borderRadius: "var(--radius-md)",
+                  padding: "14px 16px",
+                  display: "grid",
+                  gridTemplateColumns: "auto 56px 1fr auto",
+                  gap: 14,
+                  alignItems: "center",
+                }}
+              >
+                <div style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--brass)", fontWeight: 600 }}>
+                  #{rec.rank}
+                </div>
+
+                <div style={{ width: 56, height: 56, borderRadius: "var(--radius-sm)", overflow: "hidden", background: "var(--ink-3)" }}>
+                  <img
+                    src={imageFor(rec)}
+                    alt={rec.product.name}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    onError={(e) => { (e.target as HTMLElement).style.visibility = "hidden"; }}
+                  />
+                </div>
+
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "var(--paper)", marginBottom: 2 }}>
+                    {rec.product.name}
+                  </div>
+                  <div style={{ fontSize: 11, color: "var(--stone-dim)" }}>
+                    {rec.reasons[0] || `SKU ${rec.product.sku}`}
+                  </div>
+                </div>
+
+                <div style={{ fontFamily: "var(--font-mono)", fontSize: 14, fontWeight: 600, color: "var(--paper)" }}>
+                  &#8377;{rec.product.price.toLocaleString("en-IN")}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Footer Action Bar */}
+        <div style={{
+          borderTop: "1px solid var(--line)",
+          paddingTop: 18,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}>
+          <div style={{ fontSize: 12, color: "var(--stone-dim)" }}>
+            Stylist will pull these exact pieces in Size {session.sizeInput} for fitting.
+          </div>
+
+          <button
+            id="recs-done-btn"
+            className="btn-kiosk btn-primary"
+            onClick={onDone}
+            style={{ fontSize: 16, padding: "0 40px", minHeight: 52 }}
+          >
+            Connect with Floor Stylist &rarr;
+          </button>
+        </div>
       </div>
     </div>
   );

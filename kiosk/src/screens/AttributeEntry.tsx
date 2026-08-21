@@ -1,4 +1,4 @@
-// Attribute Entry Screen — Clean Skin Tone Swatches & Body Silhouette Guidance
+// Attribute Entry Screen — Editorial Dual-Matrix Tone & Silhouette
 
 import { useState } from "react";
 
@@ -6,19 +6,19 @@ type SkinTone = "FAIR" | "WHEATISH" | "MEDIUM" | "DEEP";
 type BodyShape = "RECTANGLE" | "TRIANGLE" | "INVERTED_T" | "HOURGLASS";
 
 const SKIN_TONES: { value: SkinTone; label: string; sub: string; color: string }[] = [
-  { value: "FAIR", label: "Fair / Warm Porcelain", sub: "Complements Emerald, Royal Blue & Deep Ruby", color: "#F7E6D0" },
-  { value: "WHEATISH", label: "Wheatish / Golden Warmth", sub: "Complements Gold, Maroon, Mustard & Teal", color: "#D49C65" },
-  { value: "MEDIUM", label: "Medium / Olive Tan", sub: "Complements Champagne, Coral, Beige & Navy", color: "#9E6B43" },
-  { value: "DEEP", label: "Deep / Rich Ebony", sub: "Complements Ivory, Bright Gold, Crimson & Fuchsia", color: "#543422" },
+  { value: "FAIR", label: "Fair / Porcelain", sub: "Pairs with Emerald, Deep Ruby & Cobalt", color: "#F7E6D0" },
+  { value: "WHEATISH", label: "Wheatish / Golden", sub: "Pairs with Warm Gold, Mustard, Maroon & Teal", color: "#D49C65" },
+  { value: "MEDIUM", label: "Medium / Olive", sub: "Pairs with Champagne, Coral, Beige & Navy", color: "#9E6B43" },
+  { value: "DEEP", label: "Deep / Ebony", sub: "Pairs with Ivory, Rich Ochre, Crimson & Fuchsia", color: "#543422" },
 ];
 
 const BODY_SHAPES: { value: BodyShape; label: string; sub: string; icon: JSX.Element }[] = [
   {
     value: "RECTANGLE",
     label: "Athletic & Straight",
-    sub: "Balanced shoulders and hips with subtle waist definition",
+    sub: "Balanced shoulders and hips",
     icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <rect x="7" y="4" width="10" height="16" rx="2" />
       </svg>
     ),
@@ -26,9 +26,9 @@ const BODY_SHAPES: { value: BodyShape; label: string; sub: string; icon: JSX.Ele
   {
     value: "TRIANGLE",
     label: "Pear / A-Line",
-    sub: "Fuller hips with narrow shoulder balance",
+    sub: "Fuller hip taper & narrow shoulders",
     icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <path d="M12 4L4 20H20L12 4Z" />
       </svg>
     ),
@@ -36,9 +36,9 @@ const BODY_SHAPES: { value: BodyShape; label: string; sub: string; icon: JSX.Ele
   {
     value: "INVERTED_T",
     label: "Broad Shoulder",
-    sub: "Wider shoulder line tapering toward waist",
+    sub: "Structured upper frame",
     icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <path d="M4 4H20L12 20L4 4Z" />
       </svg>
     ),
@@ -46,9 +46,9 @@ const BODY_SHAPES: { value: BodyShape; label: string; sub: string; icon: JSX.Ele
   {
     value: "HOURGLASS",
     label: "Curvy & Defined",
-    sub: "Proportional shoulders & hips with defined waist",
+    sub: "Proportional frame & waist definition",
     icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <path d="M6 4H18L13 12L18 20H6L11 12L6 4Z" />
       </svg>
     ),
@@ -76,121 +76,176 @@ export default function AttributeEntry({
   const canContinue = skin !== null && body !== null;
 
   return (
-    <div className="screen screen-scrollable" id="screen-attributes" style={{ paddingTop: 84, paddingBottom: 80 }}>
-      <div
-        style={{
-          fontFamily: "var(--font-mono)",
-          fontSize: 12,
-          letterSpacing: "0.16em",
-          textTransform: "uppercase",
-          color: "var(--brass)",
-          marginBottom: 16,
-          textAlign: "center",
-        }}
-      >
-        04 &middot; Fit Profile
-      </div>
+    <div className="screen" id="screen-attributes" style={{ padding: "36px 48px" }}>
+      <div style={{ width: "100%", maxWidth: 1040 }}>
+        {/* Header */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 28 }}>
+          <div>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--brass)", marginBottom: 8 }}>
+              Step 04 / 04 &bull; Tailoring Profile
+            </div>
+            <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 36, color: "var(--paper)", fontWeight: 400, letterSpacing: "-0.01em" }}>
+              Calibrate tone & silhouette cut
+            </h2>
+          </div>
 
-      <div style={{ textAlign: "center", marginBottom: 20 }}>
-        {onStartCamera && (
+          {onStartCamera && (
+            <button
+              className="btn-kiosk btn-secondary"
+              onClick={onStartCamera}
+              style={{
+                fontSize: 13,
+                padding: "0 20px",
+                minHeight: 44,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+              }}
+            >
+              <span>📷</span>
+              <span>Fast Camera Scan</span>
+            </button>
+          )}
+        </div>
+
+        {/* Dual Grid: Left Tone, Right Silhouette */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32, marginBottom: 32 }}>
+          {/* Tone Section */}
+          <div style={{
+            background: "var(--ink-2)",
+            border: "1px solid var(--line)",
+            borderRadius: "var(--radius-lg)",
+            padding: "24px 20px",
+          }}>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--brass)", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 16 }}>
+              1. Complexion Undertone
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              {SKIN_TONES.map((t) => {
+                const isSelected = skin === t.value;
+                return (
+                  <button
+                    key={t.value}
+                    id={`skin-${t.value.toLowerCase()}`}
+                    onClick={() => setSkin(t.value)}
+                    style={{
+                      background: isSelected ? "var(--ink-3)" : "transparent",
+                      border: isSelected ? "1px solid var(--brass-bright)" : "1px solid var(--line)",
+                      borderRadius: "var(--radius-md)",
+                      padding: "16px 12px",
+                      textAlign: "left",
+                      cursor: "pointer",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                      gap: 8,
+                      transition: "all 0.15s ease",
+                    }}
+                  >
+                    <div style={{
+                      width: 28,
+                      height: 28,
+                      borderRadius: "50%",
+                      background: t.color,
+                      border: isSelected ? "2px solid var(--brass-bright)" : "1px solid rgba(255,255,255,0.2)",
+                    }} />
+                    <div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: isSelected ? "var(--brass-bright)" : "var(--paper)", marginBottom: 2 }}>
+                        {t.label}
+                      </div>
+                      <div style={{ fontSize: 11, color: "var(--stone-dim)", lineHeight: 1.3 }}>
+                        {t.sub}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Silhouette Section */}
+          <div style={{
+            background: "var(--ink-2)",
+            border: "1px solid var(--line)",
+            borderRadius: "var(--radius-lg)",
+            padding: "24px 20px",
+          }}>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--brass)", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 16 }}>
+              2. Silhouette Architecture
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              {BODY_SHAPES.map((b) => {
+                const isSelected = body === b.value;
+                return (
+                  <button
+                    key={b.value}
+                    id={`shape-${b.value.toLowerCase().replace(/_/g, "-")}`}
+                    onClick={() => setBody(b.value)}
+                    style={{
+                      background: isSelected ? "var(--ink-3)" : "transparent",
+                      border: isSelected ? "1px solid var(--brass-bright)" : "1px solid var(--line)",
+                      borderRadius: "var(--radius-md)",
+                      padding: "16px 12px",
+                      textAlign: "left",
+                      cursor: "pointer",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                      gap: 8,
+                      transition: "all 0.15s ease",
+                    }}
+                  >
+                    <div style={{ color: isSelected ? "var(--brass-bright)" : "var(--stone-dim)" }}>
+                      {b.icon}
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: isSelected ? "var(--brass-bright)" : "var(--paper)", marginBottom: 2 }}>
+                        {b.label}
+                      </div>
+                      <div style={{ fontSize: 11, color: "var(--stone-dim)", lineHeight: 1.3 }}>
+                        {b.sub}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Action Bottom Bar */}
+        <div style={{
+          borderTop: "1px solid var(--line)",
+          paddingTop: 20,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}>
+          <div style={{ fontSize: 13, color: "var(--stone-dim)" }}>
+            {canContinue ? (
+              <span style={{ color: "var(--brass-bright)" }}>&check; Profile calibrated &mdash; ready to match floor inventory</span>
+            ) : (
+              <span>Select both a complexion tone and silhouette to calculate matches</span>
+            )}
+          </div>
+
           <button
+            id="attributes-continue-btn"
             className="btn-kiosk btn-primary"
-            onClick={onStartCamera}
+            disabled={!canContinue}
+            onClick={handleContinue}
             style={{
-              marginBottom: 16,
-              fontSize: 14,
-              padding: "0 28px",
-              minHeight: 44,
+              opacity: canContinue ? 1 : 0.4,
+              fontSize: 16,
+              padding: "0 40px",
+              minHeight: 52,
             }}
           >
-            Use Fast On-Device Camera Scan
+            Reveal Curated Pieces &rarr;
           </button>
-        )}
-        <h2 className="h2" style={{ marginBottom: 6 }}>Personal Tone & Cut Profile</h2>
-        <p className="subtitle" style={{ fontSize: 15 }}>
-          Select manually below or use instant camera scan above.
-        </p>
-      </div>
-
-      {/* Skin Tone */}
-      <div style={{ width: "100%", maxWidth: 760, marginBottom: 36 }}>
-        <div style={{
-          fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--brass)",
-          textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 16, textAlign: "center"
-        }}>
-          1. Select Complexion Tone
         </div>
-        <div className="card-grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))" }}>
-          {SKIN_TONES.map((t) => {
-            const isSelected = skin === t.value;
-            return (
-              <button
-                key={t.value}
-                id={`skin-${t.value.toLowerCase()}`}
-                className={`selection-card ${isSelected ? "selected" : ""}`}
-                style={{ padding: "20px 14px" }}
-                onClick={() => setSkin(t.value)}
-              >
-                <div
-                  style={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: "50%",
-                    background: t.color,
-                    border: isSelected ? "3px solid var(--brass)" : "2px solid var(--line-strong)",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-                    marginBottom: 12,
-                    transition: "all 0.2s ease",
-                  }}
-                />
-                <div className="selection-card-title" style={{ fontSize: 15 }}>{t.label}</div>
-                <div className="selection-card-sub" style={{ fontSize: 11 }}>{t.sub}</div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Body Shape */}
-      <div style={{ width: "100%", maxWidth: 760, marginBottom: 36 }}>
-        <div style={{
-          fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--brass)",
-          textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 16, textAlign: "center"
-        }}>
-          2. Select Body Silhouette
-        </div>
-        <div className="card-grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))" }}>
-          {BODY_SHAPES.map((b) => {
-            const isSelected = body === b.value;
-            return (
-              <button
-                key={b.value}
-                id={`shape-${b.value.toLowerCase().replace(/_/g, "-")}`}
-                className={`selection-card ${isSelected ? "selected" : ""}`}
-                style={{ padding: "20px 14px" }}
-                onClick={() => setBody(b.value)}
-              >
-                <div className="selection-card-icon" style={{ width: 48, height: 48, marginBottom: 12 }}>
-                  {b.icon}
-                </div>
-                <div className="selection-card-title" style={{ fontSize: 15 }}>{b.label}</div>
-                <div className="selection-card-sub" style={{ fontSize: 11 }}>{b.sub}</div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      <div style={{ textAlign: "center", marginTop: 8 }}>
-        <button
-          id="attributes-continue-btn"
-          className="btn-kiosk btn-primary"
-          disabled={!canContinue}
-          onClick={handleContinue}
-          style={{ opacity: canContinue ? 1 : 0.45, fontSize: 17, padding: "0 54px" }}
-        >
-          {canContinue ? "Generate Recommendations &rarr;" : "Select Tone & Cut to Proceed"}
-        </button>
       </div>
     </div>
   );

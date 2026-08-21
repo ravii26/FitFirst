@@ -185,72 +185,104 @@ export default function Analytics() {
         </div>
       )}
 
-      {/* Key Metrics */}
-      <div className="stats-grid">
-        <div className="stat-card" id="stat-sessions">
-          <div className="stat-label">Kiosk Sessions</div>
-          <div className="stat-value">{sessions.total}</div>
-          <div className="stat-sub">Total customers who used the kiosk</div>
-        </div>
-        <div className="stat-card" id="stat-conversions">
-          <div className="stat-label">Recommended Purchases</div>
-          <div className="stat-value accent">{conversions.recommendedPurchases}</div>
-          <div className="stat-sub">
-            {(conversions.recommendedPurchaseRate * 100).toFixed(1)}% of sessions led to a recommended purchase
+      {/* Executive Performance Ledger */}
+      <div style={{
+        background: "var(--atelier-surface)",
+        border: "1px solid var(--atelier-hairline)",
+        borderRadius: "var(--radius-lg)",
+        padding: "24px 28px",
+        marginBottom: 28,
+      }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, borderBottom: "1px solid var(--atelier-hairline)", paddingBottom: 12 }}>
+          <div>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--atelier-brass)", textTransform: "uppercase", letterSpacing: "0.12em" }}>
+              Financial & Pilot Performance Matrix
+            </div>
+            <div style={{ fontFamily: "var(--font-serif)", fontSize: 18, color: "var(--atelier-text-title)" }}>
+              Baseline Pre-Pilot vs. In-Store Kiosk Attribution
+            </div>
           </div>
-          {killThreshold && (
-            <div className={`stat-lift ${conversions.recommendedPurchaseRate >= killThreshold.minRecommendedPurchaseRate ? "up" : "down"}`}>
-              Target: {(killThreshold.minRecommendedPurchaseRate * 100).toFixed(0)}%
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--atelier-text-muted)" }}>
+            {summary.baseline.daysLogged} Baseline Days Logged
+          </div>
+        </div>
+
+        {/* Ledger Comparative Table */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20 }}>
+          <div style={{ borderRight: "1px solid var(--atelier-hairline)", paddingRight: 16 }}>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--atelier-text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
+              Kiosk Consultations
             </div>
-          )}
-        </div>
-        <div className="stat-card" id="stat-basket-kiosk">
-          <div className="stat-label">Avg Basket (Kiosk Period)</div>
-          <div className="stat-value">{fmtINR(basketValue.kioskPeriod)}</div>
-          {basketValue.liftPct !== null && (
-            <div className={`stat-lift ${basketValue.liftPct >= 0 ? "up" : "down"}`}>
-              {fmtPct(basketValue.liftPct)} vs. baseline
+            <div style={{ fontFamily: "var(--font-serif)", fontSize: 32, color: "var(--atelier-text-title)", fontWeight: 500, lineHeight: 1 }}>
+              {sessions.total}
             </div>
-          )}
-          {killThreshold && (
-            <div className={`stat-lift ${(basketValue.liftPct ?? 0) >= killThreshold.minBasketValueLiftPct ? "up" : "down"}`}>
-              Target: +{killThreshold.minBasketValueLiftPct}%
+            <div style={{ fontSize: 12, color: "var(--atelier-text-muted)", marginTop: 6 }}>
+              {summary.recommendations.total} floor pieces served
             </div>
-          )}
-        </div>
-        <div className="stat-card" id="stat-basket-baseline">
-          <div className="stat-label">Avg Basket (Baseline)</div>
-          <div className="stat-value">{basketValue.baseline > 0 ? fmtINR(basketValue.baseline) : "—"}</div>
-          <div className="stat-sub">{summary.baseline.daysLogged} pre-kiosk days logged</div>
-        </div>
-        <div className="stat-card" id="stat-revenue">
-          <div className="stat-label">Total Recommended Revenue</div>
-          <div className="stat-value success">{fmtINR(conversions.recommendedRevenue)}</div>
-          <div className="stat-sub">Revenue from kiosk-recommended items</div>
-        </div>
-        <div className="stat-card" id="stat-total-recs">
-          <div className="stat-label">Recommendations Made</div>
-          <div className="stat-value">{summary.recommendations.total}</div>
-          <div className="stat-sub">Total product recommendations served</div>
+          </div>
+
+          <div style={{ borderRight: "1px solid var(--atelier-hairline)", paddingRight: 16 }}>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--atelier-text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
+              Attributed Purchases
+            </div>
+            <div style={{ fontFamily: "var(--font-serif)", fontSize: 32, color: "var(--atelier-brass-light)", fontWeight: 500, lineHeight: 1 }}>
+              {conversions.recommendedPurchases}
+            </div>
+            <div style={{ fontSize: 12, color: "var(--atelier-sage)", marginTop: 6, fontWeight: 600 }}>
+              {(conversions.recommendedPurchaseRate * 100).toFixed(1)}% Conversion Rate
+            </div>
+          </div>
+
+          <div style={{ borderRight: "1px solid var(--atelier-hairline)", paddingRight: 16 }}>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--atelier-text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
+              Average Basket Value
+            </div>
+            <div style={{ fontFamily: "var(--font-serif)", fontSize: 32, color: "var(--atelier-text-title)", fontWeight: 500, lineHeight: 1 }}>
+              {fmtINR(basketValue.kioskPeriod)}
+            </div>
+            <div style={{ fontSize: 12, color: (basketValue.liftPct ?? 0) >= 0 ? "var(--atelier-sage)" : "var(--atelier-terracotta)", marginTop: 6 }}>
+              {basketValue.liftPct !== null ? `${fmtPct(basketValue.liftPct)} vs Baseline` : "Baseline: " + fmtINR(basketValue.baseline)}
+            </div>
+          </div>
+
+          <div>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--atelier-text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
+              Attributed Showroom Sales
+            </div>
+            <div style={{ fontFamily: "var(--font-serif)", fontSize: 32, color: "var(--atelier-sage)", fontWeight: 500, lineHeight: 1 }}>
+              {fmtINR(conversions.recommendedRevenue)}
+            </div>
+            <div style={{ fontSize: 12, color: "var(--atelier-text-muted)", marginTop: 6 }}>
+              Direct pilot sales recorded
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Charts */}
       {chartData.length > 0 && (
         <div className="charts-grid">
-          <div className="chart-card" id="chart-basket">
-            <div className="card-title">Avg Basket Value by Day</div>
-            <p style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 12 }}>
-              <span style={{ display: "inline-block", width: 10, height: 10, background: "#B98A46", borderRadius: 2, marginRight: 4 }}></span>Kiosk active &nbsp;
-              <span style={{ display: "inline-block", width: 10, height: 10, background: "#7C7365", borderRadius: 2, marginRight: 4 }}></span>Baseline
+          <div className="chart-card" id="chart-basket" style={{ background: "var(--atelier-surface)", border: "1px solid var(--atelier-hairline)", borderRadius: "var(--radius-lg)", padding: 24 }}>
+            <div className="card-title" style={{ fontFamily: "var(--font-serif)", fontSize: 18, color: "var(--atelier-text-title)", marginBottom: 4 }}>
+              Average Daily Basket Value
+            </div>
+            <p style={{ fontSize: 11, color: "var(--atelier-text-muted)", marginBottom: 16 }}>
+              <span style={{ display: "inline-block", width: 10, height: 10, background: "#C89B53", borderRadius: 2, marginRight: 6 }}></span>Kiosk Pilot Days &nbsp;
+              <span style={{ display: "inline-block", width: 10, height: 10, background: "rgba(247, 243, 234, 0.15)", borderRadius: 2, marginRight: 6 }}></span>Baseline Days
             </p>
-            <div style={{ height: 200 }}>
+            <div style={{ height: 210 }}>
               <Bar data={basketChart} options={chartOptions} />
             </div>
           </div>
-          <div className="chart-card" id="chart-revenue">
-            <div className="card-title">Daily Revenue Trend</div>
-            <div style={{ height: 220 }}>
+
+          <div className="chart-card" id="chart-revenue" style={{ background: "var(--atelier-surface)", border: "1px solid var(--atelier-hairline)", borderRadius: "var(--radius-lg)", padding: 24 }}>
+            <div className="card-title" style={{ fontFamily: "var(--font-serif)", fontSize: 18, color: "var(--atelier-text-title)", marginBottom: 4 }}>
+              Daily Revenue Attribution
+            </div>
+            <p style={{ fontSize: 11, color: "var(--atelier-text-muted)", marginBottom: 16 }}>
+              Recorded transactions from kiosk styling consultations
+            </p>
+            <div style={{ height: 210 }}>
               <Line data={revenueChart} options={chartOptions} />
             </div>
           </div>
@@ -258,11 +290,10 @@ export default function Analytics() {
       )}
 
       {chartData.length === 0 && (
-        <div className="card mb-xl">
-          <div className="empty-state">
-            <h3>No chart data yet</h3>
-            <p>Log baseline sales data in the <strong>Baseline Log</strong> tab to see before/after charts here.</p>
-          </div>
+        <div className="card" style={{ textAlign: "center", padding: 40 }}>
+          <p style={{ color: "var(--atelier-text-muted)", fontSize: 14 }}>
+            Log baseline days in the Baseline Log tab or record kiosk purchases to visualize trends.
+          </p>
         </div>
       )}
     </div>

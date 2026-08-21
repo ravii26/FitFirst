@@ -81,25 +81,56 @@ export default function BaselineLog() {
 
   return (
     <div className="fade-in">
+      {/* Page Header */}
       <div className="page-header">
-        <h1 className="page-title">Baseline Sales Log</h1>
+        <h1 className="page-title">Daily Showroom Sales Ledger</h1>
         <p className="page-subtitle">
-          Phase 0 — log daily sales figures before and during the kiosk pilot to enable fair before/after comparison.
+          Phase 0 pre-pilot benchmarks &bull; Record daily floor figures for attribution comparison
         </p>
       </div>
 
-      {/* Instructions */}
-      <div className="card mb-xl" style={{ borderColor: "var(--brass-border)", background: "var(--brass-dim)" }}>
-        <div className="flex-center gap-sm" style={{ marginBottom: 8 }}>
-          <strong style={{ color: "var(--brass-bright)", fontFamily: "var(--font-mono)", fontSize: 13, textTransform: "uppercase", letterSpacing: "0.06em" }}>How to use this log</strong>
+      {/* Pilot Benchmark Status Ribbon */}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(3, 1fr)",
+        gap: 16,
+        marginBottom: 28,
+      }}>
+        <div style={{ background: "var(--atelier-surface)", border: "1px solid var(--atelier-hairline)", borderRadius: "var(--radius-md)", padding: "16px 20px" }}>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: "var(--atelier-text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>
+            Benchmark Target
+          </div>
+          <div style={{ fontFamily: "var(--font-serif)", fontSize: 20, color: "var(--atelier-text-title)", fontWeight: 500 }}>
+            14 Consecutive Days
+          </div>
+          <div style={{ fontSize: 12, color: "var(--atelier-text-muted)", marginTop: 2 }}>
+            Pre-kiosk baseline for reliable comparative variance
+          </div>
         </div>
-        <ul style={{ color: "var(--stone)", fontSize: 13, paddingLeft: 20, lineHeight: 2 }}>
-          <li>Log <strong>every day</strong> — both pre-kiosk baseline days and kiosk-active days.</li>
-          <li>For baseline days (before kiosk launches), leave <em>Kiosk Active</em> unchecked.</li>
-          <li>Once the kiosk is live, check <em>Kiosk Active</em> for each day.</li>
-          <li>Aim for at least <strong>14 baseline days</strong> before going live for a fair comparison.</li>
-          <li>Total Revenue = gross sales in INR for that day (before returns/discounts if easier).</li>
-        </ul>
+
+        <div style={{ background: "var(--atelier-surface)", border: "1px solid var(--atelier-hairline)", borderRadius: "var(--radius-md)", padding: "16px 20px" }}>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: "var(--atelier-text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>
+            Basket Value Target
+          </div>
+          <div style={{ fontFamily: "var(--font-serif)", fontSize: 20, color: "var(--atelier-sage)", fontWeight: 500 }}>
+            +15% Minimum Lift
+          </div>
+          <div style={{ fontSize: 12, color: "var(--atelier-text-muted)", marginTop: 2 }}>
+            Pre-set pilot success threshold
+          </div>
+        </div>
+
+        <div style={{ background: "var(--atelier-surface)", border: "1px solid var(--atelier-hairline)", borderRadius: "var(--radius-md)", padding: "16px 20px" }}>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: "var(--atelier-text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>
+            Logging Mode
+          </div>
+          <div style={{ fontFamily: "var(--font-serif)", fontSize: 20, color: "var(--atelier-brass-light)", fontWeight: 500 }}>
+            {form.isKioskActive ? "Kiosk Pilot Active" : "Pre-Pilot Baseline"}
+          </div>
+          <div style={{ fontSize: 12, color: "var(--atelier-text-muted)", marginTop: 2 }}>
+            Selected for today's entry
+          </div>
+        </div>
       </div>
 
       {status === "success" && (
@@ -109,12 +140,28 @@ export default function BaselineLog() {
         <div className="alert alert-error mb-lg">✗ {message}</div>
       )}
 
-      <div className="card">
-        <div className="card-title">Add Daily Entry</div>
+      {/* Main Ledger Form */}
+      <div style={{
+        background: "var(--atelier-surface)",
+        border: "1px solid var(--atelier-hairline)",
+        borderRadius: "var(--radius-lg)",
+        padding: "28px 32px",
+      }}>
+        <div style={{ borderBottom: "1px solid var(--atelier-hairline)", paddingBottom: 16, marginBottom: 24 }}>
+          <h3 style={{ fontFamily: "var(--font-serif)", fontSize: 20, color: "var(--atelier-text-title)", fontWeight: 500, marginBottom: 4 }}>
+            Record Daily Store Figures
+          </h3>
+          <p style={{ fontSize: 13, color: "var(--atelier-text-muted)" }}>
+            Enter the gross sales totals for the day to calibrate before/after pilot analytics.
+          </p>
+        </div>
+
         <form id="baseline-form" onSubmit={handleSubmit}>
-          <div className="form-grid">
-            <div className="form-group">
-              <label htmlFor="baseline-date">Date</label>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 20, marginBottom: 20 }}>
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label htmlFor="baseline-date" style={{ color: "var(--atelier-text-title)", fontSize: 12 }}>
+                Ledger Date
+              </label>
               <input
                 id="baseline-date"
                 name="date"
@@ -122,10 +169,14 @@ export default function BaselineLog() {
                 value={form.date}
                 onChange={handleChange}
                 required
+                style={{ background: "var(--atelier-surface-sub)", borderColor: "var(--atelier-hairline)" }}
               />
             </div>
-            <div className="form-group">
-              <label htmlFor="baseline-transactions">Total Transactions (customers)</label>
+
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label htmlFor="baseline-transactions" style={{ color: "var(--atelier-text-title)", fontSize: 12 }}>
+                Customer Transactions
+              </label>
               <input
                 id="baseline-transactions"
                 name="totalTransactions"
@@ -135,10 +186,14 @@ export default function BaselineLog() {
                 value={form.totalTransactions}
                 onChange={handleChange}
                 required
+                style={{ background: "var(--atelier-surface-sub)", borderColor: "var(--atelier-hairline)" }}
               />
             </div>
-            <div className="form-group">
-              <label htmlFor="baseline-revenue">Total Revenue (₹)</label>
+
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label htmlFor="baseline-revenue" style={{ color: "var(--atelier-text-title)", fontSize: 12 }}>
+                Gross Store Revenue (₹ INR)
+              </label>
               <input
                 id="baseline-revenue"
                 name="totalRevenue"
@@ -148,10 +203,14 @@ export default function BaselineLog() {
                 value={form.totalRevenue}
                 onChange={handleChange}
                 required
+                style={{ background: "var(--atelier-surface-sub)", borderColor: "var(--atelier-hairline)" }}
               />
             </div>
-            <div className="form-group">
-              <label htmlFor="baseline-units">Avg Units per Customer</label>
+
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label htmlFor="baseline-units" style={{ color: "var(--atelier-text-title)", fontSize: 12 }}>
+                Avg Units Per Shopper
+              </label>
               <input
                 id="baseline-units"
                 name="avgUnitsPerCustomer"
@@ -162,72 +221,87 @@ export default function BaselineLog() {
                 value={form.avgUnitsPerCustomer}
                 onChange={handleChange}
                 required
+                style={{ background: "var(--atelier-surface-sub)", borderColor: "var(--atelier-hairline)" }}
               />
             </div>
           </div>
 
           {computedBasket && (
-            <div style={{ margin: "12px 0", padding: "12px 16px", background: "var(--accent-dim)", borderRadius: "var(--radius-md)", display: "inline-flex", gap: 12, alignItems: "center" }}>
-              <span style={{ color: "var(--text-muted)", fontSize: 12 }}>Computed Avg Basket Value:</span>
-              <strong style={{ color: "var(--accent)", fontSize: 18, fontFamily: "var(--font-display)" }}>₹{parseInt(computedBasket).toLocaleString("en-IN")}</strong>
+            <div style={{
+              margin: "16px 0 24px",
+              padding: "14px 20px",
+              background: "var(--atelier-surface-sub)",
+              border: "1px solid var(--atelier-hairline)",
+              borderRadius: "var(--radius-sm)",
+              display: "inline-flex",
+              gap: 16,
+              alignItems: "center",
+            }}>
+              <span style={{ color: "var(--atelier-text-muted)", fontSize: 12, textTransform: "uppercase", letterSpacing: "0.08em", fontFamily: "var(--font-mono)" }}>
+                Calculated Basket Value:
+              </span>
+              <strong style={{ color: "var(--atelier-text-title)", fontSize: 20, fontFamily: "var(--font-serif)" }}>
+                ₹{parseInt(computedBasket).toLocaleString("en-IN")}
+              </strong>
             </div>
           )}
 
-          <div className="form-group" style={{ marginTop: 16 }}>
-            <label htmlFor="baseline-notes">Notes (optional)</label>
+          <div className="form-group" style={{ marginTop: 16, marginBottom: 20 }}>
+            <label htmlFor="baseline-notes" style={{ color: "var(--atelier-text-title)", fontSize: 12 }}>
+              Showroom Context & Notes (Optional)
+            </label>
             <textarea
               id="baseline-notes"
               name="notes"
               rows={2}
-              placeholder="e.g. Diwali weekend, higher footfall; or staff shortage, slower day"
+              placeholder="e.g. Festive promotion launch; higher footfall; or rainy evening, slower floor traffic"
               value={form.notes}
               onChange={handleChange}
+              style={{ background: "var(--atelier-surface-sub)", borderColor: "var(--atelier-hairline)" }}
             />
           </div>
 
-          <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 12 }}>
-            <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", textTransform: "none", letterSpacing: 0, fontSize: 14, fontWeight: 500, color: "var(--text-primary)" }}>
-              <input
-                id="baseline-kiosk-active"
-                type="checkbox"
-                name="isKioskActive"
-                checked={form.isKioskActive}
-                onChange={handleChange}
-                style={{ width: 16, height: 16 }}
-              />
-              Kiosk was active on this day
-            </label>
-            <span style={{ fontSize: 12, color: "var(--text-muted)" }}>
-              (Check this once the kiosk is live — affects before/after comparison)
-            </span>
+          {/* Kiosk Status Checkbox */}
+          <div style={{
+            padding: "16px 20px",
+            background: "var(--atelier-surface-sub)",
+            border: "1px solid var(--atelier-hairline)",
+            borderRadius: "var(--radius-sm)",
+            marginBottom: 28,
+            display: "flex",
+            alignItems: "center",
+            gap: 14,
+          }}>
+            <input
+              id="baseline-kiosk-active"
+              type="checkbox"
+              name="isKioskActive"
+              checked={form.isKioskActive}
+              onChange={handleChange}
+              style={{ width: 18, height: 18, accentColor: "var(--atelier-brass)" }}
+            />
+            <div>
+              <label htmlFor="baseline-kiosk-active" style={{ fontSize: 14, fontWeight: 600, color: "var(--atelier-text-title)", cursor: "pointer" }}>
+                Kiosk was actively used by customers on this day
+              </label>
+              <div style={{ fontSize: 12, color: "var(--atelier-text-muted)" }}>
+                Leave unchecked for pre-pilot baseline days; check once the in-store kiosk is live.
+              </div>
+            </div>
           </div>
 
-          <div style={{ marginTop: 24 }}>
+          <div>
             <button
               id="baseline-submit-btn"
               type="submit"
               className="btn btn-primary"
               disabled={status === "saving"}
+              style={{ minHeight: 48, padding: "0 36px", fontSize: 14 }}
             >
-              {status === "saving" ? "Saving…" : "Save Entry"}
+              {status === "saving" ? "Recording Entry…" : "Record Ledger Entry →"}
             </button>
           </div>
         </form>
-      </div>
-
-      {/* Kill Threshold reminder */}
-      <div className="card" style={{ marginTop: 24, borderColor: "rgba(196, 130, 60, 0.35)", background: "var(--warning-dim)" }}>
-        <div className="flex-center gap-sm" style={{ marginBottom: 8 }}>
-          <strong style={{ color: "var(--warning)", fontFamily: "var(--font-mono)", fontSize: 12, textTransform: "uppercase", letterSpacing: "0.06em" }}>Kill Threshold — Set Before Pilot Starts</strong>
-        </div>
-        <p style={{ color: "var(--text-secondary)", fontSize: 13, lineHeight: 1.7 }}>
-          The current kill threshold (15% basket lift, 30% conversion rate, 40% usage rate) was pre-seeded.
-          Review and confirm it with the store owner <strong>before</strong> the kiosk goes live.
-          Once agreed, treat it as immutable — don't adjust it after seeing the pilot data.
-        </p>
-        <p style={{ color: "var(--text-muted)", fontSize: 12, marginTop: 8 }}>
-          To update the threshold, use the API: <span className="monospace">POST /api/baseline/kill-threshold</span> (or ask your developer to update the seed).
-        </p>
       </div>
     </div>
   );

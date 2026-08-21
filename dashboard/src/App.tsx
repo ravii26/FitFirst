@@ -42,52 +42,253 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
   const [pin, setPin] = useState("");
   const [error, setError] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (pin === DASHBOARD_PIN) {
-      onLogin();
-    } else {
-      setError(true);
-      setPin("");
-      setTimeout(() => setError(false), 2000);
+  const handleDigit = (digit: string) => {
+    if (pin.length >= 4) return;
+    const newPin = pin + digit;
+    setPin(newPin);
+    if (newPin.length === 4) {
+      if (newPin === DASHBOARD_PIN) {
+        setTimeout(onLogin, 150);
+      } else {
+        setError(true);
+        setTimeout(() => {
+          setPin("");
+          setError(false);
+        }, 800);
+      }
+    }
+  };
+
+  const handleDelete = () => {
+    setPin((prev) => prev.slice(0, -1));
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key >= "0" && e.key <= "9") {
+      handleDigit(e.key);
+    } else if (e.key === "Backspace") {
+      handleDelete();
     }
   };
 
   return (
-    <div className="login-screen">
-      <div className="login-card fade-in">
-        <div className="login-logo-mark">F</div>
-        <h1 className="login-title">FitFirst Atelier</h1>
-        <p className="login-subtitle">In-Store Stylist & Showroom Operations</p>
-
-        <form onSubmit={handleSubmit}>
-          <div className="form-group" style={{ marginBottom: "16px" }}>
-            <input
-              id="pin-input"
-              className="pin-input"
-              type="password"
-              inputMode="numeric"
-              maxLength={6}
-              placeholder="••••"
-              value={pin}
-              onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
-              autoFocus
-              style={{ borderColor: error ? "var(--atelier-terracotta)" : undefined }}
-            />
-          </div>
-          {error && (
-            <div className="alert alert-error" style={{ marginBottom: "12px", justifyContent: "center" }}>
-              Incorrect Access PIN
+    <div
+      className="atelier-auth-viewport"
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
+      autoFocus
+      style={{
+        display: "grid",
+        gridTemplateColumns: "1.1fr 1fr",
+        minHeight: "100vh",
+        background: "var(--atelier-bg)",
+        outline: "none",
+      }}
+    >
+      {/* Left Brand Panel */}
+      <div
+        style={{
+          borderRight: "1px solid var(--atelier-hairline)",
+          padding: "64px 72px",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          background: "linear-gradient(180deg, var(--atelier-bg) 0%, var(--atelier-surface) 100%)",
+        }}
+      >
+        <div>
+          <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 48 }}>
+            <div
+              style={{
+                width: 40,
+                height: 40,
+                background: "var(--atelier-brass)",
+                borderRadius: "var(--radius-sm)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontFamily: "var(--font-serif)",
+                fontSize: 22,
+                fontWeight: 600,
+                color: "var(--atelier-bg)",
+              }}
+            >
+              F
             </div>
-          )}
-          <button id="pin-submit-btn" type="submit" className="btn btn-primary" style={{ width: "100%" }}>
-            Enter Showroom Console
-          </button>
-        </form>
+            <div>
+              <div style={{ fontFamily: "var(--font-serif)", fontSize: 22, color: "var(--atelier-text-title)", fontWeight: 500, letterSpacing: "-0.01em" }}>
+                FitFirst
+              </div>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: "var(--atelier-brass)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
+                Showroom Operations Console
+              </div>
+            </div>
+          </div>
 
-        <p style={{ marginTop: "16px", fontSize: "11px", color: "var(--atelier-text-muted)", fontFamily: "var(--font-mono)" }}>
-          Authorized Stylist Access &bull; PIN: 1234
-        </p>
+          <h1
+            style={{
+              fontFamily: "var(--font-serif)",
+              fontSize: "clamp(34px, 3.5vw, 48px)",
+              lineHeight: 1.1,
+              fontWeight: 400,
+              color: "var(--atelier-text-title)",
+              marginBottom: 20,
+              maxWidth: 480,
+            }}
+          >
+            In-store clienteling, fitting attribution &amp; floor inventory.
+          </h1>
+          <p style={{ fontSize: 15, color: "var(--atelier-text-body)", lineHeight: 1.6, maxWidth: 440 }}>
+            Dedicated staff portal for store stylists, inventory managers, and retail pilot directors.
+          </p>
+        </div>
+
+        <div style={{ borderTop: "1px solid var(--atelier-hairline)", paddingTop: 20, display: "flex", justifyContent: "space-between", fontSize: 11.5, fontFamily: "var(--font-mono)", color: "var(--atelier-text-muted)" }}>
+          <span>Ahmedabad Flagship Showroom</span>
+          <span>Pilot Phase 1 Active</span>
+        </div>
+      </div>
+
+      {/* Right Terminal Keypad Panel */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "48px",
+        }}
+      >
+        <div style={{ width: "100%", maxWidth: 340, textAlign: "center" }}>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--atelier-brass)", marginBottom: 8 }}>
+            Stylist Security Gate
+          </div>
+          <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 26, color: "var(--atelier-text-title)", fontWeight: 400, marginBottom: 8 }}>
+            Enter Console Passcode
+          </h2>
+          <p style={{ fontSize: 13, color: "var(--atelier-text-muted)", marginBottom: 32 }}>
+            Tap or type your 4-digit stylist access code
+          </p>
+
+          {/* 4 Discrete Hairline Digit Cells */}
+          <div style={{ display: "flex", justifyContent: "center", gap: 14, marginBottom: 32 }}>
+            {[0, 1, 2, 3].map((idx) => {
+              const isFilled = pin.length > idx;
+              return (
+                <div
+                  key={idx}
+                  style={{
+                    width: 52,
+                    height: 60,
+                    borderRadius: "var(--radius-sm)",
+                    background: isFilled ? "var(--atelier-surface-sub)" : "transparent",
+                    border: error
+                      ? "1px solid var(--atelier-terracotta)"
+                      : isFilled
+                      ? "1px solid var(--atelier-brass)"
+                      : "1px solid var(--atelier-hairline)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    transition: "all 0.15s ease",
+                  }}
+                >
+                  {isFilled && (
+                    <div
+                      style={{
+                        width: 10,
+                        height: 10,
+                        borderRadius: "50%",
+                        background: error ? "var(--atelier-terracotta)" : "var(--atelier-brass-light)",
+                        boxShadow: error ? "none" : "0 0 10px rgba(200, 155, 83, 0.4)",
+                      }}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* 10-Digit Touch Dial */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 24 }}>
+            {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((num) => (
+              <button
+                key={num}
+                type="button"
+                onClick={() => handleDigit(num)}
+                style={{
+                  height: 56,
+                  borderRadius: "var(--radius-sm)",
+                  background: "var(--atelier-surface)",
+                  border: "1px solid var(--atelier-hairline)",
+                  color: "var(--atelier-text-title)",
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 18,
+                  fontWeight: 500,
+                  cursor: "pointer",
+                  transition: "all 0.1s ease",
+                }}
+              >
+                {num}
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={() => setPin("")}
+              style={{
+                height: 56,
+                borderRadius: "var(--radius-sm)",
+                background: "transparent",
+                border: "1px solid transparent",
+                color: "var(--atelier-text-muted)",
+                fontFamily: "var(--font-mono)",
+                fontSize: 12,
+                cursor: "pointer",
+                textTransform: "uppercase",
+              }}
+            >
+              Clear
+            </button>
+            <button
+              key="0"
+              type="button"
+              onClick={() => handleDigit("0")}
+              style={{
+                height: 56,
+                borderRadius: "var(--radius-sm)",
+                background: "var(--atelier-surface)",
+                border: "1px solid var(--atelier-hairline)",
+                color: "var(--atelier-text-title)",
+                fontFamily: "var(--font-mono)",
+                fontSize: 18,
+                fontWeight: 500,
+                cursor: "pointer",
+              }}
+            >
+              0
+            </button>
+            <button
+              type="button"
+              onClick={handleDelete}
+              style={{
+                height: 56,
+                borderRadius: "var(--radius-sm)",
+                background: "transparent",
+                border: "1px solid transparent",
+                color: "var(--atelier-text-muted)",
+                fontFamily: "var(--font-mono)",
+                fontSize: 16,
+                cursor: "pointer",
+              }}
+            >
+              ⌫
+            </button>
+          </div>
+
+          <div style={{ fontSize: 11.5, fontFamily: "var(--font-mono)", color: "var(--atelier-text-muted)" }}>
+            Stylist Access PIN: <span style={{ color: "var(--atelier-brass-light)" }}>1234</span>
+          </div>
+        </div>
       </div>
     </div>
   );
