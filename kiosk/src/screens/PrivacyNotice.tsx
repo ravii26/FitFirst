@@ -52,12 +52,22 @@ export default function PrivacyNotice({
       </div>
 
       <div style={{ display: "flex", gap: 14, flexWrap: "wrap", justifyContent: "center" }}>
+        {onCameraScan && (
+          <button
+            id="privacy-camera-btn"
+            className="btn-kiosk btn-primary"
+            onClick={onCameraScan}
+            style={{ background: "linear-gradient(135deg, #D4AF37 0%, #AA820A 100%)" }}
+          >
+            ⚡ Start Fast Camera Scan &rarr;
+          </button>
+        )}
         <button
           id="privacy-continue-btn"
-          className="btn-kiosk btn-primary"
+          className="btn-kiosk btn-ghost"
           onClick={onContinue}
         >
-          Continue &rarr;
+          Manual Selection &rarr;
         </button>
         <button
           id="privacy-decline-btn"
