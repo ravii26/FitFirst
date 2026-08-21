@@ -1,41 +1,61 @@
-// Gender Selection Screen — first data input step
+// Gender Selection Screen — Luxury Boutique Vector UI
 
 type Gender = "MEN" | "WOMEN" | "KIDS";
 
-const options: { value: Gender; label: string; icon: string; sub: string }[] = [
-  { value: "MEN", label: "Men", icon: "👔", sub: "Kurtas, shirts, trousers & more" },
-  { value: "WOMEN", label: "Women", icon: "👗", sub: "Sarees, suits, kurtis & more" },
-  { value: "KIDS", label: "Kids", icon: "🧒", sub: "Boys & girls, all ages" },
+const SVGMen = () => (
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20 4v6m0-6h-6m6 0l-5.5 5.5"/>
+    <circle cx="9" cy="15" r="6"/>
+  </svg>
+);
+
+const SVGWomen = () => (
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="9" r="6"/>
+    <path d="M12 15v7m-3-3h6"/>
+  </svg>
+);
+
+const SVGKids = () => (
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="7" r="4"/>
+    <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
+  </svg>
+);
+
+const options: { value: Gender; label: string; icon: JSX.Element; sub: string }[] = [
+  { value: "MEN", label: "Men's Collection", icon: <SVGMen />, sub: "Kurtas, Shirts, Trousers & Ethnic Wear" },
+  { value: "WOMEN", label: "Women's Collection", icon: <SVGWomen />, sub: "Sarees, Suits, Lehengas & Kurtis" },
+  { value: "KIDS", label: "Junior Collection", icon: <SVGKids />, sub: "Boys & Girls Ethnic & Formal Wear" },
 ];
 
 export default function GenderSelect({
   value,
   onSelect,
 }: {
-  value: "MEN" | "WOMEN" | "KIDS" | null;
-  onSelect: (g: "MEN" | "WOMEN" | "KIDS") => void;
+  value: Gender | null;
+  onSelect: (g: Gender) => void;
 }) {
   return (
     <div className="screen" id="screen-gender">
-      <h2 className="h2" style={{ marginBottom: 12 }}>Who are we shopping for?</h2>
-      <p className="subtitle" style={{ marginBottom: 40 }}>
-        This helps us show you the right section of our collection.
+      <h2 className="h2" style={{ marginBottom: 12 }}>Select Department</h2>
+      <p className="subtitle" style={{ marginBottom: 44 }}>
+        We will filter our active in-store catalog to match your exact department.
       </p>
 
-      <div style={{ display: "flex", gap: 20, flexWrap: "wrap", justifyContent: "center" }}>
+      <div className="card-grid">
         {options.map((o) => (
           <button
             key={o.value}
             id={`gender-${o.value.toLowerCase()}`}
-            className={`attr-card ${value === o.value ? "selected" : ""}`}
-            style={{ width: 200, minHeight: 180 }}
+            className={`selection-card ${value === o.value ? "selected" : ""}`}
             onClick={() => onSelect(o.value)}
           >
-            <div className="attr-card-icon" style={{ background: "var(--bg-glass)", fontSize: 40 }}>
+            <div className="selection-card-icon">
               {o.icon}
             </div>
-            <div className="attr-card-label" style={{ fontSize: 20 }}>{o.label}</div>
-            <div className="attr-card-sub">{o.sub}</div>
+            <div className="selection-card-title">{o.label}</div>
+            <div className="selection-card-sub">{o.sub}</div>
           </button>
         ))}
       </div>

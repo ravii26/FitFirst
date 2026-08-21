@@ -1,6 +1,4 @@
-// Attribute Entry Screen — Phase 1 manual version
-// Customer self-selects skin tone and body shape using illustrated reference tiles.
-// Phase 2 will replace this with camera-derived estimation (MediaPipe).
+// Attribute Entry Screen — Clean Skin Tone Swatches & Body Silhouette Guidance
 
 import { useState } from "react";
 
@@ -8,36 +6,52 @@ type SkinTone = "FAIR" | "WHEATISH" | "MEDIUM" | "DEEP";
 type BodyShape = "RECTANGLE" | "TRIANGLE" | "INVERTED_T" | "HOURGLASS";
 
 const SKIN_TONES: { value: SkinTone; label: string; sub: string; color: string }[] = [
-  { value: "FAIR", label: "Fair", sub: "Very light skin", color: "#f5e8d0" },
-  { value: "WHEATISH", label: "Wheatish", sub: "Light-golden", color: "#c8975a" },
-  { value: "MEDIUM", label: "Medium", sub: "Medium brown", color: "#8b5e3c" },
-  { value: "DEEP", label: "Deep", sub: "Deep brown", color: "#4a2c1a" },
+  { value: "FAIR", label: "Fair / Warm Porcelain", sub: "Complements Emerald, Royal Blue & Deep Ruby", color: "#F7E6D0" },
+  { value: "WHEATISH", label: "Wheatish / Golden Warmth", sub: "Complements Gold, Maroon, Mustard & Teal", color: "#D49C65" },
+  { value: "MEDIUM", label: "Medium / Olive Tan", sub: "Complements Champagne, Coral, Beige & Navy", color: "#9E6B43" },
+  { value: "DEEP", label: "Deep / Rich Ebony", sub: "Complements Ivory, Bright Gold, Crimson & Fuchsia", color: "#543422" },
 ];
 
-const BODY_SHAPES: { value: BodyShape; label: string; sub: string; shape: string }[] = [
+const BODY_SHAPES: { value: BodyShape; label: string; sub: string; icon: JSX.Element }[] = [
   {
     value: "RECTANGLE",
-    label: "Rectangle",
-    sub: "Shoulders ≈ hips, less defined waist",
-    shape: "▬",
+    label: "Athletic & Straight",
+    sub: "Balanced shoulders and hips with subtle waist definition",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <rect x="7" y="4" width="10" height="16" rx="2" />
+      </svg>
+    ),
   },
   {
     value: "TRIANGLE",
-    label: "Pear",
-    sub: "Hips wider than shoulders",
-    shape: "▽",
+    label: "Pear / A-Line",
+    sub: "Fuller hips with narrow shoulder balance",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <path d="M12 4L4 20H20L12 4Z" />
+      </svg>
+    ),
   },
   {
     value: "INVERTED_T",
-    label: "Broad shoulders",
-    sub: "Shoulders wider than hips",
-    shape: "△",
+    label: "Broad Shoulder",
+    sub: "Wider shoulder line tapering toward waist",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <path d="M4 4H20L12 20L4 4Z" />
+      </svg>
+    ),
   },
   {
     value: "HOURGLASS",
-    label: "Hourglass",
-    sub: "Shoulders ≈ hips, defined waist",
-    shape: "⌛",
+    label: "Curvy & Defined",
+    sub: "Proportional shoulders & hips with defined waist",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <path d="M6 4H18L13 12L18 20H6L11 12L6 4Z" />
+      </svg>
+    ),
   },
 ];
 
@@ -60,87 +74,92 @@ export default function AttributeEntry({
   const canContinue = skin !== null && body !== null;
 
   return (
-    <div className="screen screen-scrollable" id="screen-attributes" style={{ paddingTop: 100 }}>
-      <h2 className="h2" style={{ marginBottom: 8 }}>Just a little more about you</h2>
+    <div className="screen screen-scrollable" id="screen-attributes" style={{ paddingTop: 90, paddingBottom: 80 }}>
+      <h2 className="h2" style={{ marginBottom: 8 }}>Personal Tone & Cut Profile</h2>
       <p className="subtitle" style={{ marginBottom: 40 }}>
-        This helps us match colours and cuts that suit you best. Pick the option that feels closest.
+        Our scoring engine pairs your skin undertone with complementary fabric dyes and matches garment silhouettes to your body shape.
       </p>
 
       {/* Skin Tone */}
-      <div style={{ width: "100%", maxWidth: 720, marginBottom: 40 }}>
-        <p style={{
-          fontSize: 13, fontWeight: 600, color: "var(--text-muted)",
-          textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 16, textAlign: "center"
+      <div style={{ width: "100%", maxWidth: 760, marginBottom: 40 }}>
+        <div style={{
+          fontSize: 12, fontWeight: 700, color: "var(--gold-warm)",
+          textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 16, textAlign: "center"
         }}>
-          Skin Tone
-        </p>
-        <div className="attr-grid">
-          {SKIN_TONES.map((t) => (
-            <button
-              key={t.value}
-              id={`skin-${t.value.toLowerCase()}`}
-              className={`attr-card ${skin === t.value ? "selected" : ""}`}
-              onClick={() => setSkin(t.value)}
-            >
-              <div
-                className="attr-card-icon"
-                style={{
-                  background: t.color,
-                  border: skin === t.value ? "3px solid var(--accent)" : "2px solid rgba(255,255,255,0.1)",
-                }}
-              />
-              <div className="attr-card-label">{t.label}</div>
-              <div className="attr-card-sub">{t.sub}</div>
-            </button>
-          ))}
+          1. Select Complexion Tone
+        </div>
+        <div className="card-grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))" }}>
+          {SKIN_TONES.map((t) => {
+            const isSelected = skin === t.value;
+            return (
+              <button
+                key={t.value}
+                id={`skin-${t.value.toLowerCase()}`}
+                className={`selection-card ${isSelected ? "selected" : ""}`}
+                style={{ padding: "20px 14px" }}
+                onClick={() => setSkin(t.value)}
+              >
+                <div
+                  style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: "50%",
+                    background: t.color,
+                    border: isSelected ? "3px solid var(--gold-primary)" : "2px solid rgba(255,255,255,0.15)",
+                    boxShadow: isSelected ? "0 0 16px var(--gold-glow)" : "0 4px 12px rgba(0,0,0,0.3)",
+                    marginBottom: 12,
+                    transition: "all 0.2s ease",
+                  }}
+                />
+                <div className="selection-card-title" style={{ fontSize: 15 }}>{t.label}</div>
+                <div className="selection-card-sub" style={{ fontSize: 11 }}>{t.sub}</div>
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* Body Shape */}
-      <div style={{ width: "100%", maxWidth: 720, marginBottom: 40 }}>
-        <p style={{
-          fontSize: 13, fontWeight: 600, color: "var(--text-muted)",
-          textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 16, textAlign: "center"
+      <div style={{ width: "100%", maxWidth: 760, marginBottom: 36 }}>
+        <div style={{
+          fontSize: 12, fontWeight: 700, color: "var(--gold-warm)",
+          textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 16, textAlign: "center"
         }}>
-          Body Shape
-        </p>
-        <div className="attr-grid">
-          {BODY_SHAPES.map((b) => (
-            <button
-              key={b.value}
-              id={`shape-${b.value.toLowerCase().replace(/_/g, "-")}`}
-              className={`attr-card ${body === b.value ? "selected" : ""}`}
-              onClick={() => setBody(b.value)}
-            >
-              <div className="attr-card-icon" style={{ background: "var(--bg-glass)", fontSize: 28 }}>
-                {b.shape}
-              </div>
-              <div className="attr-card-label">{b.label}</div>
-              <div className="attr-card-sub">{b.sub}</div>
-            </button>
-          ))}
+          2. Select Body Silhouette
+        </div>
+        <div className="card-grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))" }}>
+          {BODY_SHAPES.map((b) => {
+            const isSelected = body === b.value;
+            return (
+              <button
+                key={b.value}
+                id={`shape-${b.value.toLowerCase().replace(/_/g, "-")}`}
+                className={`selection-card ${isSelected ? "selected" : ""}`}
+                style={{ padding: "20px 14px" }}
+                onClick={() => setBody(b.value)}
+              >
+                <div className="selection-card-icon" style={{ width: 48, height: 48, marginBottom: 12 }}>
+                  {b.icon}
+                </div>
+                <div className="selection-card-title" style={{ fontSize: 15 }}>{b.label}</div>
+                <div className="selection-card-sub" style={{ fontSize: 11 }}>{b.sub}</div>
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      <p style={{ marginTop: 4, marginBottom: 24, fontSize: 13, color: "var(--text-muted)", textAlign: "center" }}>
-        {canContinue
-          ? <span style={{ color: "var(--success)" }}>✓ Both selected — tap Continue when ready.</span>
-          : `Select ${!skin ? "a skin tone" : ""}${!skin && !body ? " and " : ""}${!body ? "a body shape" : ""} to continue.`}
-      </p>
-
-      <button
-        id="attributes-continue-btn"
-        className="btn-kiosk btn-primary"
-        disabled={!canContinue}
-        onClick={handleContinue}
-        style={{ opacity: canContinue ? 1 : 0.4 }}
-      >
-        See My Recommendations →
-      </button>
-
-      <p style={{ marginTop: 16, fontSize: 12, color: "var(--text-muted)" }}>
-        Can't decide? Pick the closest match — our recommendations will still be helpful.
-      </p>
+      <div style={{ textAlign: "center", marginTop: 8 }}>
+        <button
+          id="attributes-continue-btn"
+          className="btn-kiosk btn-primary"
+          disabled={!canContinue}
+          onClick={handleContinue}
+          style={{ opacity: canContinue ? 1 : 0.45, fontSize: 17, padding: "0 54px" }}
+        >
+          {canContinue ? "Generate Recommendations &rarr;" : "Select Tone & Cut to Proceed"}
+        </button>
+      </div>
     </div>
   );
 }

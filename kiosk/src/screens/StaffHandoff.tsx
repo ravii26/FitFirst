@@ -1,12 +1,9 @@
-// Staff Handoff Screen
-// Shows the session short-code for staff to look up.
-// Auto-resets after a countdown.
+// Staff Handoff Screen — Luxury Code Presentation
 
 import { useEffect, useState } from "react";
 
 function shortCode(sessionId: string | null): string {
   if (!sessionId) return "——";
-  // Take last 6 chars of cuid, uppercase — unique enough for a single store
   return sessionId.slice(-6).toUpperCase();
 }
 
@@ -31,33 +28,40 @@ export default function StaffHandoff({
 
   return (
     <div className="screen" id="screen-handoff" style={{ position: "relative" }}>
-      {/* Ambient */}
-      <div
-        style={{
-          position: "absolute", inset: 0,
-          background: "radial-gradient(ellipse 60% 40% at 50% 50%, rgba(245,158,11,0.07) 0%, transparent 70%)",
-          pointerEvents: "none",
-        }}
-      />
-
-      <div style={{ textAlign: "center", marginBottom: 40 }}>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>🎉</div>
-        <h2 className="h2" style={{ marginBottom: 12 }}>Your recommendations are ready!</h2>
+      <div style={{ textAlign: "center", marginBottom: 36 }}>
+        <div style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 6,
+          padding: "6px 16px",
+          borderRadius: 100,
+          background: "var(--success-dim)",
+          border: "1px solid rgba(46, 229, 157, 0.3)",
+          fontSize: 12,
+          color: "var(--success)",
+          fontWeight: 700,
+          letterSpacing: "0.08em",
+          textTransform: "uppercase",
+          marginBottom: 16,
+        }}>
+          ✓ Session Generated & Logged
+        </div>
+        <h2 className="h2" style={{ marginBottom: 12 }}>Your Stylist Handoff Code</h2>
         <p className="subtitle">
-          Show this code to a staff member and they'll help you find these items.
+          Please present this session code to any store floor stylist. They will instantly retrieve your recommendations for fitting.
         </p>
       </div>
 
       {/* Code Card */}
       <div className="handoff-card" id="handoff-code-card">
-        <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 4 }}>
-          YOUR SESSION CODE
+        <p style={{ fontSize: 12, color: "var(--gold-warm)", letterSpacing: "0.12em", fontWeight: 700 }}>
+          HANDOFF CODE
         </p>
         <div className="handoff-code" id="handoff-code-value">
           {shortCode(sessionId)}
         </div>
-        <p style={{ fontSize: 12, color: "var(--text-muted)" }}>
-          Staff: look up this code in the FitFirst dashboard → Sessions
+        <p style={{ fontSize: 13, color: "var(--text-muted)" }}>
+          Store Stylists: Enter code in <strong>FitFirst Dashboard &rarr; Sessions</strong>
         </p>
       </div>
 
@@ -67,17 +71,17 @@ export default function StaffHandoff({
           className="btn-kiosk btn-ghost"
           onClick={onReset}
         >
-          Start Over
+          Finish & Return to Start
         </button>
       </div>
 
       <p style={{ marginTop: 28, fontSize: 13, color: "var(--text-muted)" }}>
-        This screen will reset in {remaining}s
+        Session auto-resets in {remaining}s
       </p>
 
       {/* Countdown bar */}
-      <div className="reset-timer-bar">
-        <div className="reset-timer-fill" style={{ width: `${pct}%` }} />
+      <div className="reset-timer-bar" style={{ position: "fixed", bottom: 0, left: 0, right: 0, height: 4, background: "rgba(255,255,255,0.06)" }}>
+        <div className="reset-timer-fill" style={{ height: "100%", background: "var(--gold-primary)", width: `${pct}%`, transition: "width 1s linear" }} />
       </div>
     </div>
   );

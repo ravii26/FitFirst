@@ -1,41 +1,40 @@
-// Style Preferences Screen — multi-select tiles
-// Customer can skip (tap Next) if they have no particular preference.
+// Style Preferences Screen — Atelier Aesthetics
 
 const MEN_PREFS = [
-  { tag: "KURTA", label: "Kurtas", emoji: "🧣" },
-  { tag: "SHIRT", label: "Shirts", emoji: "👔" },
-  { tag: "TROUSERS", label: "Trousers", emoji: "👖" },
-  { tag: "JEANS", label: "Jeans", emoji: "🧷" },
-  { tag: "SHERWANI", label: "Sherwani", emoji: "🎩" },
-  { tag: "SOLID", label: "Solid colours", emoji: "🟦" },
-  { tag: "CHECKS", label: "Checks", emoji: "🔲" },
-  { tag: "EMBROIDERED", label: "Embroidered", emoji: "✨" },
-  { tag: "CASUAL", label: "Casual wear", emoji: "😎" },
-  { tag: "FORMAL", label: "Formal wear", emoji: "💼" },
+  { tag: "KURTA", label: "Ethnic Kurtas" },
+  { tag: "SHIRT", label: "Formal & Casual Shirts" },
+  { tag: "TROUSERS", label: "Tailored Trousers" },
+  { tag: "JEANS", label: "Denim Jeans" },
+  { tag: "SHERWANI", label: "Wedding Sherwanis" },
+  { tag: "SOLID", label: "Solid Tones" },
+  { tag: "CHECKS", label: "Structured Checks" },
+  { tag: "EMBROIDERED", label: "Hand Embroidered" },
+  { tag: "CASUAL", label: "Casual Everyday" },
+  { tag: "FORMAL", label: "Evening Formal" },
 ];
 
 const WOMEN_PREFS = [
-  { tag: "SAREE", label: "Sarees", emoji: "🪭" },
-  { tag: "SALWAR_KAMEEZ", label: "Salwar Suits", emoji: "👘" },
-  { tag: "KURTA", label: "Kurtis", emoji: "🧣" },
-  { tag: "LEHENGA", label: "Lehenga", emoji: "💃" },
-  { tag: "DRESS", label: "Dresses", emoji: "👗" },
-  { tag: "FLORAL", label: "Floral prints", emoji: "🌸" },
-  { tag: "SOLID", label: "Solid colours", emoji: "🟪" },
-  { tag: "EMBROIDERED", label: "Embroidered", emoji: "✨" },
-  { tag: "BLOCK_PRINT", label: "Block print", emoji: "🎨" },
-  { tag: "PAISLEY", label: "Paisley", emoji: "🌀" },
+  { tag: "SAREE", label: "Designer Sarees" },
+  { tag: "SALWAR_KAMEEZ", label: "Salwar Suits" },
+  { tag: "KURTA", label: "Contemporary Kurtis" },
+  { tag: "LEHENGA", label: "Bridal Lehengas" },
+  { tag: "DRESS", label: "Occasion Dresses" },
+  { tag: "FLORAL", label: "Floral Prints" },
+  { tag: "SOLID", label: "Monochrome Tones" },
+  { tag: "EMBROIDERED", label: "Zari & Thread Work" },
+  { tag: "BLOCK_PRINT", label: "Hand Block Print" },
+  { tag: "PAISLEY", label: "Traditional Paisley" },
 ];
 
 const KIDS_PREFS = [
-  { tag: "KIDS_KURTA", label: "Kurtas", emoji: "🧣" },
-  { tag: "KIDS_DRESS", label: "Frocks & Dresses", emoji: "👗" },
-  { tag: "KIDS_SHIRT", label: "Shirts", emoji: "👔" },
-  { tag: "FLORAL", label: "Florals", emoji: "🌸" },
-  { tag: "CHECKS", label: "Checks", emoji: "🔲" },
-  { tag: "BRIGHT_WARM", label: "Bright colours", emoji: "🌈" },
-  { tag: "FESTIVE", label: "Festive / party", emoji: "🎉" },
-  { tag: "CASUAL", label: "Casual / daily", emoji: "🎒" },
+  { tag: "KIDS_KURTA", label: "Junior Kurtas" },
+  { tag: "KIDS_DRESS", label: "Party Frocks & Dresses" },
+  { tag: "KIDS_SHIRT", label: "Smart Shirts" },
+  { tag: "FLORAL", label: "Vibrant Prints" },
+  { tag: "CHECKS", label: "Classic Checks" },
+  { tag: "BRIGHT_WARM", label: "Bright Celebration Tones" },
+  { tag: "FESTIVE", label: "Festive Wear" },
+  { tag: "CASUAL", label: "Daily Comfort" },
 ];
 
 function getPrefs(gender: "MEN" | "WOMEN" | "KIDS" | null) {
@@ -67,31 +66,40 @@ export default function StylePreferences({
 
   return (
     <div className="screen" id="screen-prefs">
-      <h2 className="h2" style={{ marginBottom: 12 }}>What are you looking for today?</h2>
-      <p className="subtitle" style={{ marginBottom: 8 }}>
-        Select anything that appeals to you. <span style={{ color: "var(--text-muted)" }}>(Optional — you can skip this)</span>
+      <h2 className="h2" style={{ marginBottom: 12 }}>Select Desired Styles & Patterns</h2>
+      <p className="subtitle" style={{ marginBottom: 12 }}>
+        Tap any preferences that match your occasion or taste. <span style={{ color: "var(--text-muted)" }}>(Optional)</span>
       </p>
 
-      {selected.length > 0 && (
-        <p style={{ fontSize: 13, color: "var(--accent)", marginBottom: 24 }}>
-          {selected.length} selected
+      {selected.length > 0 ? (
+        <p style={{ fontSize: 13, color: "var(--gold-warm)", marginBottom: 28, fontWeight: 600 }}>
+          {selected.length} preference{selected.length > 1 ? "s" : ""} selected
         </p>
+      ) : (
+        <div style={{ marginBottom: 28 }} />
       )}
-      {selected.length === 0 && <div style={{ marginBottom: 24 }} />}
 
-      <div className="tile-grid" style={{ marginBottom: 40 }}>
-        {prefs.map((p) => (
-          <button
-            key={p.tag}
-            id={`pref-${p.tag.toLowerCase()}`}
-            className={`tile ${selected.includes(p.tag) ? "selected" : ""}`}
-            onClick={() => toggle(p.tag)}
-            style={{ gap: 8 }}
-          >
-            <span style={{ fontSize: 20 }}>{p.emoji}</span>
-            {p.label}
-          </button>
-        ))}
+      <div className="tile-grid" style={{ marginBottom: 44 }}>
+        {prefs.map((p) => {
+          const isSelected = selected.includes(p.tag);
+          return (
+            <button
+              key={p.tag}
+              id={`pref-${p.tag.toLowerCase()}`}
+              className={`tile ${isSelected ? "selected" : ""}`}
+              onClick={() => toggle(p.tag)}
+            >
+              <span style={{
+                width: 8,
+                height: 8,
+                borderRadius: "50%",
+                background: isSelected ? "var(--gold-primary)" : "rgba(255,255,255,0.2)",
+                transition: "all 0.2s ease",
+              }} />
+              {p.label}
+            </button>
+          );
+        })}
       </div>
 
       <button
@@ -99,7 +107,7 @@ export default function StylePreferences({
         className="btn-kiosk btn-primary"
         onClick={onNext}
       >
-        {selected.length > 0 ? "Continue →" : "Skip & Continue →"}
+        {selected.length > 0 ? "Continue to Fit Profile &rarr;" : "Skip & Continue &rarr;"}
       </button>
     </div>
   );
