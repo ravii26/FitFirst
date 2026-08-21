@@ -15,7 +15,7 @@ const ProductCreateSchema = z.object({
   price: z.number().int().positive(),
   stockQty: z.number().int().min(0),
   daysInStock: z.number().int().min(0).default(0),
-  imageUrl: z.string().url().optional(),
+  imageUrl: z.string().optional(),
   isActive: z.boolean().default(true),
 });
 
@@ -50,7 +50,7 @@ export async function productsRoutes(app: FastifyInstance) {
     return product;
   });
 
-  // POST /api/products — create product
+  // POST /api/products — create new product
   app.post("/products", async (request, reply) => {
     const result = ProductCreateSchema.safeParse(request.body);
     if (!result.success) return reply.badRequest(result.error.message);
@@ -58,7 +58,7 @@ export async function productsRoutes(app: FastifyInstance) {
     return reply.code(201).send(product);
   });
 
-  // PUT /api/products/:id — update product
+  // PUT /api/products/:id — update product details
   app.put<{ Params: { id: string } }>("/products/:id", async (request, reply) => {
     const result = ProductUpdateSchema.safeParse(request.body);
     if (!result.success) return reply.badRequest(result.error.message);
@@ -68,6 +68,20 @@ export async function productsRoutes(app: FastifyInstance) {
         data: result.data as any,
       });
       return product;
+    } catch {
+      return reply.notFound("Product not found");
+    }
+  });
+
+  // PATCH /api/products/:id/image — update product image URL
+  app.patch<{ Params: { id: string } }>("/products/:id/image", async (request, reply) => {
+    const { imageUrl } = request.body as { imageUrl: string };
+    if (!imageUrl) return reply.badRequest("imageUrl is required");
+    try {
+      return await prisma.product.update({
+        where: { id: request.params.id },
+        data: { imageUrl },
+      });
     } catch {
       return reply.notFound("Product not found");
     }
@@ -100,4 +114,3 @@ export async function productsRoutes(app: FastifyInstance) {
     }
   });
 }
-

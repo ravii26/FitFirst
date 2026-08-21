@@ -1,8 +1,12 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import sensible from "@fastify/sensible";
+import fastifyStatic from "@fastify/static";
+import multipart from "@fastify/multipart";
 import { PrismaClient } from "@prisma/client";
 import dotenv from "dotenv";
+import path from "path";
+import fs from "fs";
 
 import { sessionsRoutes } from "./routes/sessions";
 import { recommendationsRoutes } from "./routes/recommendations";
@@ -10,11 +14,17 @@ import { purchaseEventsRoutes } from "./routes/purchaseEvents";
 import { analyticsRoutes } from "./routes/analytics";
 import { productsRoutes } from "./routes/products";
 import { baselineRoutes } from "./routes/baseline";
+import { uploadRoutes } from "./routes/upload";
 
 dotenv.config();
 
 const prisma = new PrismaClient();
 const PORT = parseInt(process.env.PORT ?? "3000", 10);
+
+const uploadsDir = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 async function main() {
   const app = Fastify({ logger: true });
@@ -30,6 +40,15 @@ async function main() {
 
   await app.register(sensible);
 
+  await app.register(multipart, {
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+  });
+
+  await app.register(fastifyStatic, {
+    root: uploadsDir,
+    prefix: "/uploads/",
+  });
+
   // ── Prisma Decorator ────────────────────────────────────────────────────────
   app.decorate("prisma", prisma);
 
@@ -40,6 +59,7 @@ async function main() {
   await app.register(analyticsRoutes, { prefix: "/api" });
   await app.register(productsRoutes, { prefix: "/api" });
   await app.register(baselineRoutes, { prefix: "/api" });
+  await app.register(uploadRoutes, { prefix: "/api" });
 
   // ── Health Check ────────────────────────────────────────────────────────────
   app.get("/health", async () => ({ status: "ok", timestamp: new Date().toISOString() }));
@@ -63,5 +83,3 @@ main().catch((err) => {
   console.error(err);
   process.exit(1);
 });
-
-
