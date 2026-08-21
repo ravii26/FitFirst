@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { apiFetch } from "../lib/api";
 
 const API = "/api";
 
@@ -44,7 +45,7 @@ export default function BaselineLog() {
     setMessage("");
 
     try {
-      const res = await fetch(`${API}/baseline`, {
+      const res = await apiFetch(`${API}/baseline`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

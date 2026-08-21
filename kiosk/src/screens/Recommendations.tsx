@@ -180,7 +180,6 @@ export default function Recommendations({
       {/* Product Cards Horizontal Scroll */}
       <div className="products-scroll">
         {recs.map((rec) => {
-          const purchased = loggedPurchases.has(rec.product.id);
           const imgSrc = rec.product.imageUrl || CATEGORY_IMAGES[rec.product.category] || CATEGORY_IMAGES.KURTA;
           const matchPercentage = Math.round(rec.score * 100);
 

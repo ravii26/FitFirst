@@ -5,6 +5,7 @@ import {
   LineElement, PointElement, Title, Tooltip, Legend, Filler,
 } from "chart.js";
 import { Bar, Line } from "react-chartjs-2";
+import { apiFetch } from "../lib/api";
 
 ChartJS.register(
   CategoryScale, LinearScale, BarElement,
@@ -64,8 +65,8 @@ export default function Analytics() {
     async function load() {
       try {
         const [s, c] = await Promise.all([
-          fetch(`${API}/analytics/summary`).then((r) => r.json()),
-          fetch(`${API}/analytics/baseline-chart`).then((r) => r.json()),
+          apiFetch(`${API}/analytics/summary`).then((r) => r.json()),
+          apiFetch(`${API}/analytics/baseline-chart`).then((r) => r.json()),
         ]);
         setSummary(s);
         setChartData(c);

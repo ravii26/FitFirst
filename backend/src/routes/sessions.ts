@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { PrismaClient } from "@prisma/client";
+import { requireDashboardPin } from "../authGuard";
 
 const SessionSchema = z.object({
   skinToneBucket: z.enum(["FAIR", "WHEATISH", "MEDIUM", "DEEP"]).default("WHEATISH"),
@@ -39,7 +40,7 @@ export async function sessionsRoutes(app: FastifyInstance) {
   });
 
   // GET /api/sessions — list recent sessions (staff dashboard)
-  app.get("/sessions", async (request, reply) => {
+  app.get("/sessions", { preHandler: requireDashboardPin }, async (request, reply) => {
     const sessions = await prisma.customerSession.findMany({
       orderBy: { createdAt: "desc" },
       take: 100,

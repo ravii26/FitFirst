@@ -17,6 +17,9 @@ const ProductCreateSchema = z.object({
   daysInStock: z.number().int().min(0).default(0),
   imageUrl: z.string().optional(),
   isActive: z.boolean().default(true),
+  aiTagged: z.boolean().default(false),
+  aiEngine: z.string().optional(),
+  aiConfidence: z.record(z.number()).optional(),
 });
 
 const ProductUpdateSchema = ProductCreateSchema.partial();

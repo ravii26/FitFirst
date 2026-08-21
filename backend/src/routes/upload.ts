@@ -1,7 +1,19 @@
 import { FastifyInstance } from "fastify";
 import path from "path";
-import fs from "fs";
-import { pipeline } from "stream/promises";
+import fs from "fs/promises";
+import { sniffImageMime } from "../imageSniff";
+
+// Extension is derived from the sniffed MIME type, never from the
+// client-supplied filename — a spoofed filename (e.g. "x.html" sent with
+// Content-Type: image/jpeg) must not be able to make its way onto disk
+// with an extension that gets served/executed as something other than an image.
+const EXT_BY_MIME: Record<string, string> = {
+  "image/jpeg": ".jpg",
+  "image/png": ".png",
+  "image/webp": ".webp",
+  "image/gif": ".gif",
+  "image/avif": ".avif",
+};
 
 export async function uploadRoutes(app: FastifyInstance) {
   // POST /api/upload — upload media file (image)
@@ -11,22 +23,25 @@ export async function uploadRoutes(app: FastifyInstance) {
       return reply.badRequest("No image file uploaded");
     }
 
-    const allowedMimeTypes = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif"];
-    if (!allowedMimeTypes.includes(data.mimetype)) {
+    const buffer = await data.toBuffer();
+
+    // Don't trust the client-supplied Content-Type — verify the actual bytes.
+    const sniffedMime = sniffImageMime(buffer);
+    const ext = sniffedMime && EXT_BY_MIME[sniffedMime];
+    if (!ext) {
       return reply.badRequest("Invalid file type. Supported formats: JPEG, PNG, WEBP, GIF, AVIF");
     }
 
-    const ext = path.extname(data.filename) || ".jpg";
     const filename = `garment_${Date.now()}_${Math.random().toString(36).slice(2, 8)}${ext}`;
     const uploadPath = path.join(process.cwd(), "uploads", filename);
 
-    await pipeline(data.file, fs.createWriteStream(uploadPath));
+    await fs.writeFile(uploadPath, buffer);
 
     const publicUrl = `/uploads/${filename}`;
     return reply.code(201).send({
       url: publicUrl,
       filename,
-      mimetype: data.mimetype,
+      mimetype: sniffedMime,
     });
   });
 }

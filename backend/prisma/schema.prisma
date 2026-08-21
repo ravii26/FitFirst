@@ -111,6 +111,12 @@ model Product {
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 
+  // Provenance of the AI garment auto-tagger, when used to populate the
+  // fields above. Null/false for products entered manually.
+  aiTagged      Boolean     @default(false)
+  aiEngine      String?     // "clip" | "heuristic"
+  aiConfidence  Json?       // per-attribute confidence, e.g. {"category":0.92,...}
+
   recommendations Recommendation[]
   purchaseEvents  PurchaseEvent[]
 }

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { apiFetch } from "../lib/api";
 
 const API = "/api";
 
@@ -85,6 +86,9 @@ interface Product {
   daysInStock: number;
   imageUrl?: string;
   isActive: boolean;
+  aiTagged?: boolean;
+  aiEngine?: string | null;
+  aiConfidence?: Record<string, number> | null;
 }
 
 export default function Inventory() {
@@ -103,6 +107,81 @@ export default function Inventory() {
   const [photoUrlInput, setPhotoUrlInput] = useState("");
   const [uploading, setUploading] = useState(false);
   const [uploadMsg, setUploadMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+  // AI Scan state
+  const [scanningAI, setScanningAI] = useState(false);
+  const [aiConfidence, setAiConfidence] = useState<Record<string, number> | null>(null);
+  const [aiEngine, setAiEngine] = useState<string | null>(null);
+  const [scanMsg, setScanMsg] = useState<{ type: "success" | "error" | "warning"; text: string } | null>(null);
+
+  const handleAIScanFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setScanningAI(true);
+    setAiConfidence(null);
+    setAiEngine(null);
+    setScanMsg(null);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      // 1. Call AI scanner microservice via backend proxy
+      const scanRes = await apiFetch(`${API}/scan-garment`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!scanRes.ok) throw new Error("AI scan request failed");
+      const scanData = await scanRes.json();
+
+      if (scanData.aiServiceAvailable === false) {
+        setScanMsg({
+          type: "error",
+          text: scanData.error ?? "AI scanner unavailable. Please select attributes manually.",
+        });
+      } else if (scanData.predictions) {
+        const p = scanData.predictions;
+        setNewProduct((prev) => ({
+          ...prev,
+          category: p.category.value,
+          gender: p.gender.value,
+          colorFamily: p.colorFamily.value,
+          fitType: p.fitType.value,
+          pattern: p.pattern.value,
+        }));
+
+        setAiConfidence({
+          category: p.category.confidence,
+          gender: p.gender.confidence,
+          colorFamily: p.colorFamily.confidence,
+          fitType: p.fitType.confidence,
+          pattern: p.pattern.confidence,
+        });
+        setAiEngine(p.category.engine ?? null);
+
+        if (p.category.engine === "heuristic") {
+          setScanMsg({
+            type: "warning",
+            text: "Tagged using the fallback visual heuristic (CLIP model not loaded on the AI service) — please double-check these fields.",
+          });
+        }
+      }
+
+      // 2. Upload image to server for live display
+      const uploadRes = await apiFetch(`${API}/upload`, {
+        method: "POST",
+        body: formData,
+      });
+      if (uploadRes.ok) {
+        const uploadData = await uploadRes.json();
+        setNewProduct((prev) => ({ ...prev, imageUrl: uploadData.url }));
+      }
+    } catch (err) {
+      setScanMsg({ type: "error", text: "AI scan failed. Please select attributes manually." });
+    } finally {
+      setScanningAI(false);
+    }
+  };
 
   // Add Product modal state
   const [showAddModal, setShowAddModal] = useState(false);
@@ -127,7 +206,7 @@ export default function Inventory() {
       if (filterGender) params.set("gender", filterGender);
       if (filterCategory) params.set("category", filterCategory);
       if (search) params.set("search", search);
-      const res = await fetch(`${API}/products?${params}`);
+      const res = await apiFetch(`${API}/products?${params}`);
       setProducts(await res.json());
     } finally {
       setLoading(false);
@@ -153,7 +232,7 @@ export default function Inventory() {
 
   const saveStock = async (id: string) => {
     setSavingStock(true);
-    await fetch(`${API}/products/${id}/stock`, {
+    await apiFetch(`${API}/products/${id}/stock`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ stockQty: stockValue }),
@@ -167,7 +246,7 @@ export default function Inventory() {
 
   const deactivate = async (id: string) => {
     if (!confirm("Mark this product as inactive? It won't appear in recommendations.")) return;
-    await fetch(`${API}/products/${id}`, { method: "DELETE" });
+    await apiFetch(`${API}/products/${id}`, { method: "DELETE" });
     loadProducts();
   };
 
@@ -182,7 +261,7 @@ export default function Inventory() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const res = await fetch(`${API}/upload`, {
+      const res = await apiFetch(`${API}/upload`, {
         method: "POST",
         body: formData,
       });
@@ -201,7 +280,7 @@ export default function Inventory() {
   const saveProductPhoto = async () => {
     if (!photoProduct) return;
     try {
-      await fetch(`${API}/products/${photoProduct.id}/image`, {
+      await apiFetch(`${API}/products/${photoProduct.id}/image`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ imageUrl: photoUrlInput }),
@@ -220,7 +299,7 @@ export default function Inventory() {
     e.preventDefault();
     try {
       const sizes = newProduct.sizeRange.split(",").map((s) => s.trim()).filter(Boolean);
-      const res = await fetch(`${API}/products`, {
+      const res = await apiFetch(`${API}/products`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -228,6 +307,9 @@ export default function Inventory() {
           price: Number(newProduct.price),
           stockQty: Number(newProduct.stockQty),
           sizeRange: sizes,
+          aiTagged: aiConfidence !== null,
+          aiEngine: aiEngine ?? undefined,
+          aiConfidence: aiConfidence ?? undefined,
         }),
       });
 
@@ -237,6 +319,9 @@ export default function Inventory() {
       }
 
       setShowAddModal(false);
+      setAiConfidence(null);
+      setAiEngine(null);
+      setScanMsg(null);
       loadProducts();
     } catch (err: any) {
       alert(err.message);
@@ -528,9 +613,56 @@ export default function Inventory() {
             <h3 style={{ fontSize: 20, fontFamily: "var(--font-display)", marginBottom: 6, color: "var(--text-primary)" }}>
               Add New SKU to Inventory
             </h3>
-            <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 20 }}>
+            <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 16 }}>
               New garments immediately enter the scoring pool for kiosk recommendations.
             </p>
+
+            {/* AI Vision Scanner Banner */}
+            <div style={{
+              padding: "14px 16px",
+              borderRadius: 12,
+              background: "rgba(212, 175, 55, 0.08)",
+              border: "1px solid rgba(212, 175, 55, 0.3)",
+              marginBottom: 20,
+            }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+                <div>
+                  <strong style={{ color: "var(--accent-light)", fontSize: 13, display: "block" }}>✨ AI Garment Auto-Tagger</strong>
+                  <span style={{ fontSize: 11, color: "var(--text-muted)" }}>
+                    Upload photo to auto-classify category, color, fit & pattern
+                  </span>
+                </div>
+                <label className="btn btn-primary btn-sm" style={{ cursor: "pointer", whiteSpace: "nowrap" }}>
+                  {scanningAI ? "Scanning AI…" : "📷 Upload & Scan with AI"}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAIScanFile}
+                    disabled={scanningAI}
+                    style={{ display: "none" }}
+                  />
+                </label>
+              </div>
+
+              {aiConfidence && (
+                <div style={{ fontSize: 11, color: "var(--success)", display: "flex", gap: 10, flexWrap: "wrap", marginTop: 10, paddingTop: 8, borderTop: "1px dashed rgba(255,255,255,0.1)" }}>
+                  <span>✓ Category ({(aiConfidence.category * 100).toFixed(0)}%)</span>
+                  <span>✓ Color ({(aiConfidence.colorFamily * 100).toFixed(0)}%)</span>
+                  <span>✓ Pattern ({(aiConfidence.pattern * 100).toFixed(0)}%)</span>
+                  <span>✓ Fit ({(aiConfidence.fitType * 100).toFixed(0)}%)</span>
+                  <span>✓ Gender ({(aiConfidence.gender * 100).toFixed(0)}%)</span>
+                </div>
+              )}
+
+              {scanMsg && (
+                <div style={{
+                  fontSize: 11, marginTop: 10, paddingTop: 8, borderTop: "1px dashed rgba(255,255,255,0.1)",
+                  color: scanMsg.type === "error" ? "var(--danger)" : scanMsg.type === "warning" ? "var(--accent-light)" : "var(--success)",
+                }}>
+                  {scanMsg.type === "error" ? "⚠ " : scanMsg.type === "warning" ? "ℹ " : "✓ "}{scanMsg.text}
+                </div>
+              )}
+            </div>
 
             <form onSubmit={handleCreateProduct}>
               <div className="form-grid" style={{ gridTemplateColumns: "1fr 1fr", gap: 16 }}>

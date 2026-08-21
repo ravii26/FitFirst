@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
+import { apiFetch } from "../lib/api";
 
 const API = "/api";
 
@@ -58,7 +59,7 @@ function LogPurchaseModal({
     setSaving(true);
     setError(null);
     try {
-      const res = await fetch(`${API}/purchase-events`, {
+      const res = await apiFetch(`${API}/purchase-events`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -185,7 +186,7 @@ export default function Sessions() {
 
   const loadSessions = () => {
     setLoading(true);
-    fetch(`${API}/sessions`)
+    apiFetch(`${API}/sessions`)
       .then((r) => r.json())
       .then((data) => { setSessions(data); setLoading(false); })
       .catch(() => setLoading(false));

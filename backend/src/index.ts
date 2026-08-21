@@ -15,6 +15,8 @@ import { analyticsRoutes } from "./routes/analytics";
 import { productsRoutes } from "./routes/products";
 import { baselineRoutes } from "./routes/baseline";
 import { uploadRoutes } from "./routes/upload";
+import { scanGarmentRoutes } from "./routes/scanGarment";
+import { requireDashboardPin } from "./authGuard";
 
 dotenv.config();
 
@@ -53,13 +55,23 @@ async function main() {
   app.decorate("prisma", prisma);
 
   // ── Routes ────────────────────────────────────────────────────────────────
+  // Kiosk-facing: no auth (unattended customer devices can't hold a PIN).
   await app.register(sessionsRoutes, { prefix: "/api" });
   await app.register(recommendationsRoutes, { prefix: "/api" });
-  await app.register(purchaseEventsRoutes, { prefix: "/api" });
-  await app.register(analyticsRoutes, { prefix: "/api" });
-  await app.register(productsRoutes, { prefix: "/api" });
-  await app.register(baselineRoutes, { prefix: "/api" });
-  await app.register(uploadRoutes, { prefix: "/api" });
+
+  // Staff-facing: require the dashboard PIN sent as x-dashboard-pin.
+  await app.register(
+    async (staffApp) => {
+      staffApp.addHook("preHandler", requireDashboardPin);
+      await staffApp.register(purchaseEventsRoutes);
+      await staffApp.register(analyticsRoutes);
+      await staffApp.register(productsRoutes);
+      await staffApp.register(baselineRoutes);
+      await staffApp.register(uploadRoutes);
+      await staffApp.register(scanGarmentRoutes);
+    },
+    { prefix: "/api" }
+  );
 
   // ── Health Check ────────────────────────────────────────────────────────────
   app.get("/health", async () => ({ status: "ok", timestamp: new Date().toISOString() }));
