@@ -336,59 +336,58 @@ export default function Inventory() {
 
   return (
     <div className="fade-in">
-      <div className="page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div className="page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 16 }}>
         <div>
-          <h1 className="page-title">Inventory & Garment Media</h1>
+          <h1 className="page-title">Showroom Catalog & Garment Inventory</h1>
           <p className="page-subtitle">
-            {filtered.length} products &bull; Upload product photos, manage stock levels, and add new floor SKUs
+            {filtered.length} curated pieces &bull; Live inventory sync &bull; AI vision auto-tagging
           </p>
         </div>
         <button
           className="btn btn-primary"
           onClick={() => setShowAddModal(true)}
         >
-          + Add New SKU
+          + Add Showroom Piece
         </button>
       </div>
 
       {/* Search & Filter Bar */}
-      <div className="card mb-xl">
-        <form id="inventory-search-form" onSubmit={handleSearch} style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end" }}>
-          <div className="form-group" style={{ flex: "1 1 200px" }}>
-            <label htmlFor="inv-search">Search Inventory</label>
+      <div className="atelier-toolbar" style={{ background: "var(--atelier-surface)", padding: "14px 18px", borderRadius: "var(--radius-md)", border: "1px solid var(--atelier-hairline)" }}>
+        <form id="inventory-search-form" onSubmit={handleSearch} style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center", width: "100%" }}>
+          <div style={{ flex: "1 1 240px", position: "relative" }}>
             <input
               id="inv-search"
               type="text"
-              placeholder="Name or SKU…"
+              placeholder="Search by piece title, color, or SKU…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              style={{ width: "100%", background: "var(--atelier-surface-sub)", borderColor: "var(--atelier-hairline)" }}
             />
           </div>
-          <div className="form-group" style={{ flex: "0 1 150px" }}>
-            <label htmlFor="inv-gender">Gender / Dept</label>
-            <select id="inv-gender" value={filterGender} onChange={(e) => setFilterGender(e.target.value)}>
-              <option value="">All</option>
-              <option value="MEN">Men</option>
-              <option value="WOMEN">Women</option>
-              <option value="KIDS">Kids</option>
-              <option value="UNISEX">Unisex</option>
+          <div style={{ flex: "0 1 160px" }}>
+            <select id="inv-gender" value={filterGender} onChange={(e) => setFilterGender(e.target.value)} style={{ background: "var(--atelier-surface-sub)", borderColor: "var(--atelier-hairline)" }}>
+              <option value="">All Departments</option>
+              <option value="MEN">Men's Collection</option>
+              <option value="WOMEN">Women's Collection</option>
+              <option value="KIDS">Junior Collection</option>
+              <option value="UNISEX">Unisex / Universal</option>
             </select>
           </div>
-          <div className="form-group" style={{ flex: "0 1 200px" }}>
-            <label htmlFor="inv-category">Category</label>
-            <select id="inv-category" value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
+          <div style={{ flex: "0 1 200px" }}>
+            <select id="inv-category" value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} style={{ background: "var(--atelier-surface-sub)", borderColor: "var(--atelier-hairline)" }}>
               <option value="">All Categories</option>
               {CATEGORIES.map((c) => <option key={c} value={c}>{categoryLabel(c)}</option>)}
             </select>
           </div>
-          <button id="inv-search-btn" type="submit" className="btn btn-secondary">Filter</button>
+          <button id="inv-search-btn" type="submit" className="btn btn-secondary btn-sm">Filter</button>
         </form>
       </div>
 
       {/* Slow-moving stock alert */}
       {slowStockCount > 0 && (
-        <div className="alert alert-info mb-xl" style={{ padding: "12px 16px", borderRadius: 10, background: "rgba(212, 175, 55, 0.1)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--accent-light)", marginBottom: 20 }}>
-          Notice: {slowStockCount} products have been in stock over 60 days — aging tiebreak boost automatically applies in kiosk recommendations.
+        <div style={{ padding: "12px 18px", borderRadius: "var(--radius-sm)", background: "var(--atelier-brass-ghost)", border: "1px solid var(--atelier-brass-line)", color: "var(--atelier-brass-light)", marginBottom: 20, fontSize: 13, display: "flex", alignItems: "center", gap: 10 }}>
+          <span>⏳</span>
+          <span><strong>{slowStockCount} pieces</strong> have been in showroom inventory over 60 days. The recommendation engine automatically applies aging priority to surface them to matching shoppers.</span>
         </div>
       )}
 
@@ -522,7 +521,6 @@ export default function Inventory() {
           </table>
           {filtered.length === 0 && (
             <div className="empty-state" style={{ padding: 40, textAlign: "center" }}>
-              <div style={{ fontSize: 36, marginBottom: 12 }}>Box</div>
               <h3>No products found</h3>
               <p>Adjust your search filters or click "Add New SKU" above.</p>
             </div>
@@ -620,20 +618,20 @@ export default function Inventory() {
             {/* AI Vision Scanner Banner */}
             <div style={{
               padding: "14px 16px",
-              borderRadius: 12,
-              background: "rgba(212, 175, 55, 0.08)",
-              border: "1px solid rgba(212, 175, 55, 0.3)",
+              borderRadius: "var(--radius-md)",
+              background: "var(--brass-dim)",
+              border: "1px solid var(--brass-border)",
               marginBottom: 20,
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
                 <div>
-                  <strong style={{ color: "var(--accent-light)", fontSize: 13, display: "block" }}>✨ AI Garment Auto-Tagger</strong>
+                  <strong style={{ color: "var(--accent-light)", fontSize: 13, display: "block" }}>AI Garment Auto-Tagger</strong>
                   <span style={{ fontSize: 11, color: "var(--text-muted)" }}>
                     Upload photo to auto-classify category, color, fit & pattern
                   </span>
                 </div>
                 <label className="btn btn-primary btn-sm" style={{ cursor: "pointer", whiteSpace: "nowrap" }}>
-                  {scanningAI ? "Scanning AI…" : "📷 Upload & Scan with AI"}
+                  {scanningAI ? "Scanning AI…" : "Upload & Scan with AI"}
                   <input
                     type="file"
                     accept="image/*"
@@ -645,7 +643,7 @@ export default function Inventory() {
               </div>
 
               {aiConfidence && (
-                <div style={{ fontSize: 11, color: "var(--success)", display: "flex", gap: 10, flexWrap: "wrap", marginTop: 10, paddingTop: 8, borderTop: "1px dashed rgba(255,255,255,0.1)" }}>
+                <div style={{ fontSize: 11, color: "var(--success)", display: "flex", gap: 10, flexWrap: "wrap", marginTop: 10, paddingTop: 8, borderTop: "1px dashed var(--line-strong)" }}>
                   <span>✓ Category ({(aiConfidence.category * 100).toFixed(0)}%)</span>
                   <span>✓ Color ({(aiConfidence.colorFamily * 100).toFixed(0)}%)</span>
                   <span>✓ Pattern ({(aiConfidence.pattern * 100).toFixed(0)}%)</span>
@@ -656,7 +654,7 @@ export default function Inventory() {
 
               {scanMsg && (
                 <div style={{
-                  fontSize: 11, marginTop: 10, paddingTop: 8, borderTop: "1px dashed rgba(255,255,255,0.1)",
+                  fontSize: 11, marginTop: 10, paddingTop: 8, borderTop: "1px dashed var(--line-strong)",
                   color: scanMsg.type === "error" ? "var(--danger)" : scanMsg.type === "warning" ? "var(--accent-light)" : "var(--success)",
                 }}>
                   {scanMsg.type === "error" ? "⚠ " : scanMsg.type === "warning" ? "ℹ " : "✓ "}{scanMsg.text}

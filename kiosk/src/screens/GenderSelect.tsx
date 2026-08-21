@@ -1,23 +1,23 @@
-// Gender Selection Screen — Luxury Boutique Vector UI
+// Gender Selection Screen — Editorial Atelier Vector UI
 
 type Gender = "MEN" | "WOMEN" | "KIDS" | "UNISEX";
 
 const SVGMen = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
     <path d="M20 4v6m0-6h-6m6 0l-5.5 5.5"/>
     <circle cx="9" cy="15" r="6"/>
   </svg>
 );
 
 const SVGWomen = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="9" r="6"/>
     <path d="M12 15v7m-3-3h6"/>
   </svg>
 );
 
 const SVGKids = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="7" r="4"/>
     <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
   </svg>
@@ -38,8 +38,21 @@ export default function GenderSelect({
 }) {
   return (
     <div className="screen" id="screen-gender">
+      <div
+        style={{
+          fontFamily: "var(--font-mono)",
+          fontSize: 12,
+          letterSpacing: "0.16em",
+          textTransform: "uppercase",
+          color: "var(--brass)",
+          marginBottom: 16,
+        }}
+      >
+        01 &middot; Department
+      </div>
+
       <h2 className="h2" style={{ marginBottom: 12 }}>Select Department</h2>
-      <p className="subtitle" style={{ marginBottom: 44 }}>
+      <p className="subtitle" style={{ marginBottom: 40 }}>
         We will filter our active in-store catalog to match your exact department.
       </p>
 

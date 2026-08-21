@@ -23,6 +23,19 @@ export default function SizeEntry({
 
   return (
     <div className="screen" id="screen-size">
+      <div
+        style={{
+          fontFamily: "var(--font-mono)",
+          fontSize: 12,
+          letterSpacing: "0.16em",
+          textTransform: "uppercase",
+          color: "var(--brass)",
+          marginBottom: 16,
+        }}
+      >
+        02 &middot; Sizing
+      </div>
+
       <h2 className="h2" style={{ marginBottom: 12 }}>What is your tailored size?</h2>
       <p className="subtitle" style={{ marginBottom: 40 }}>
         Only garments currently in stock in your precise size will be displayed.
@@ -45,16 +58,16 @@ export default function SizeEntry({
       <div style={{
         marginTop: 36,
         padding: "12px 24px",
-        borderRadius: 100,
-        background: "rgba(255, 255, 255, 0.03)",
-        border: "1px solid var(--border-subtle)",
+        borderRadius: "var(--radius-full)",
+        background: "var(--ink-2)",
+        border: "1px solid var(--line)",
         fontSize: 13,
-        color: "var(--text-muted)",
+        color: "var(--stone-dim)",
         display: "inline-flex",
         alignItems: "center",
         gap: 8,
       }}>
-        <span>📏 Need fitting help? Ask any store stylist on the floor for instant measurement.</span>
+        <span>Need fitting help? Ask any store stylist on the floor for instant measurement.</span>
       </div>
     </div>
   );

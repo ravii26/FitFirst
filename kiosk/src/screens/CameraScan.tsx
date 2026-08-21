@@ -112,16 +112,16 @@ export default function CameraScan({
           gap: 6,
           padding: "4px 14px",
           borderRadius: 100,
-          background: "rgba(212, 175, 55, 0.12)",
-          border: "1px solid var(--gold-border)",
+          background: "var(--brass-dim)",
+          border: "1px solid var(--brass-border)",
+          fontFamily: "var(--font-mono)",
           fontSize: 11,
-          color: "var(--gold-warm)",
-          fontWeight: 700,
+          color: "var(--brass-bright)",
           letterSpacing: "0.08em",
           textTransform: "uppercase",
           marginBottom: 8,
         }}>
-          🔒 100% On-Device &bull; No Photos Saved
+          100% On-Device &bull; No Photos Saved
         </div>
         <h2 className="h2" style={{ marginBottom: 4 }}>
           {scanning ? "Analyzing Tone & Silhouette" : "Analysis Complete"}
@@ -134,10 +134,9 @@ export default function CameraScan({
       </div>
 
       {cameraError ? (
-        <div style={{ textAlign: "center", maxWidth: 440, padding: 32, borderRadius: 20, background: "var(--bg-card)", border: "1px solid var(--border-medium)" }}>
-          <div style={{ fontSize: 40, marginBottom: 16 }}>📷</div>
-          <h3 style={{ fontSize: 18, color: "var(--text-heading)", marginBottom: 12 }}>Camera Access Unavailable</h3>
-          <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 24, lineHeight: 1.5 }}>
+        <div style={{ textAlign: "center", maxWidth: 440, padding: 32, borderRadius: "var(--radius-lg)", background: "var(--ink-2)", border: "1px solid var(--line-strong)" }}>
+          <h3 style={{ fontFamily: "var(--font-serif)", fontWeight: 500, fontSize: 22, color: "var(--paper)", marginBottom: 12 }}>Camera Access Unavailable</h3>
+          <p style={{ fontSize: 13, color: "var(--stone)", marginBottom: 24, lineHeight: 1.5 }}>
             No problem! You can select your skin tone and body shape manually in 10 seconds.
           </p>
           <button className="btn-kiosk btn-primary" onClick={onCancel}>
@@ -153,8 +152,8 @@ export default function CameraScan({
             height: scanning ? 300 : 160,
             borderRadius: "50%",
             overflow: "hidden",
-            border: scanning ? "3px solid var(--gold-primary)" : "3px solid var(--success)",
-            boxShadow: scanning ? "0 0 32px var(--gold-glow)" : "0 0 32px rgba(46, 229, 157, 0.3)",
+            border: scanning ? "3px solid var(--brass)" : "3px solid var(--moss)",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
             background: "#000",
             marginBottom: 16,
             transition: "all 0.4s var(--ease-out)",
@@ -177,7 +176,7 @@ export default function CameraScan({
               <div style={{
                 position: "absolute",
                 inset: 0,
-                background: "linear-gradient(180deg, transparent 0%, rgba(212, 175, 55, 0.25) 50%, transparent 100%)",
+                background: "linear-gradient(180deg, transparent 0%, rgba(185, 138, 70, 0.2) 50%, transparent 100%)",
                 animation: "scanSweep 2s ease-in-out infinite",
                 pointerEvents: "none",
               }} />
@@ -190,16 +189,16 @@ export default function CameraScan({
                 bottom: 16,
                 left: "50%",
                 transform: "translateX(-50%)",
-                background: "rgba(11, 13, 18, 0.85)",
+                background: "rgba(20, 18, 14, 0.85)",
                 backdropFilter: "blur(8px)",
                 padding: "6px 16px",
-                borderRadius: 100,
+                borderRadius: "var(--radius-full)",
+                fontFamily: "var(--font-mono)",
                 fontSize: 13,
-                fontWeight: 700,
-                color: "var(--gold-light)",
-                border: "1px solid var(--gold-border)",
+                color: "var(--brass-bright)",
+                border: "1px solid var(--brass-border)",
               }}>
-                Scanning… {countdown}s
+                Scanning&hellip; {countdown}s
               </div>
             )}
           </div>
@@ -213,23 +212,22 @@ export default function CameraScan({
 
           {/* Results Card & Action Buttons */}
           {scanComplete && (
-            <div className="fade-in" style={{
+            <div style={{
               width: "100%",
               maxWidth: 500,
               padding: "18px 24px 24px",
-              borderRadius: 20,
-              background: "rgba(20, 24, 34, 0.95)",
-              border: "1px solid var(--gold-border)",
+              borderRadius: "var(--radius-lg)",
+              background: "var(--ink-2)",
+              border: "1px solid var(--brass-border)",
               textAlign: "center",
-              backdropFilter: "blur(16px)",
             }}>
-              <div style={{ fontSize: 12, color: "var(--gold-warm)", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700, marginBottom: 12 }}>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--brass)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>
                 Detected Silhouette & Department
               </div>
 
               {/* Department / Gender selector */}
               <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 11, color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 700, marginBottom: 6 }}>
+                <div style={{ fontSize: 11, color: "var(--stone-dim)", textTransform: "uppercase", fontWeight: 700, marginBottom: 6 }}>
                   Shopping Department
                 </div>
                 <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
@@ -239,12 +237,12 @@ export default function CameraScan({
                       onClick={() => setSelectedGender(g)}
                       style={{
                         padding: "6px 16px",
-                        borderRadius: 8,
+                        borderRadius: "var(--radius-sm)",
                         fontSize: 13,
                         fontWeight: 700,
-                        border: selectedGender === g ? "2px solid var(--gold-primary)" : "1px solid var(--border-subtle)",
-                        background: selectedGender === g ? "rgba(212, 175, 55, 0.2)" : "rgba(255,255,255,0.04)",
-                        color: selectedGender === g ? "var(--gold-light)" : "var(--text-muted)",
+                        border: selectedGender === g ? "1.5px solid var(--brass)" : "1px solid var(--line)",
+                        background: selectedGender === g ? "var(--brass-dim)" : "var(--ink-3)",
+                        color: selectedGender === g ? "var(--brass-bright)" : "var(--stone-dim)",
                         cursor: "pointer",
                         transition: "all 0.2s ease",
                       }}
@@ -257,13 +255,13 @@ export default function CameraScan({
 
               {/* Attributes badges */}
               <div style={{ display: "flex", justifyContent: "center", gap: 16, marginBottom: 20 }}>
-                <div style={{ background: "rgba(255,255,255,0.04)", padding: "10px 18px", borderRadius: 12, border: "1px solid var(--border-subtle)", minWidth: 140 }}>
-                  <div style={{ fontSize: 10, color: "var(--text-muted)", fontWeight: 700, marginBottom: 2, textTransform: "uppercase" }}>Skin Tone</div>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: "var(--gold-light)" }}>{detectedSkin}</div>
+                <div style={{ background: "var(--ink-3)", padding: "10px 18px", borderRadius: "var(--radius-md)", border: "1px solid var(--line)", minWidth: 140 }}>
+                  <div style={{ fontSize: 10, color: "var(--stone-dim)", fontWeight: 700, marginBottom: 2, textTransform: "uppercase" }}>Skin Tone</div>
+                  <div style={{ fontFamily: "var(--font-mono)", fontSize: 14, color: "var(--brass-bright)" }}>{detectedSkin}</div>
                 </div>
-                <div style={{ background: "rgba(255,255,255,0.04)", padding: "10px 18px", borderRadius: 12, border: "1px solid var(--border-subtle)", minWidth: 140 }}>
-                  <div style={{ fontSize: 10, color: "var(--text-muted)", fontWeight: 700, marginBottom: 2, textTransform: "uppercase" }}>Body Silhouette</div>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: "var(--gold-light)" }}>{detectedBody}</div>
+                <div style={{ background: "var(--ink-3)", padding: "10px 18px", borderRadius: "var(--radius-md)", border: "1px solid var(--line)", minWidth: 140 }}>
+                  <div style={{ fontSize: 10, color: "var(--stone-dim)", fontWeight: 700, marginBottom: 2, textTransform: "uppercase" }}>Body Silhouette</div>
+                  <div style={{ fontFamily: "var(--font-mono)", fontSize: 14, color: "var(--brass-bright)" }}>{detectedBody}</div>
                 </div>
               </div>
 
@@ -280,7 +278,7 @@ export default function CameraScan({
                   onClick={onCancel}
                   style={{ fontSize: 14, padding: "0 20px", minHeight: 48 }}
                 >
-                  Adjust Manually ✏️
+                  Adjust Manually
                 </button>
               </div>
             </div>

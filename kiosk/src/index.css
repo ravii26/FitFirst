@@ -1,47 +1,79 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   FitFirst Customer Kiosk — Premium Atelier Design System
-   High-End Luxury Boutique Aesthetic · Crisp Typography · Micro-Interactions
+   FitFirst Customer Kiosk — Atelier Design System
+   Editorial Fashion Sensibility · Warm Neutrals · Brass as a Rare Accent
    ═══════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  /* Color Palette — Midnight Obsidian & Brushed Champagne Gold */
-  --bg-dark:            #0B0D12;
-  --bg-surface:         #131720;
-  --bg-card:            rgba(255, 255, 255, 0.035);
-  --bg-card-hover:      rgba(255, 255, 255, 0.065);
-  --bg-glass:           rgba(20, 24, 34, 0.75);
-  --bg-glass-strong:    rgba(27, 32, 45, 0.85);
+  /* Core palette — Ink & Bone, warm not cool */
+  --ink:                #14120E;
+  --ink-2:               #1C1914;
+  --ink-3:               #241F18;
+  --ink-4:               #2C2620;
 
-  --gold-primary:       #D4AF37;
-  --gold-light:         #F3E5AB;
-  --gold-warm:          #E6C280;
-  --gold-dim:           rgba(212, 175, 55, 0.12);
-  --gold-glow:          rgba(212, 175, 55, 0.25);
-  --gold-border:        rgba(212, 175, 55, 0.35);
+  --paper:               #F5EFE2;
+  --stone:               #B4A895;
+  --stone-dim:           #7C7365;
 
-  --text-heading:       #F9F9FB;
-  --text-body:          #C3C7D4;
-  --text-muted:         #828898;
-  --text-dim:           #545967;
+  --brass:               #B98A46;
+  --brass-bright:        #D4A868;
+  --brass-press:         #9C7238;
+  --brass-dim:           rgba(185, 138, 70, 0.14);
+  --brass-border:        rgba(185, 138, 70, 0.4);
 
-  --border-subtle:      rgba(255, 255, 255, 0.07);
-  --border-medium:      rgba(255, 255, 255, 0.14);
-  --border-active:      #D4AF37;
+  --rust:                #A8503A;
+  --rust-dim:            rgba(168, 80, 58, 0.14);
 
-  --success:            #2EE59D;
-  --success-dim:        rgba(46, 229, 157, 0.12);
+  --moss:                #6B7A54;
+  --moss-dim:            rgba(107, 122, 84, 0.16);
 
-  /* Typography */
-  --font-serif: 'Cormorant Garamond', Georgia, serif;
-  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  --font-display: 'Outfit', sans-serif;
+  --crimson:             #A8453A;
+  --crimson-dim:         rgba(168, 69, 58, 0.16);
 
-  /* Sizing & Radius */
+  --line:                rgba(245, 239, 226, 0.10);
+  --line-strong:         rgba(245, 239, 226, 0.20);
+
+  /* ── Back-compat aliases — old token names, new values ──────────────────
+     Existing screens still reference these directly; re-pointing them here
+     re-skins every screen immediately without touching each file. Retire
+     these as each screen gets rebuilt. */
+  --bg-dark:             var(--ink);
+  --bg-surface:          var(--ink-2);
+  --bg-card:             var(--ink-2);
+  --bg-card-hover:       var(--ink-3);
+  --bg-glass:            var(--ink-2);
+  --bg-glass-strong:     var(--ink-3);
+
+  --gold-primary:        var(--brass);
+  --gold-light:          var(--brass-bright);
+  --gold-warm:           var(--brass-bright);
+  --gold-dim:            var(--brass-dim);
+  --gold-glow:           rgba(185, 138, 70, 0.18);
+  --gold-border:         var(--brass-border);
+
+  --text-heading:        var(--paper);
+  --text-body:           var(--stone);
+  --text-muted:          var(--stone-dim);
+  --text-dim:            var(--stone-dim);
+
+  --border-subtle:       var(--line);
+  --border-medium:       var(--line-strong);
+  --border-active:       var(--brass);
+
+  --success:             var(--moss);
+  --success-dim:         var(--moss-dim);
+
+  /* Typography — one serif spent boldly, one grotesk for everything else */
+  --font-serif:   'Fraunces', Georgia, serif;
+  --font-display: 'Manrope', system-ui, -apple-system, sans-serif;
+  --font-sans:    'Manrope', system-ui, -apple-system, sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+  /* Sizing & Radius — structural, not soft; pills reserved for small chips */
   --touch-min: 56px;
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
-  --radius-xl: 28px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
   --radius-full: 9999px;
 
   /* Motion */
@@ -64,22 +96,22 @@ html, body, #root {
   width: 100%;
   overflow: hidden;
   font-family: var(--font-sans);
-  background-color: var(--bg-dark);
-  color: var(--text-body);
+  background-color: var(--ink);
+  color: var(--stone);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   user-select: none;
 }
 
-/* Background Atmosphere */
+/* Background Atmosphere — warm, not a blue-black tech glow */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
-  background: 
-    radial-gradient(circle at 15% 15%, rgba(212, 175, 55, 0.06) 0%, transparent 45%),
-    radial-gradient(circle at 85% 85%, rgba(35, 45, 68, 0.35) 0%, transparent 50%),
-    radial-gradient(circle at 50% 50%, rgba(11, 13, 18, 0.9) 0%, #0B0D12 100%);
+  background:
+    radial-gradient(circle at 15% 10%, rgba(185, 138, 70, 0.06) 0%, transparent 45%),
+    radial-gradient(circle at 90% 90%, rgba(168, 80, 58, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(20, 18, 14, 0.9) 0%, #14120E 100%);
   pointer-events: none;
   z-index: 0;
 }
@@ -100,11 +132,11 @@ body::before {
 @keyframes fadeScaleIn {
   from {
     opacity: 0;
-    transform: scale(0.985) translateY(12px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
-    transform: scale(1) translateY(0);
+    transform: translateY(0);
   }
 }
 
@@ -120,7 +152,7 @@ body::before {
   background: transparent;
 }
 .screen-scrollable::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--line-strong);
   border-radius: 4px;
 }
 
@@ -131,15 +163,14 @@ body::before {
   left: 0;
   right: 0;
   height: 3px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--line);
   z-index: 100;
 }
 
 .progress-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #D4AF37 0%, #F3E5AB 100%);
+  background: var(--brass);
   transition: width 0.4s var(--ease-out);
-  box-shadow: 0 0 12px var(--gold-glow);
 }
 
 /* ── Header ───────────────────────────────────────────────────────────────── */
@@ -153,7 +184,7 @@ body::before {
   align-items: center;
   justify-content: space-between;
   padding: 0 40px;
-  background: linear-gradient(180deg, rgba(11, 13, 18, 0.95) 0%, rgba(11, 13, 18, 0) 100%);
+  background: linear-gradient(180deg, rgba(20, 18, 14, 0.95) 0%, rgba(20, 18, 14, 0) 100%);
   backdrop-filter: blur(12px);
   z-index: 50;
 }
@@ -167,16 +198,15 @@ body::before {
 .logo-badge {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #D4AF37 0%, #AA820A 100%);
-  border-radius: 10px;
+  background: var(--brass);
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-serif);
-  font-weight: 700;
+  font-weight: 600;
   font-size: 22px;
-  color: #0B0D12;
-  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.25);
+  color: var(--ink);
 }
 
 .logo-name {
@@ -184,14 +214,14 @@ body::before {
   font-weight: 700;
   font-size: 20px;
   letter-spacing: -0.01em;
-  color: var(--text-heading);
+  color: var(--paper);
 }
 
 .logo-subtag {
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--gold-warm);
+  color: var(--brass-bright);
   font-weight: 600;
   margin-top: 2px;
 }
@@ -199,26 +229,28 @@ body::before {
 /* ── Typography & Headings ────────────────────────────────────────────────── */
 .h1 {
   font-family: var(--font-serif);
+  font-weight: 400;
   font-size: clamp(40px, 6vw, 76px);
-  font-weight: 600;
-  line-height: 1.05;
+  line-height: 1.02;
   letter-spacing: -0.01em;
-  color: var(--text-heading);
+  color: var(--paper);
   text-align: center;
+  text-wrap: balance;
 }
 
 .h2 {
   font-family: var(--font-serif);
+  font-weight: 400;
   font-size: clamp(28px, 4vw, 46px);
-  font-weight: 600;
-  line-height: 1.15;
-  color: var(--text-heading);
+  line-height: 1.1;
+  color: var(--paper);
   text-align: center;
+  text-wrap: balance;
 }
 
 .subtitle {
   font-size: clamp(14px, 1.6vw, 18px);
-  color: var(--text-body);
+  color: var(--stone);
   text-align: center;
   line-height: 1.6;
   max-width: 620px;
@@ -227,10 +259,8 @@ body::before {
 
 .highlight {
   font-style: italic;
-  color: var(--gold-warm);
-  background: linear-gradient(135deg, #F3E5AB 0%, #D4AF37 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-weight: 300;
+  color: var(--brass-bright);
 }
 
 /* ── Buttons ──────────────────────────────────────────────────────────────── */
@@ -241,7 +271,7 @@ body::before {
   gap: 12px;
   min-height: var(--touch-min);
   padding: 0 44px;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-md);
   font-family: var(--font-sans);
   font-size: 16px;
   font-weight: 600;
@@ -250,36 +280,36 @@ body::before {
   border: none;
   transition: all var(--dur-fast) var(--ease-out);
   text-decoration: none;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #E6C280 0%, #D4AF37 100%);
-  color: #0B0D12;
+  background: var(--brass);
+  color: var(--ink);
   font-weight: 700;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
 }
 
 .btn-primary:hover, .btn-primary:focus-visible {
-  background: linear-gradient(135deg, #F3E5AB 0%, #E6C280 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px var(--gold-glow);
+  background: var(--brass-bright);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
 }
 
 .btn-primary:active {
+  background: var(--brass-press);
   transform: translateY(0);
 }
 
 .btn-ghost {
-  background: var(--bg-card);
-  color: var(--text-heading);
-  border: 1px solid var(--border-medium);
-  backdrop-filter: blur(12px);
+  background: var(--ink-2);
+  color: var(--paper);
+  border: 1px solid var(--line-strong);
 }
 
 .btn-ghost:hover {
-  background: var(--bg-card-hover);
-  border-color: rgba(255, 255, 255, 0.3);
-  color: #FFF;
+  background: var(--ink-3);
+  border-color: var(--stone-dim);
+  color: var(--paper);
 }
 
 .back-btn {
@@ -291,21 +321,20 @@ body::before {
   gap: 8px;
   padding: 12px 24px;
   border-radius: var(--radius-full);
-  background: rgba(20, 24, 34, 0.85);
-  border: 1px solid var(--border-medium);
-  color: var(--text-body);
+  background: var(--ink-2);
+  border: 1px solid var(--line-strong);
+  color: var(--stone);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: all var(--dur-fast) var(--ease-out);
-  backdrop-filter: blur(12px);
   z-index: 60;
 }
 
 .back-btn:hover {
-  color: var(--text-heading);
-  border-color: var(--gold-warm);
-  background: rgba(30, 36, 50, 0.95);
+  color: var(--paper);
+  border-color: var(--brass-bright);
+  background: var(--ink-3);
 }
 
 /* ── Step Indicators ──────────────────────────────────────────────────────── */
@@ -319,19 +348,18 @@ body::before {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--line-strong);
   transition: all var(--dur-normal) var(--ease-out);
 }
 
 .step-dot.done {
-  background: rgba(212, 175, 55, 0.4);
+  background: var(--brass-dim);
 }
 
 .step-dot.active {
-  background: var(--gold-primary);
+  background: var(--brass);
   width: 24px;
-  border-radius: 4px;
-  box-shadow: 0 0 10px var(--gold-glow);
+  border-radius: var(--radius-sm);
 }
 
 /* ── Modern Option Cards (Gender, Attributes, Selection) ──────────────────── */
@@ -345,8 +373,8 @@ body::before {
 
 .selection-card {
   position: relative;
-  background: var(--bg-card);
-  border: 1.5px solid var(--border-subtle);
+  background: var(--ink-2);
+  border: 1.5px solid var(--line);
   border-radius: var(--radius-lg);
   padding: 28px 20px;
   display: flex;
@@ -355,55 +383,52 @@ body::before {
   text-align: center;
   cursor: pointer;
   transition: all var(--dur-fast) var(--ease-out);
-  backdrop-filter: blur(10px);
 }
 
 .selection-card:hover {
-  background: var(--bg-card-hover);
-  border-color: rgba(255, 255, 255, 0.25);
-  transform: translateY(-3px);
+  background: var(--ink-3);
+  border-color: var(--stone-dim);
 }
 
 .selection-card.selected {
-  background: var(--gold-dim);
-  border-color: var(--gold-primary);
-  box-shadow: 0 0 32px rgba(212, 175, 55, 0.15), inset 0 0 12px rgba(212, 175, 55, 0.08);
+  background: var(--brass-dim);
+  border-color: var(--brass);
 }
 
 .selection-card-icon {
   width: 60px;
   height: 60px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.04);
+  border-radius: var(--radius-md);
+  background: var(--ink-3);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 16px;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--line);
   transition: all var(--dur-fast) var(--ease-out);
 }
 
 .selection-card.selected .selection-card-icon {
-  background: var(--gold-warm);
-  color: #0B0D12;
-  border-color: var(--gold-primary);
+  background: var(--brass);
+  color: var(--ink);
+  border-color: var(--brass);
 }
 
 .selection-card-title {
   font-family: var(--font-display);
   font-size: 18px;
   font-weight: 700;
-  color: var(--text-heading);
+  color: var(--paper);
   margin-bottom: 6px;
 }
 
 .selection-card.selected .selection-card-title {
-  color: var(--gold-light);
+  color: var(--brass-bright);
 }
 
 .selection-card-sub {
   font-size: 12px;
-  color: var(--text-muted);
+  color: var(--stone-dim);
   line-height: 1.4;
 }
 
@@ -420,9 +445,9 @@ body::before {
   min-height: 54px;
   padding: 0 26px;
   border-radius: var(--radius-md);
-  border: 1.5px solid var(--border-subtle);
-  background: var(--bg-card);
-  color: var(--text-body);
+  border: 1.5px solid var(--line);
+  background: var(--ink-2);
+  color: var(--stone);
   font-family: var(--font-sans);
   font-size: 16px;
   font-weight: 600;
@@ -435,180 +460,223 @@ body::before {
 }
 
 .tile:hover {
-  background: var(--bg-card-hover);
-  border-color: rgba(255, 255, 255, 0.25);
-  color: var(--text-heading);
-  transform: translateY(-2px);
+  background: var(--ink-3);
+  border-color: var(--stone-dim);
+  color: var(--paper);
 }
 
 .tile.selected {
-  background: var(--gold-dim);
-  border-color: var(--gold-primary);
-  color: var(--gold-light);
-  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.18);
+  background: var(--brass-dim);
+  border-color: var(--brass);
+  color: var(--brass-bright);
 }
 
-/* ── Product Recommendation Card Refinements ────────────────────────────── */
-.products-scroll {
+/* ── Recommendations — Hero Pick + Ranked List ────────────────────────────── */
+.recs-header {
+  width: 100%;
+  max-width: 1040px;
   display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 20px;
+  margin-bottom: 28px;
   gap: 20px;
-  overflow-x: auto;
-  padding: 12px 40px 24px;
-  width: 100%;
-  scroll-snap-type: x mandatory;
+  flex-wrap: wrap;
 }
 
-.products-scroll::-webkit-scrollbar {
-  height: 6px;
-}
-.products-scroll::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: 3px;
-}
-.products-scroll::-webkit-scrollbar-thumb {
-  background: var(--gold-border);
-  border-radius: 3px;
-}
-
-.product-card {
-  flex-shrink: 0;
-  width: 260px;
-  border-radius: var(--radius-lg);
-  background: rgba(20, 24, 34, 0.85);
-  border: 1px solid var(--border-medium);
-  overflow: hidden;
-  scroll-snap-align: start;
-  transition: all var(--dur-normal) var(--ease-out);
-  display: flex;
-  flex-direction: column;
-  backdrop-filter: blur(16px);
-  position: relative;
-}
-
-.product-card:hover {
-  transform: translateY(-6px);
-  border-color: var(--gold-border);
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6);
-}
-
-.product-card.top-pick {
-  border-color: var(--gold-primary);
-  box-shadow: 0 0 32px rgba(212, 175, 55, 0.2);
-}
-
-.product-card.top-pick::before {
-  content: "TOP SELECTION";
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: linear-gradient(135deg, #D4AF37 0%, #AA820A 100%);
-  color: #0B0D12;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
-  z-index: 5;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-}
-
-.product-image-wrap {
-  position: relative;
-  width: 100%;
-  height: 140px;
-  max-height: 140px;
-  background: #191D27;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.product-image-wrap img {
-  width: 100%;
-  height: 100%;
-  max-height: 140px;
-  object-fit: cover;
-  transition: transform 0.6s var(--ease-out);
-}
-
-.product-card:hover .product-image-wrap img {
-  transform: scale(1.06);
-}
-
-.product-body {
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-}
-
-.product-rank-tag {
+.recs-eyebrow {
+  font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--gold-warm);
-  margin-bottom: 4px;
-}
-
-.product-name {
-  font-family: var(--font-display);
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text-heading);
-  margin-bottom: 6px;
-  line-height: 1.3;
-}
-
-.product-price {
-  font-family: var(--font-sans);
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--gold-light);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--brass);
   margin-bottom: 8px;
 }
 
-.product-reason-pill {
+.recs-title {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(26px, 3vw, 38px);
+  color: var(--paper);
+}
+
+.recs-count {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--stone-dim);
+  white-space: nowrap;
+}
+
+.recs-grid {
+  width: 100%;
+  max-width: 1040px;
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.hero-card {
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--ink-2);
+}
+
+.hero-image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background: var(--ink-3);
+  overflow: hidden;
+}
+
+.hero-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-match-badge {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  background: var(--brass);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+}
+
+.hero-body {
+  padding: 24px 28px 28px;
+}
+
+.hero-rank {
+  font-family: var(--font-mono);
   font-size: 11px;
-  color: var(--text-body);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-subtle);
-  border-radius: 6px;
-  padding: 6px 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--stone-dim);
+  margin-bottom: 8px;
+}
+
+.hero-name {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 26px;
+  color: var(--paper);
   margin-bottom: 12px;
+  line-height: 1.2;
+}
+
+.hero-why {
+  font-size: 13.5px;
+  color: var(--stone);
+  line-height: 1.6;
+  border-left: 2px solid var(--brass);
+  padding-left: 14px;
+  margin-bottom: 18px;
+}
+
+.hero-price {
+  font-family: var(--font-mono);
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--brass-bright);
+}
+
+.rec-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.rec-row {
+  display: grid;
+  grid-template-columns: 26px 50px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  background: var(--ink-2);
+  padding: 12px 16px;
+  transition: background var(--dur-fast) var(--ease-out);
+}
+
+.rec-row:hover {
+  background: var(--ink-3);
+}
+
+.rec-row-n {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--stone-dim);
+}
+
+.rec-row-thumb {
+  width: 50px;
+  height: 62px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  background: var(--ink-3);
+  flex-shrink: 0;
+}
+
+.rec-row-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--paper);
+  margin-bottom: 2px;
+}
+
+.rec-row-reason {
+  font-size: 11.5px;
+  color: var(--stone-dim);
   line-height: 1.4;
 }
 
-.product-sku {
-  font-size: 10px;
-  color: var(--text-muted);
-  font-family: monospace;
+.rec-row-price {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--stone);
+  white-space: nowrap;
+}
+
+@media (max-width: 880px) {
+  .recs-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ── Handoff & Privacy Cards ──────────────────────────────────────────────── */
 .handoff-card {
-  background: rgba(20, 24, 34, 0.9);
-  border: 2px solid var(--gold-primary);
+  background: var(--ink-2);
+  border: 1.5px solid var(--brass);
   border-radius: var(--radius-xl);
   padding: 40px 56px;
   text-align: center;
-  backdrop-filter: blur(20px);
-  box-shadow: 0 0 60px rgba(212, 175, 55, 0.2);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
 }
 
 .handoff-code {
-  font-family: var(--font-display);
-  font-size: 56px;
-  font-weight: 800;
-  letter-spacing: 0.18em;
-  color: var(--gold-light);
+  font-family: var(--font-mono);
+  font-size: 52px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--brass-bright);
   margin: 16px 0;
-  text-shadow: 0 0 20px var(--gold-glow);
 }
 
 .privacy-box {
-  background: rgba(20, 24, 34, 0.8);
-  border: 1px solid var(--border-medium);
+  background: var(--ink-2);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius-lg);
   padding: 24px 32px;
   max-width: 640px;
-  backdrop-filter: blur(16px);
 }

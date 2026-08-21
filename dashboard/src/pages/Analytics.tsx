@@ -55,6 +55,22 @@ function fmtPct(n: number) {
   return (n >= 0 ? "+" : "") + n.toFixed(1) + "%";
 }
 
+const IconCheck = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="9" /><path d="M8 12.5l2.5 2.5L16 9.5" />
+  </svg>
+);
+const IconCross = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="9" /><path d="M9 9l6 6M15 9l-6 6" />
+  </svg>
+);
+const IconClock = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" />
+  </svg>
+);
+
 export default function Analytics() {
   const [summary, setSummary] = useState<Summary | null>(null);
   const [chartData, setChartData] = useState<ChartEntry[]>([]);
@@ -87,9 +103,9 @@ export default function Analytics() {
 
   // Pilot Verdict UI
   const verdictConfig = {
-    PASSING: { cls: "passing", icon: "✅", title: "Pilot is PASSING", desc: `Basket value lift and conversion rate are both above kill-threshold targets.` },
-    FAILING: { cls: "failing", icon: "❌", title: "Pilot is FAILING", desc: `One or more metrics are below kill-threshold. Review honestly before proceeding to Phase 2.` },
-    INSUFFICIENT_DATA: { cls: "insufficient", icon: "⏳", title: "Collecting Data", desc: `Need at least 20 sessions to evaluate against the kill threshold.` },
+    PASSING: { cls: "passing", icon: <IconCheck />, title: "Pilot is PASSING", desc: `Basket value lift and conversion rate are both above kill-threshold targets.` },
+    FAILING: { cls: "failing", icon: <IconCross />, title: "Pilot is FAILING", desc: `One or more metrics are below kill-threshold. Review honestly before proceeding to Phase 2.` },
+    INSUFFICIENT_DATA: { cls: "insufficient", icon: <IconClock />, title: "Collecting Data", desc: `Need at least 20 sessions to evaluate against the kill threshold.` },
   };
   const verdict = pilotVerdict ? verdictConfig[pilotVerdict] : null;
 
@@ -106,10 +122,10 @@ export default function Analytics() {
         label: "Avg Basket Value (₹)",
         data: chartData.map((d) => d.avgBasketValue),
         backgroundColor: chartData.map((d) =>
-          d.isKioskActive ? "rgba(245,158,11,0.7)" : "rgba(148,163,184,0.3)"
+          d.isKioskActive ? "rgba(185, 138, 70, 0.75)" : "rgba(180, 168, 149, 0.2)"
         ),
         borderColor: chartData.map((d) =>
-          d.isKioskActive ? "#f59e0b" : "#475569"
+          d.isKioskActive ? "#B98A46" : "#7C7365"
         ),
         borderWidth: 1.5,
         borderRadius: 4,
@@ -123,12 +139,12 @@ export default function Analytics() {
       {
         label: "Daily Revenue (₹)",
         data: chartData.map((d) => d.totalRevenue),
-        borderColor: "#10b981",
-        backgroundColor: "rgba(16,185,129,0.1)",
+        borderColor: "#6B7A54",
+        backgroundColor: "rgba(107, 122, 84, 0.18)",
         fill: true,
         tension: 0.4,
         pointRadius: 3,
-        pointBackgroundColor: "#10b981",
+        pointBackgroundColor: "#6B7A54",
       },
     ],
   };
@@ -138,8 +154,8 @@ export default function Analytics() {
     maintainAspectRatio: false,
     plugins: { legend: { display: false }, tooltip: { mode: "index" as const, intersect: false } },
     scales: {
-      x: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#94a3b8", font: { size: 11 } } },
-      y: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#94a3b8", font: { size: 11 } } },
+      x: { grid: { color: "rgba(245, 239, 226, 0.06)" }, ticks: { color: "#7C7365", font: { size: 11, family: "var(--font-mono)" } } },
+      y: { grid: { color: "rgba(245, 239, 226, 0.06)" }, ticks: { color: "#7C7365", font: { size: 11, family: "var(--font-mono)" } } },
     },
   };
 
@@ -225,8 +241,8 @@ export default function Analytics() {
           <div className="chart-card" id="chart-basket">
             <div className="card-title">Avg Basket Value by Day</div>
             <p style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 12 }}>
-              <span style={{ display: "inline-block", width: 10, height: 10, background: "#f59e0b", borderRadius: 2, marginRight: 4 }}></span>Kiosk active &nbsp;
-              <span style={{ display: "inline-block", width: 10, height: 10, background: "#475569", borderRadius: 2, marginRight: 4 }}></span>Baseline
+              <span style={{ display: "inline-block", width: 10, height: 10, background: "#B98A46", borderRadius: 2, marginRight: 4 }}></span>Kiosk active &nbsp;
+              <span style={{ display: "inline-block", width: 10, height: 10, background: "#7C7365", borderRadius: 2, marginRight: 4 }}></span>Baseline
             </p>
             <div style={{ height: 200 }}>
               <Bar data={basketChart} options={chartOptions} />
@@ -244,7 +260,6 @@ export default function Analytics() {
       {chartData.length === 0 && (
         <div className="card mb-xl">
           <div className="empty-state">
-            <div className="empty-state-icon">📊</div>
             <h3>No chart data yet</h3>
             <p>Log baseline sales data in the <strong>Baseline Log</strong> tab to see before/after charts here.</p>
           </div>

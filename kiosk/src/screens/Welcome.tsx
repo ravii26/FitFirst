@@ -1,35 +1,20 @@
-// Welcome / Attract Screen — Luxury Atelier Entrance
+// Welcome / Attract Screen — Editorial Atelier Entrance
 
 export default function Welcome({ onStart }: { onStart: () => void }) {
   return (
-    <div className="screen" id="screen-welcome" style={{ position: "relative", overflow: "hidden" }}>
-      {/* Brand Badge */}
-      <div style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: 8,
-        padding: "6px 16px",
-        borderRadius: 100,
-        background: "rgba(212, 175, 55, 0.1)",
-        border: "1px solid rgba(212, 175, 55, 0.3)",
-        fontSize: 12,
-        fontWeight: 600,
-        color: "var(--gold-warm)",
-        letterSpacing: "0.08em",
-        textTransform: "uppercase",
-        marginBottom: 32,
-      }}>
-        <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--gold-primary)" }} />
-        Personal In-Store Recommendation Engine
-      </div>
-
-      {/* Logo Mark */}
-      <div className="logo-mark" style={{ marginBottom: 28 }}>
-        <div className="logo-badge" style={{ width: 60, height: 60, fontSize: 30, borderRadius: 14 }}>F</div>
-        <div>
-          <div className="logo-name" style={{ fontSize: 32, fontFamily: "var(--font-serif)" }}>FitFirst</div>
-          <div className="logo-subtag">ATELIER COLLECTION</div>
-        </div>
+    <div className="screen" id="screen-welcome">
+      {/* Eyebrow */}
+      <div
+        style={{
+          fontFamily: "var(--font-mono)",
+          fontSize: 12,
+          letterSpacing: "0.16em",
+          textTransform: "uppercase",
+          color: "var(--brass)",
+          marginBottom: 28,
+        }}
+      >
+        In-Store Styling &middot; FitFirst
       </div>
 
       {/* Headline */}
@@ -37,8 +22,8 @@ export default function Welcome({ onStart }: { onStart: () => void }) {
         Curated for your <span className="highlight">fit & silhouette.</span>
       </h1>
 
-      <p className="subtitle" style={{ marginBottom: 48, fontSize: 18 }}>
-        Scan your preferences to discover garments from our live showroom floor precisely matched to your tone, size, and cut.
+      <p className="subtitle" style={{ marginBottom: 44, fontSize: 18 }}>
+        Answer a few questions. See what's actually on our floor today, chosen for your tone, size, and cut.
       </p>
 
       {/* CTA Button */}
@@ -51,28 +36,31 @@ export default function Welcome({ onStart }: { onStart: () => void }) {
         Discover My Collection &rarr;
       </button>
 
-      <p style={{ marginTop: 24, fontSize: 13, color: "var(--text-muted)", letterSpacing: "0.02em" }}>
-        60-Second Consultation &bull; On-Device Privacy Guaranteed &bull; Live In-Stock
+      <p style={{ marginTop: 24, fontSize: 13, color: "var(--stone-dim)", letterSpacing: "0.02em" }}>
+        60-second consultation &bull; on-device, nothing uploaded
       </p>
 
       {/* Footer info */}
-      <div style={{
-        position: "absolute",
-        bottom: 28,
-        fontSize: 11,
-        color: "var(--text-muted)",
-        display: "flex",
-        gap: 32,
-        letterSpacing: "0.06em",
-        alignItems: "center",
-      }}>
-        <span>🔒 Zero Photo Storage</span>
-        <span>✓ Store Inventory Sync</span>
+      <div
+        style={{
+          position: "absolute",
+          bottom: 28,
+          fontFamily: "var(--font-mono)",
+          fontSize: 11,
+          color: "var(--stone-dim)",
+          display: "flex",
+          gap: 28,
+          letterSpacing: "0.04em",
+          alignItems: "center",
+        }}
+      >
+        <span>No photos stored, ever</span>
+        <span>Live inventory sync</span>
         <a
           href="http://localhost:5173"
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: "var(--gold-warm)", textDecoration: "none", opacity: 0.9, fontWeight: 600 }}
+          style={{ color: "var(--brass-bright)", textDecoration: "none", fontWeight: 600 }}
         >
           &rarr; Staff Dashboard
         </a>

@@ -8,7 +8,7 @@ interface RecommendationItem {
   rank: number;
   score: number;
   productId: string;
-  product?: { name: string; sku: string; price: number };
+  product?: { name: string; sku: string; price: number; category?: string };
 }
 
 interface Session {
@@ -23,14 +23,50 @@ interface Session {
   purchaseEvents: { wasRecommended: boolean; amount: number; productId?: string }[];
 }
 
-// Derive the 6-char handoff code the same way StaffHandoff.tsx does
 function shortCode(sessionId: string): string {
   return sessionId.slice(-6).toUpperCase();
 }
 
-const genderBadge: Record<string, string> = {
-  MEN: "badge-blue", WOMEN: "badge-amber", KIDS: "badge-green", UNISEX: "badge-gray",
-};
+function formatTone(tone: string): string {
+  const map: Record<string, string> = {
+    FAIR: "Fair / Porcelain",
+    WHEATISH: "Wheatish / Golden",
+    MEDIUM: "Medium / Olive",
+    DEEP: "Deep / Ebony",
+  };
+  return map[tone] || tone.replace(/_/g, " ");
+}
+
+function formatShape(shape: string): string {
+  const map: Record<string, string> = {
+    RECTANGLE: "Athletic & Straight",
+    TRIANGLE: "Pear / A-Line",
+    INVERTED_T: "Broad Shoulder",
+    HOURGLASS: "Curvy & Defined",
+  };
+  return map[shape] || shape.replace(/_/g, " ");
+}
+
+function formatGender(gender?: string): string {
+  if (!gender) return "All Collections";
+  const map: Record<string, string> = {
+    MEN: "Men's Collection",
+    WOMEN: "Women's Collection",
+    KIDS: "Junior Collection",
+    UNISEX: "Unisex / Universal",
+  };
+  return map[gender] || gender;
+}
+
+function formatSessionDate(dateStr?: string): string {
+  if (!dateStr) return "—";
+  try {
+    const d = new Date(dateStr);
+    return format(d, "dd MMM yyyy") + " · " + format(d, "HH:mm");
+  } catch {
+    return dateStr;
+  }
+}
 
 // ── Log Purchase Modal ───────────────────────────────────────────────────────
 
@@ -82,7 +118,6 @@ function LogPurchaseModal({
     }
   };
 
-  // When product selection changes, auto-fill price from recommendations
   const handleProductChange = (pid: string) => {
     setSelectedProductId(pid);
     const match = session.recommendations.find((r) => r.productId === pid);
@@ -92,43 +127,57 @@ function LogPurchaseModal({
   return (
     <div
       style={{
-        position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)",
-        backdropFilter: "blur(6px)", display: "flex", alignItems: "center",
+        position: "fixed", inset: 0, background: "rgba(10,9,8,0.82)",
+        backdropFilter: "blur(8px)", display: "flex", alignItems: "center",
         justifyContent: "center", zIndex: 1000, padding: 20,
       }}
     >
       <div
         className="card"
         style={{
-          width: "100%", maxWidth: 480, background: "var(--bg-card)",
-          border: "1px solid var(--border-accent)",
+          width: "100%", maxWidth: 480, background: "var(--atelier-surface)",
+          border: "1px solid var(--atelier-brass-line)",
+          padding: 28,
         }}
       >
-        <h3 style={{ fontSize: 18, fontFamily: "var(--font-display)", marginBottom: 4, color: "var(--text-primary)" }}>
-          Log Purchase — #{shortCode(session.id)}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--atelier-brass)", letterSpacing: "0.12em", textTransform: "uppercase" }}>
+            Attribution Register
+          </span>
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: 13, color: "var(--atelier-text-muted)" }}>
+            #{shortCode(session.id)}
+          </span>
+        </div>
+        <h3 style={{ fontSize: 20, fontFamily: "var(--font-serif)", marginBottom: 6, color: "var(--atelier-text-title)" }}>
+          Log Customer Purchase
         </h3>
-        <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 20 }}>
-          Record which item the customer actually purchased. This updates the pilot analytics.
+        <p style={{ fontSize: 13, color: "var(--atelier-text-muted)", marginBottom: 24 }}>
+          Record the exact piece the customer selected to attribute sales to this styling session.
         </p>
 
         {success ? (
-          <div className="alert alert-success">✓ Purchase logged successfully!</div>
+          <div className="alert alert-success" style={{ background: "var(--atelier-sage-ghost)", color: "var(--atelier-sage)", border: "1px solid var(--atelier-sage)" }}>
+            ✓ Sale logged successfully to pilot register!
+          </div>
         ) : (
           <form onSubmit={handleSave}>
             <div className="form-group" style={{ marginBottom: 16 }}>
-              <label htmlFor="purchase-product">Item Purchased</label>
+              <label htmlFor="purchase-product" style={{ color: "var(--atelier-text-title)", fontSize: 12 }}>
+                Selected Garment
+              </label>
               {session.recommendations.length > 0 ? (
                 <select
                   id="purchase-product"
                   value={selectedProductId}
                   onChange={(e) => handleProductChange(e.target.value)}
+                  style={{ background: "var(--atelier-surface-sub)", color: "var(--atelier-text-title)", border: "1px solid var(--atelier-hairline)" }}
                 >
                   {session.recommendations.map((r) => (
                     <option key={r.productId} value={r.productId}>
-                      #{r.rank} — {r.product?.name ?? r.productId.slice(0, 12) + "…"} {r.product?.sku ? `(${r.product.sku})` : ""}
+                      Pick #{r.rank} &mdash; {r.product?.name ?? r.productId.slice(0, 12) + "…"} {r.product?.sku ? `(${r.product.sku})` : ""}
                     </option>
                   ))}
-                  <option value="__other__">Other item (not from recommendations)</option>
+                  <option value="__other__">Other In-Store Item (Unlisted)</option>
                 </select>
               ) : (
                 <input
@@ -140,8 +189,10 @@ function LogPurchaseModal({
               )}
             </div>
 
-            <div className="form-group" style={{ marginBottom: 16 }}>
-              <label htmlFor="purchase-amount">Sale Amount (₹)</label>
+            <div className="form-group" style={{ marginBottom: 20 }}>
+              <label htmlFor="purchase-amount" style={{ color: "var(--atelier-text-title)", fontSize: 12 }}>
+                Transaction Amount (₹ INR)
+              </label>
               <input
                 id="purchase-amount"
                 type="number"
@@ -150,6 +201,7 @@ function LogPurchaseModal({
                 placeholder="e.g. 2499"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
+                style={{ background: "var(--atelier-surface-sub)", color: "var(--atelier-text-title)", border: "1px solid var(--atelier-hairline)", fontFamily: "var(--font-mono)", fontSize: 16 }}
               />
             </div>
 
@@ -165,7 +217,7 @@ function LogPurchaseModal({
                 className="btn btn-primary"
                 disabled={saving || !selectedProductId || !amount}
               >
-                {saving ? "Saving…" : "Log Purchase"}
+                {saving ? "Recording…" : "Complete Attribution"}
               </button>
             </div>
           </form>
@@ -180,22 +232,38 @@ function LogPurchaseModal({
 export default function Sessions() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);
-  const [expanded, setExpanded] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [filterMode, setFilterMode] = useState<"ALL" | "PURCHASED" | "PENDING">("ALL");
   const [logTarget, setLogTarget] = useState<Session | null>(null);
 
   const loadSessions = () => {
     setLoading(true);
     apiFetch(`${API}/sessions`)
       .then((r) => r.json())
-      .then((data) => { setSessions(data); setLoading(false); })
-      .catch(() => setLoading(false));
+      .then((data) => {
+        setSessions(Array.isArray(data) ? data : []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setSessions([]);
+        setLoading(false);
+      });
   };
 
   useEffect(() => { loadSessions(); }, []);
 
-  // Filter by search — matches handoff code (last 6 chars) or partial session ID
-  const filtered = sessions.filter((s) => {
+  const safeSessions = Array.isArray(sessions) ? sessions : [];
+  const purchasedCount = safeSessions.filter((s) => (s.purchaseEvents || []).length > 0).length;
+  const pendingCount = safeSessions.length - purchasedCount;
+
+  // Filter pipeline
+  const filtered = safeSessions.filter((s) => {
+    const events = s.purchaseEvents || [];
+    const hasPurchase = events.length > 0;
+    if (filterMode === "PURCHASED" && !hasPurchase) return false;
+    if (filterMode === "PENDING" && hasPurchase) return false;
+
+    // Search query filter
     if (!search.trim()) return true;
     const q = search.trim().toUpperCase();
     return shortCode(s.id).includes(q) || s.id.toUpperCase().includes(q);
@@ -205,207 +273,209 @@ export default function Sessions() {
 
   return (
     <div className="fade-in">
+      {/* Editorial Header */}
       <div className="page-header">
-        <h1 className="page-title">Session Log</h1>
+        <h1 className="page-title">Stylist Client Dossiers</h1>
         <p className="page-subtitle">
-          {sessions.length} kiosk sessions · Find a session by the 6-char handoff code to log purchases
+          {safeSessions.length} recorded consultations &middot; Look up 6-character handoff code from kiosk tablet
         </p>
       </div>
 
-      {/* ── Search by Handoff Code ── */}
-      <div className="card mb-xl" style={{ padding: "16px 20px" }}>
-        <div style={{ display: "flex", gap: 12, alignItems: "flex-end" }}>
-          <div className="form-group" style={{ flex: 1, marginBottom: 0 }}>
-            <label htmlFor="session-code-search" style={{ marginBottom: 6 }}>
-              Find Session by Handoff Code
-            </label>
-            <input
-              id="session-code-search"
-              type="text"
-              placeholder="Enter 6-char code (e.g. AB12CD) or partial session ID…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value.toUpperCase())}
-              style={{ fontFamily: "var(--font-mono, monospace)", letterSpacing: "0.06em" }}
-            />
-          </div>
-          {search && (
-            <button
-              className="btn btn-secondary"
-              style={{ marginBottom: 0 }}
-              onClick={() => setSearch("")}
-            >
-              Clear
-            </button>
-          )}
+      {/* ── Atelier Filter & Lookup Toolbar ── */}
+      <div className="atelier-toolbar">
+        <div className="atelier-search-wrap">
+          <span className="atelier-search-icon">🔍</span>
+          <input
+            id="session-code-search"
+            className="atelier-search-input"
+            type="text"
+            placeholder="Search by 6-char Handoff Code (e.g. AB12CD)…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value.toUpperCase())}
+          />
         </div>
-        {search && filtered.length === 0 && (
-          <p style={{ fontSize: 13, color: "var(--danger)", marginTop: 10 }}>
-            No session found for code "{search}". Check the code on the kiosk handoff screen.
-          </p>
-        )}
-        {search && filtered.length > 0 && (
-          <p style={{ fontSize: 12, color: "var(--success)", marginTop: 10 }}>
-            ✓ {filtered.length} session{filtered.length > 1 ? "s" : ""} found
-          </p>
-        )}
+
+        <div className="filter-chip-group">
+          <button
+            className={`filter-chip ${filterMode === "ALL" ? "active" : ""}`}
+            onClick={() => setFilterMode("ALL")}
+          >
+            All Sessions ({safeSessions.length})
+          </button>
+          <button
+            className={`filter-chip ${filterMode === "PURCHASED" ? "active" : ""}`}
+            onClick={() => setFilterMode("PURCHASED")}
+          >
+            Purchased ({purchasedCount})
+          </button>
+          <button
+            className={`filter-chip ${filterMode === "PENDING" ? "active" : ""}`}
+            onClick={() => setFilterMode("PENDING")}
+          >
+            Pending Action ({pendingCount})
+          </button>
+        </div>
       </div>
 
-      {sessions.length === 0 ? (
-        <div className="card">
-          <div className="empty-state">
-            <div className="empty-state-icon">🧍</div>
-            <h3>No sessions yet</h3>
-            <p>Sessions will appear here once customers use the kiosk.</p>
-          </div>
+      {/* ── Dossier List ── */}
+      {safeSessions.length === 0 ? (
+        <div className="card" style={{ textAlign: "center", padding: "64px 20px" }}>
+          <div style={{ fontSize: 32, marginBottom: 12 }}>✨</div>
+          <h3 style={{ fontFamily: "var(--font-serif)", fontSize: 20, color: "var(--atelier-text-title)", marginBottom: 6 }}>
+            No Consultations Recorded Yet
+          </h3>
+          <p style={{ color: "var(--atelier-text-muted)", fontSize: 13, maxWidth: 400, margin: "0 auto" }}>
+            When a shopper interacts with the in-store kiosk tablet, their personal styling dossier will appear here automatically.
+          </p>
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="card" style={{ textAlign: "center", padding: "48px 20px" }}>
+          <p style={{ color: "var(--atelier-text-muted)", fontSize: 14 }}>
+            No sessions match your search &ldquo;<strong>{search}</strong>&rdquo; or current filter.
+          </p>
+          <button
+            className="btn btn-secondary btn-sm"
+            style={{ marginTop: 16 }}
+            onClick={() => { setSearch(""); setFilterMode("ALL"); }}
+          >
+            Reset Filters
+          </button>
         </div>
       ) : (
-        <div className="table-wrap">
-          <table id="sessions-table">
-            <thead>
-              <tr>
-                <th>Code</th>
-                <th>Time</th>
-                <th>Gender</th>
-                <th>Size</th>
-                <th>Skin Tone</th>
-                <th>Body Shape</th>
-                <th>Preferences</th>
-                <th>Recs</th>
-                <th>Purchased</th>
-                <th>Revenue</th>
-                <th>Outcome</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((s) => {
-                const totalRevenue = s.purchaseEvents.reduce((sum, e) => sum + e.amount, 0);
-                const recPurchases = s.purchaseEvents.filter((e) => e.wasRecommended);
-                const hasPurchase = s.purchaseEvents.length > 0;
-                const hasRecPurchase = recPurchases.length > 0;
+        <div className="dossier-list">
+          {filtered.map((s) => {
+            const purchaseEvents = s.purchaseEvents || [];
+            const totalRevenue = purchaseEvents.reduce((sum, e) => sum + (e.amount || 0), 0);
+            const recPurchases = purchaseEvents.filter((e) => e.wasRecommended);
+            const hasPurchase = purchaseEvents.length > 0;
+            const hasRecPurchase = recPurchases.length > 0;
+            const recommendations = s.recommendations || [];
 
-                return (
-                  <React.Fragment key={s.id}>
-                    <tr
-                      id={`session-${s.id}`}
-                      style={{ cursor: "pointer" }}
-                      onClick={() => setExpanded(expanded === s.id ? null : s.id)}
-                    >
-                      {/* Handoff Code — what staff actually use */}
-                      <td>
-                        <span
-                          className="monospace"
-                          style={{
-                            fontSize: 14,
-                            fontWeight: 700,
-                            color: "var(--accent)",
-                            letterSpacing: "0.08em",
-                            background: "var(--accent-dim)",
-                            padding: "2px 8px",
-                            borderRadius: 6,
-                          }}
-                        >
-                          {shortCode(s.id)}
-                        </span>
-                      </td>
-                      <td style={{ fontSize: 12, color: "var(--text-muted)" }}>
-                        {format(new Date(s.createdAt), "dd MMM, HH:mm")}
-                      </td>
-                      <td><span className={`badge ${genderBadge[s.gender] ?? "badge-gray"}`}>{s.gender}</span></td>
-                      <td>{s.sizeInput}</td>
-                      <td style={{ fontSize: 12 }}>{s.skinToneBucket.replace(/_/g, " ")}</td>
-                      <td style={{ fontSize: 12 }}>{s.bodyShapeBucket.replace(/_/g, " ")}</td>
-                      <td style={{ fontSize: 11 }}>
-                        {s.preferenceTags.length > 0
-                          ? s.preferenceTags.slice(0, 2).join(", ") + (s.preferenceTags.length > 2 ? ` +${s.preferenceTags.length - 2}` : "")
-                          : <span className="text-muted">—</span>
-                        }
-                      </td>
-                      <td>{s.recommendations.length}</td>
-                      <td>{s.purchaseEvents.length}</td>
-                      <td>{totalRevenue > 0 ? `₹${totalRevenue.toLocaleString("en-IN")}` : <span className="text-muted">—</span>}</td>
-                      <td>
-                        {hasRecPurchase ? (
-                          <span className="badge badge-green">✓ Rec'd</span>
-                        ) : hasPurchase ? (
-                          <span className="badge badge-blue">Purchased</span>
-                        ) : (
-                          <span className="badge badge-gray">No sale</span>
-                        )}
-                      </td>
-                      {/* Log Purchase button — stops row click propagation */}
-                      <td onClick={(e) => e.stopPropagation()}>
-                        <button
-                          id={`log-purchase-${s.id}`}
-                          className="btn btn-primary btn-sm"
-                          onClick={() => setLogTarget(s)}
-                          style={{ whiteSpace: "nowrap" }}
-                        >
-                          + Log Sale
-                        </button>
-                      </td>
-                    </tr>
+            return (
+              <div
+                key={s.id}
+                id={`session-${s.id}`}
+                className={`dossier-card ${hasPurchase ? "has-purchase" : "pending"}`}
+              >
+                {/* Dossier Top Bar */}
+                <div className="dossier-topbar">
+                  <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                    <div className="dossier-code-badge">
+                      <span style={{ color: "var(--atelier-brass)" }}>#</span>
+                      <span>{shortCode(s.id)}</span>
+                    </div>
+                    <span className="dossier-time">
+                      {formatSessionDate(s.createdAt)}
+                    </span>
+                  </div>
 
-                    {/* Expanded Detail Row */}
-                    {expanded === s.id && (
-                      <tr id={`session-expanded-${s.id}`} style={{ background: "rgba(255,255,255,0.02)" }}>
-                        <td colSpan={12} style={{ padding: "16px 24px" }}>
-                          <div style={{ fontSize: 13, fontWeight: 600, color: "var(--accent)", marginBottom: 8 }}>
-                            Recommendations shown ({s.recommendations.length} items) · Session {shortCode(s.id)}
-                          </div>
-                          {s.recommendations.length > 0 ? (
-                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 12 }}>
-                              {s.recommendations.map((r) => {
-                                const wasBought = s.purchaseEvents.some((e) => e.productId === r.productId);
-                                return (
-                                  <div
-                                    key={r.productId}
-                                    style={{
-                                      padding: "10px 14px",
-                                      background: wasBought ? "rgba(16,185,129,0.08)" : "rgba(255,255,255,0.04)",
-                                      borderRadius: 8,
-                                      border: wasBought ? "1px solid rgba(16,185,129,0.3)" : "1px solid var(--border)",
-                                    }}
-                                  >
-                                    <div style={{ fontSize: 11, color: "var(--accent)", fontWeight: 700 }}>
-                                      RANK #{r.rank} · {(r.score * 100).toFixed(0)}% match
-                                      {wasBought && <span style={{ color: "var(--success)", marginLeft: 8 }}>✓ Purchased</span>}
-                                    </div>
-                                    <div style={{ fontSize: 13, fontWeight: 600, marginTop: 4, color: "#fff" }}>
-                                      {r.product?.name ?? "Unknown Product"}
-                                    </div>
-                                    {r.product?.sku && (
-                                      <div className="monospace" style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>
-                                        SKU: {r.product.sku}
-                                      </div>
-                                    )}
-                                    {r.product?.price && (
-                                      <div style={{ fontSize: 12, color: "var(--accent)", marginTop: 4, fontWeight: 600 }}>
-                                        ₹{r.product.price.toLocaleString("en-IN")}
-                                      </div>
-                                    )}
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          ) : (
-                            <span style={{ fontSize: 12, color: "var(--text-muted)" }}>No recommendations recorded for this session.</span>
-                          )}
-                        </td>
-                      </tr>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    {hasRecPurchase ? (
+                      <span className="outcome-tag success">
+                        ✓ Rec'd Piece Purchased (₹{totalRevenue.toLocaleString("en-IN")})
+                      </span>
+                    ) : hasPurchase ? (
+                      <span className="outcome-tag success">
+                        ✓ In-Store Purchase (₹{totalRevenue.toLocaleString("en-IN")})
+                      </span>
+                    ) : (
+                      <span className="outcome-tag pending">
+                        Pending Stylist Review
+                      </span>
                     )}
-                  </React.Fragment>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
 
-      {filtered.length > 0 && (
-        <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 12, textAlign: "center" }}>
-          Click any row to see recommendations · Use "+ Log Sale" to record a purchase
-        </p>
+                    <button
+                      id={`log-purchase-${s.id}`}
+                      className="btn btn-primary btn-sm"
+                      onClick={() => setLogTarget(s)}
+                    >
+                      {hasPurchase ? "Update Sale" : "+ Log Purchase"}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Client Fitting Profile */}
+                <div className="client-profile-grid">
+                  <div className="profile-spec-item">
+                    <span className="profile-spec-label">Dept:</span>
+                    <span>{formatGender(s.gender)}</span>
+                  </div>
+                  <div className="profile-spec-item">
+                    <span className="profile-spec-label">Size:</span>
+                    <strong style={{ color: "var(--atelier-brass-light)", fontFamily: "var(--font-mono)" }}>
+                      {s.sizeInput || "Standard"}
+                    </strong>
+                  </div>
+                  <div className="profile-spec-item">
+                    <span className="profile-spec-label">Tone:</span>
+                    <span>{formatTone(s.skinToneBucket)}</span>
+                  </div>
+                  <div className="profile-spec-item">
+                    <span className="profile-spec-label">Silhouette:</span>
+                    <span>{formatShape(s.bodyShapeBucket)}</span>
+                  </div>
+                  {s.preferenceTags.length > 0 && (
+                    <div className="profile-spec-item">
+                      <span className="profile-spec-label">Aesthetic:</span>
+                      <span style={{ color: "var(--atelier-text-body)" }}>
+                        {s.preferenceTags.map((t) => t.replace(/_/g, " ")).join(", ")}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Showroom Recommendations Ribbon */}
+                <div>
+                  <div style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: "var(--atelier-text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 6 }}>
+                    Curated Floor Pieces ({recommendations.length} items)
+                  </div>
+
+                  {recommendations.length > 0 ? (
+                    <div className="recs-strip">
+                      {recommendations.map((r) => {
+                        const wasBought = purchaseEvents.some((e) => e.productId === r.productId);
+                        const matchPct = Math.round(r.score * 100);
+
+                        return (
+                          <div
+                            key={r.productId}
+                            className={`rec-item-card ${wasBought ? "is-purchased" : ""}`}
+                          >
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                              <span className="rec-item-match">
+                                #{r.rank} &middot; {matchPct}%
+                              </span>
+                              {wasBought && (
+                                <span style={{ fontSize: 10, fontWeight: 700, color: "var(--atelier-sage)", fontFamily: "var(--font-mono)" }}>
+                                  ✓ PURCHASED
+                                </span>
+                              )}
+                            </div>
+                            <div className="rec-item-title">
+                              {r.product?.name ?? "Showroom Piece"}
+                            </div>
+                            {r.product?.sku && (
+                              <div style={{ fontSize: 10.5, color: "var(--atelier-text-muted)", fontFamily: "var(--font-mono)" }}>
+                                SKU: {r.product.sku}
+                              </div>
+                            )}
+                            <div className="rec-item-price">
+                              ₹{(r.product?.price ?? 0).toLocaleString("en-IN")}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div style={{ fontSize: 12, color: "var(--atelier-text-muted)", fontStyle: "italic", padding: "8px 0" }}>
+                      No exact matches found on floor for this size/style combination.
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       )}
 
       {/* Log Purchase Modal */}

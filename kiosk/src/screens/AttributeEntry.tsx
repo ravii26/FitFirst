@@ -77,6 +77,20 @@ export default function AttributeEntry({
 
   return (
     <div className="screen screen-scrollable" id="screen-attributes" style={{ paddingTop: 84, paddingBottom: 80 }}>
+      <div
+        style={{
+          fontFamily: "var(--font-mono)",
+          fontSize: 12,
+          letterSpacing: "0.16em",
+          textTransform: "uppercase",
+          color: "var(--brass)",
+          marginBottom: 16,
+          textAlign: "center",
+        }}
+      >
+        04 &middot; Fit Profile
+      </div>
+
       <div style={{ textAlign: "center", marginBottom: 20 }}>
         {onStartCamera && (
           <button
@@ -87,10 +101,9 @@ export default function AttributeEntry({
               fontSize: 14,
               padding: "0 28px",
               minHeight: 44,
-              background: "linear-gradient(135deg, #D4AF37 0%, #AA820A 100%)",
             }}
           >
-            ⚡ Use Fast On-Device Camera Scan
+            Use Fast On-Device Camera Scan
           </button>
         )}
         <h2 className="h2" style={{ marginBottom: 6 }}>Personal Tone & Cut Profile</h2>
@@ -102,7 +115,7 @@ export default function AttributeEntry({
       {/* Skin Tone */}
       <div style={{ width: "100%", maxWidth: 760, marginBottom: 36 }}>
         <div style={{
-          fontSize: 12, fontWeight: 700, color: "var(--gold-warm)",
+          fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--brass)",
           textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 16, textAlign: "center"
         }}>
           1. Select Complexion Tone
@@ -124,8 +137,8 @@ export default function AttributeEntry({
                     height: 44,
                     borderRadius: "50%",
                     background: t.color,
-                    border: isSelected ? "3px solid var(--gold-primary)" : "2px solid rgba(255,255,255,0.15)",
-                    boxShadow: isSelected ? "0 0 16px var(--gold-glow)" : "0 4px 12px rgba(0,0,0,0.3)",
+                    border: isSelected ? "3px solid var(--brass)" : "2px solid var(--line-strong)",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
                     marginBottom: 12,
                     transition: "all 0.2s ease",
                   }}
@@ -141,7 +154,7 @@ export default function AttributeEntry({
       {/* Body Shape */}
       <div style={{ width: "100%", maxWidth: 760, marginBottom: 36 }}>
         <div style={{
-          fontSize: 12, fontWeight: 700, color: "var(--gold-warm)",
+          fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--brass)",
           textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 16, textAlign: "center"
         }}>
           2. Select Body Silhouette

@@ -66,13 +66,26 @@ export default function StylePreferences({
 
   return (
     <div className="screen" id="screen-prefs">
+      <div
+        style={{
+          fontFamily: "var(--font-mono)",
+          fontSize: 12,
+          letterSpacing: "0.16em",
+          textTransform: "uppercase",
+          color: "var(--brass)",
+          marginBottom: 16,
+        }}
+      >
+        03 &middot; Aesthetics
+      </div>
+
       <h2 className="h2" style={{ marginBottom: 12 }}>Select Desired Styles & Patterns</h2>
       <p className="subtitle" style={{ marginBottom: 12 }}>
-        Tap any preferences that match your occasion or taste. <span style={{ color: "var(--text-muted)" }}>(Optional)</span>
+        Tap any preferences that match your occasion or taste. <span style={{ color: "var(--stone-dim)" }}>(Optional)</span>
       </p>
 
       {selected.length > 0 ? (
-        <p style={{ fontSize: 13, color: "var(--gold-warm)", marginBottom: 28, fontWeight: 600 }}>
+        <p style={{ fontSize: 13, color: "var(--brass-bright)", marginBottom: 28, fontWeight: 600 }}>
           {selected.length} preference{selected.length > 1 ? "s" : ""} selected
         </p>
       ) : (
@@ -93,7 +106,7 @@ export default function StylePreferences({
                 width: 8,
                 height: 8,
                 borderRadius: "50%",
-                background: isSelected ? "var(--gold-primary)" : "rgba(255,255,255,0.2)",
+                background: isSelected ? "var(--brass)" : "var(--line-strong)",
                 transition: "all 0.2s ease",
               }} />
               {p.label}

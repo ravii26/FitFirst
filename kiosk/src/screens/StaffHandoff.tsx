@@ -35,16 +35,16 @@ export default function StaffHandoff({
           gap: 6,
           padding: "6px 16px",
           borderRadius: 100,
-          background: "var(--success-dim)",
-          border: "1px solid rgba(46, 229, 157, 0.3)",
+          background: "var(--moss-dim)",
+          border: "1px solid rgba(107, 122, 84, 0.4)",
+          fontFamily: "var(--font-mono)",
           fontSize: 12,
-          color: "var(--success)",
-          fontWeight: 700,
+          color: "#9BAD84",
           letterSpacing: "0.08em",
           textTransform: "uppercase",
           marginBottom: 16,
         }}>
-          ✓ Session Generated & Logged
+          Session Generated & Logged
         </div>
         <h2 className="h2" style={{ marginBottom: 12 }}>Your Stylist Handoff Code</h2>
         <p className="subtitle">
@@ -54,14 +54,14 @@ export default function StaffHandoff({
 
       {/* Code Card */}
       <div className="handoff-card" id="handoff-code-card">
-        <p style={{ fontSize: 12, color: "var(--gold-warm)", letterSpacing: "0.12em", fontWeight: 700 }}>
+        <p style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--brass)", letterSpacing: "0.12em" }}>
           HANDOFF CODE
         </p>
         <div className="handoff-code" id="handoff-code-value">
           {shortCode(sessionId)}
         </div>
-        <p style={{ fontSize: 13, color: "var(--text-muted)" }}>
-          Store Stylists: Enter code in <strong>FitFirst Dashboard &rarr; Sessions</strong>
+        <p style={{ fontSize: 13, color: "var(--stone-dim)" }}>
+          Store Stylists: Enter code in <strong style={{ color: "var(--stone)" }}>FitFirst Dashboard &rarr; Sessions</strong>
         </p>
       </div>
 
@@ -75,13 +75,13 @@ export default function StaffHandoff({
         </button>
       </div>
 
-      <p style={{ marginTop: 28, fontSize: 13, color: "var(--text-muted)" }}>
+      <p style={{ marginTop: 28, fontSize: 13, color: "var(--stone-dim)" }}>
         Session auto-resets in {remaining}s
       </p>
 
       {/* Countdown bar */}
-      <div className="reset-timer-bar" style={{ position: "fixed", bottom: 0, left: 0, right: 0, height: 4, background: "rgba(255,255,255,0.06)" }}>
-        <div className="reset-timer-fill" style={{ height: "100%", background: "var(--gold-primary)", width: `${pct}%`, transition: "width 1s linear" }} />
+      <div className="reset-timer-bar" style={{ position: "fixed", bottom: 0, left: 0, right: 0, height: 4, background: "var(--line)" }}>
+        <div className="reset-timer-fill" style={{ height: "100%", background: "var(--brass)", width: `${pct}%`, transition: "width 1s linear" }} />
       </div>
     </div>
   );

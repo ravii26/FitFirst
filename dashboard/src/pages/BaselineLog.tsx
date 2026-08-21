@@ -89,12 +89,11 @@ export default function BaselineLog() {
       </div>
 
       {/* Instructions */}
-      <div className="card mb-xl" style={{ borderColor: "rgba(59,130,246,0.3)", background: "rgba(59,130,246,0.05)" }}>
+      <div className="card mb-xl" style={{ borderColor: "var(--brass-border)", background: "var(--brass-dim)" }}>
         <div className="flex-center gap-sm" style={{ marginBottom: 8 }}>
-          <span style={{ fontSize: 20 }}>📋</span>
-          <strong style={{ color: "var(--info)" }}>How to use this log</strong>
+          <strong style={{ color: "var(--brass-bright)", fontFamily: "var(--font-mono)", fontSize: 13, textTransform: "uppercase", letterSpacing: "0.06em" }}>How to use this log</strong>
         </div>
-        <ul style={{ color: "var(--text-secondary)", fontSize: 13, paddingLeft: 20, lineHeight: 2 }}>
+        <ul style={{ color: "var(--stone)", fontSize: 13, paddingLeft: 20, lineHeight: 2 }}>
           <li>Log <strong>every day</strong> — both pre-kiosk baseline days and kiosk-active days.</li>
           <li>For baseline days (before kiosk launches), leave <em>Kiosk Active</em> unchecked.</li>
           <li>Once the kiosk is live, check <em>Kiosk Active</em> for each day.</li>
@@ -217,10 +216,9 @@ export default function BaselineLog() {
       </div>
 
       {/* Kill Threshold reminder */}
-      <div className="card" style={{ marginTop: 24, borderColor: "rgba(245,158,11,0.2)" }}>
+      <div className="card" style={{ marginTop: 24, borderColor: "rgba(196, 130, 60, 0.35)", background: "var(--warning-dim)" }}>
         <div className="flex-center gap-sm" style={{ marginBottom: 8 }}>
-          <span>⚠️</span>
-          <strong style={{ color: "var(--accent)", fontSize: 14 }}>Kill Threshold — Set Before Pilot Starts</strong>
+          <strong style={{ color: "var(--warning)", fontFamily: "var(--font-mono)", fontSize: 12, textTransform: "uppercase", letterSpacing: "0.06em" }}>Kill Threshold — Set Before Pilot Starts</strong>
         </div>
         <p style={{ color: "var(--text-secondary)", fontSize: 13, lineHeight: 1.7 }}>
           The current kill threshold (15% basket lift, 30% conversion rate, 40% usage rate) was pre-seeded.

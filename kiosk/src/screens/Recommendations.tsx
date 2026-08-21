@@ -1,4 +1,4 @@
-// Recommendations Screen — Luxury E-Commerce Presentation
+// Recommendations Screen — Hero Pick + Ranked List
 
 import { useEffect, useState } from "react";
 import type { KioskSession } from "../App";
@@ -21,6 +21,8 @@ const CATEGORY_IMAGES: Record<string, string> = {
   KIDS_SHIRT: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&auto=format&fit=crop&q=80",
 };
 
+const LOADING_STAGES = ["Reading your profile", "Matching store inventory", "Ranking by fit"];
+
 interface RecommendedProduct {
   rank: number;
   score: number;
@@ -37,6 +39,10 @@ interface RecommendedProduct {
   };
 }
 
+function imageFor(rec: RecommendedProduct) {
+  return rec.product.imageUrl || CATEGORY_IMAGES[rec.product.category] || CATEGORY_IMAGES.KURTA;
+}
+
 export default function Recommendations({
   session,
   onSessionCreated,
@@ -51,6 +57,15 @@ export default function Recommendations({
   const [recs, setRecs] = useState<RecommendedProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [loadingStage, setLoadingStage] = useState(0);
+
+  useEffect(() => {
+    if (!loading) return;
+    const interval = setInterval(() => {
+      setLoadingStage((s) => (s + 1) % LOADING_STAGES.length);
+    }, 750);
+    return () => clearInterval(interval);
+  }, [loading]);
 
   useEffect(() => {
     let sessionId = session.sessionId;
@@ -89,20 +104,24 @@ export default function Recommendations({
     run();
   }, []);
 
-
   if (loading) {
     return (
       <div className="screen" id="screen-recommendations">
         <div style={{ textAlign: "center" }}>
-          <div style={{
-            width: 56, height: 56,
-            border: "3px solid var(--border-medium)",
-            borderTopColor: "var(--gold-primary)",
-            borderRadius: "50%",
-            animation: "spin 0.8s linear infinite",
-            margin: "0 auto 24px",
-          }} />
-          <h2 className="h2" style={{ marginBottom: 12 }}>Scoring Store Inventory…</h2>
+          <div
+            style={{
+              width: 56,
+              height: 56,
+              border: "3px solid var(--line-strong)",
+              borderTopColor: "var(--brass)",
+              borderRadius: "50%",
+              animation: "spin 0.8s linear infinite",
+              margin: "0 auto 24px",
+            }}
+          />
+          <h2 className="h2" style={{ marginBottom: 12 }}>
+            {LOADING_STAGES[loadingStage]}&hellip;
+          </h2>
           <p className="subtitle">Matching color tones, fit cuts, and live availability.</p>
         </div>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
@@ -126,12 +145,11 @@ export default function Recommendations({
     return (
       <div className="screen" id="screen-recommendations">
         <div style={{ textAlign: "center", maxWidth: 480 }}>
-          <div style={{ fontSize: 56, marginBottom: 20 }}>🔍</div>
           <h2 className="h2" style={{ marginBottom: 12 }}>No Exact Matches Right Now</h2>
           <p className="subtitle" style={{ marginBottom: 8 }}>
             We don't currently have items in your size and style in stock — but our stylist can help.
           </p>
-          <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 32, lineHeight: 1.7 }}>
+          <p style={{ fontSize: 13, color: "var(--stone-dim)", marginBottom: 32, lineHeight: 1.7 }}>
             Try adjusting your size or style preferences, or speak with a store stylist who can show you available options.
           </p>
           <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
@@ -139,7 +157,7 @@ export default function Recommendations({
               Try Different Preferences
             </button>
             <button className="btn-kiosk btn-ghost" onClick={onDone}>
-              Speak with a Stylist →
+              Speak with a Stylist &rarr;
             </button>
           </div>
         </div>
@@ -147,99 +165,67 @@ export default function Recommendations({
     );
   }
 
+  const [topPick, ...rest] = recs;
+  const topMatch = Math.round(topPick.score * 100);
+
   return (
     <div
       className="screen screen-scrollable"
       id="screen-recommendations"
-      style={{ paddingTop: 76, paddingBottom: 40, justifyContent: "flex-start" }}
+      style={{ paddingTop: 76, paddingBottom: 40, justifyContent: "flex-start", alignItems: "center" }}
     >
-      <div style={{ textAlign: "center", marginBottom: 24, marginTop: 4 }}>
-        <div style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: 6,
-          padding: "4px 14px",
-          borderRadius: 100,
-          background: "var(--gold-dim)",
-          border: "1px solid var(--gold-border)",
-          fontSize: 11,
-          color: "var(--gold-warm)",
-          fontWeight: 700,
-          letterSpacing: "0.08em",
-          textTransform: "uppercase",
-          marginBottom: 10,
-        }}>
-          ✨ {recs.length} Precision Matches Found
+      <div className="recs-header">
+        <div>
+          <div className="recs-eyebrow">Your Matches</div>
+          <div className="recs-title">Chosen from today's floor</div>
         </div>
-        <h2 className="h2" style={{ marginBottom: 6 }}>Your Curated Showroom Recommendations</h2>
-        <p className="subtitle" style={{ fontSize: 15 }}>
-          All items are in stock in size <strong>{session.sizeInput}</strong> on our floor today.
-        </p>
+        <div className="recs-count">
+          {recs.length} piece{recs.length === 1 ? "" : "s"} &middot; size {session.sizeInput}
+        </div>
       </div>
 
-      {/* Product Cards Horizontal Scroll */}
-      <div className="products-scroll">
-        {recs.map((rec) => {
-          const imgSrc = rec.product.imageUrl || CATEGORY_IMAGES[rec.product.category] || CATEGORY_IMAGES.KURTA;
-          const matchPercentage = Math.round(rec.score * 100);
+      <div className="recs-grid">
+        {/* Hero pick */}
+        <div className="hero-card" id="rec-card-1">
+          <div className="hero-image">
+            <img
+              src={imageFor(topPick)}
+              alt={topPick.product.name}
+              onError={(e) => { (e.target as HTMLElement).style.display = "none"; }}
+            />
+            <div className="hero-match-badge">{topMatch}% match</div>
+          </div>
+          <div className="hero-body">
+            <div className="hero-rank">Top pick</div>
+            <div className="hero-name">{topPick.product.name}</div>
+            {topPick.reasons[0] && <div className="hero-why">{topPick.reasons[0]}</div>}
+            <div className="hero-price">&#8377;{topPick.product.price.toLocaleString("en-IN")}</div>
+          </div>
+        </div>
 
-          return (
-            <div
-              key={rec.product.id}
-              id={`rec-card-${rec.rank}`}
-              className={`product-card ${rec.rank === 1 ? "top-pick" : ""}`}
-            >
-              <div className="product-image-wrap">
-                <img
-                  src={imgSrc}
-                  alt={rec.product.name}
-                  onError={(e) => {
-                    (e.target as HTMLElement).style.display = "none";
-                  }}
-                />
-                <div style={{
-                  position: "absolute",
-                  bottom: 10,
-                  left: 10,
-                  background: "rgba(11, 13, 18, 0.85)",
-                  backdropFilter: "blur(8px)",
-                  padding: "4px 10px",
-                  borderRadius: 6,
-                  fontSize: 11,
-                  fontWeight: 700,
-                  color: "var(--gold-warm)",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                }}>
-                  {matchPercentage}% Match
-                </div>
+        {/* Ranked list */}
+        <div className="rec-list">
+          {rest.map((rec) => (
+            <div className="rec-row" key={rec.product.id} id={`rec-card-${rec.rank}`}>
+              <div className="rec-row-n">{String(rec.rank).padStart(2, "0")}</div>
+              <img
+                className="rec-row-thumb"
+                src={imageFor(rec)}
+                alt={rec.product.name}
+                onError={(e) => { (e.target as HTMLElement).style.visibility = "hidden"; }}
+              />
+              <div>
+                <div className="rec-row-name">{rec.product.name}</div>
+                <div className="rec-row-reason">{rec.reasons[0] || `SKU ${rec.product.sku}`}</div>
               </div>
-
-              <div className="product-body">
-                <div className="product-rank-tag">
-                  SELECTION #{rec.rank}
-                </div>
-                <div className="product-name">{rec.product.name}</div>
-                <div className="product-price">
-                  ₹{rec.product.price.toLocaleString("en-IN")}
-                </div>
-
-                {rec.reasons[0] && (
-                  <div className="product-reason-pill">
-                    ✓ {rec.reasons[0]}
-                  </div>
-                )}
-
-                <div style={{ marginTop: "auto", paddingTop: 8, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <span className="product-sku">SKU: {rec.product.sku}</span>
-                </div>
-              </div>
+              <div className="rec-row-price">&#8377;{rec.product.price.toLocaleString("en-IN")}</div>
             </div>
-          );
-        })}
+          ))}
+        </div>
       </div>
 
       {/* Footer CTA */}
-      <div style={{ marginTop: 24, textAlign: "center" }}>
+      <div style={{ marginTop: 28, textAlign: "center" }}>
         <button
           id="recs-done-btn"
           className="btn-kiosk btn-primary"
