@@ -1,41 +1,38 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   FitFirst Customer Kiosk — Atelier Design System
-   Editorial Fashion Sensibility · Warm Neutrals · Brass as a Rare Accent
+   FitFirst Customer Kiosk — Alabaster Atelier Design System
+   Editorial Fashion Sensibility · Warm Alabaster · Obsidian Ink Accents
    ═══════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  /* Core palette — Ink & Bone, warm not cool */
-  --ink:                #14120E;
-  --ink-2:               #1C1914;
-  --ink-3:               #241F18;
-  --ink-4:               #2C2620;
+  /* Core palette — Warm Alabaster Canvas */
+  --ink:                #FBF9F5;
+  --ink-2:               #FFFFFF;
+  --ink-3:               #F3EFE6;
+  --ink-4:               #ECE6D8;
 
-  --paper:               #F5EFE2;
-  --stone:               #B4A895;
-  --stone-dim:           #7C7365;
+  --paper:               #161412;
+  --stone:               #484238;
+  --stone-dim:           #888072;
 
-  --brass:               #B98A46;
-  --brass-bright:        #D4A868;
-  --brass-press:         #9C7238;
-  --brass-dim:           rgba(185, 138, 70, 0.14);
-  --brass-border:        rgba(185, 138, 70, 0.4);
+  --brass:               #161412;
+  --brass-bright:        #8C6D3B;
+  --brass-press:         #333028;
+  --brass-dim:           rgba(22, 20, 18, 0.06);
+  --brass-border:        #D4C8B5;
 
-  --rust:                #A8503A;
-  --rust-dim:            rgba(168, 80, 58, 0.14);
+  --rust:                #9E3224;
+  --rust-dim:            rgba(158, 50, 36, 0.08);
 
-  --moss:                #6B7A54;
-  --moss-dim:            rgba(107, 122, 84, 0.16);
+  --moss:                #366538;
+  --moss-dim:            rgba(54, 101, 56, 0.08);
 
-  --crimson:             #A8453A;
-  --crimson-dim:         rgba(168, 69, 58, 0.16);
+  --crimson:             #9E3224;
+  --crimson-dim:         rgba(158, 50, 36, 0.08);
 
-  --line:                rgba(245, 239, 226, 0.10);
-  --line-strong:         rgba(245, 239, 226, 0.20);
+  --line:                #E8E2D6;
+  --line-strong:         #D5CDC0;
 
-  /* ── Back-compat aliases — old token names, new values ──────────────────
-     Existing screens still reference these directly; re-pointing them here
-     re-skins every screen immediately without touching each file. Retire
-     these as each screen gets rebuilt. */
+  /* ── Back-compat aliases ── */
   --bg-dark:             var(--ink);
   --bg-surface:          var(--ink-2);
   --bg-card:             var(--ink-2);
@@ -47,7 +44,7 @@
   --gold-light:          var(--brass-bright);
   --gold-warm:           var(--brass-bright);
   --gold-dim:            var(--brass-dim);
-  --gold-glow:           rgba(185, 138, 70, 0.18);
+  --gold-glow:           rgba(22, 20, 18, 0.06);
   --gold-border:         var(--brass-border);
 
   --text-heading:        var(--paper);
@@ -62,13 +59,13 @@
   --success:             var(--moss);
   --success-dim:         var(--moss-dim);
 
-  /* Typography — one serif spent boldly, one grotesk for everything else */
+  /* Typography */
   --font-serif:   'Fraunces', Georgia, serif;
   --font-display: 'Manrope', system-ui, -apple-system, sans-serif;
   --font-sans:    'Manrope', system-ui, -apple-system, sans-serif;
   --font-mono:    'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
 
-  /* Sizing & Radius — structural, not soft; pills reserved for small chips */
+  /* Sizing & Radius */
   --touch-min: 56px;
   --radius-sm: 4px;
   --radius-md: 6px;
@@ -101,19 +98,6 @@ html, body, #root {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   user-select: none;
-}
-
-/* Background Atmosphere — warm, not a blue-black tech glow */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background:
-    radial-gradient(circle at 15% 10%, rgba(185, 138, 70, 0.06) 0%, transparent 45%),
-    radial-gradient(circle at 90% 90%, rgba(168, 80, 58, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 50% 50%, rgba(20, 18, 14, 0.9) 0%, #14120E 100%);
-  pointer-events: none;
-  z-index: 0;
 }
 
 /* ── Screen Layout Container ──────────────────────────────────────────────── */
@@ -184,7 +168,7 @@ body::before {
   align-items: center;
   justify-content: space-between;
   padding: 0 40px;
-  background: linear-gradient(180deg, rgba(20, 18, 14, 0.95) 0%, rgba(20, 18, 14, 0) 100%);
+  background: linear-gradient(180deg, rgba(251, 249, 245, 0.95) 0%, rgba(251, 249, 245, 0) 100%);
   backdrop-filter: blur(12px);
   z-index: 50;
 }
@@ -286,13 +270,13 @@ body::before {
   background: var(--brass);
   color: var(--ink);
   font-weight: 700;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
 .btn-primary:hover, .btn-primary:focus-visible {
   background: var(--brass-bright);
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
 }
 
 .btn-primary:active {
@@ -661,7 +645,7 @@ body::before {
   border-radius: var(--radius-xl);
   padding: 40px 56px;
   text-align: center;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
 }
 
 .handoff-code {

@@ -1,5 +1,5 @@
 /// <reference types="vite/client" />
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Routes, Route, NavLink, Navigate } from "react-router-dom";
 import Analytics from "./pages/Analytics";
 import BaselineLog from "./pages/BaselineLog";
@@ -35,6 +35,37 @@ const IconClipboard = () => (
     <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
   </svg>
 );
+
+const IconSun = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+    <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+  </svg>
+);
+
+const IconMoon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+  </svg>
+);
+
+// ── Theme Hook ──────────────────────────────────────────────────────────────
+
+function useTheme(): [string, () => void] {
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem("fitfirst-theme") || "light";
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("fitfirst-theme", theme);
+  }, [theme]);
+
+  const toggle = () => setTheme((t) => (t === "light" ? "dark" : "light"));
+  return [theme, toggle];
+}
 
 // ── Login Screen ────────────────────────────────────────────────────────────
 
@@ -119,7 +150,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
               <div style={{ fontFamily: "var(--font-serif)", fontSize: 22, color: "var(--atelier-text-title)", fontWeight: 500, letterSpacing: "-0.01em" }}>
                 FitFirst
               </div>
-              <div style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: "var(--atelier-brass)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: "var(--atelier-brass-light)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
                 Showroom Operations Console
               </div>
             </div>
@@ -160,7 +191,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
         }}
       >
         <div style={{ width: "100%", maxWidth: 340, textAlign: "center" }}>
-          <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--atelier-brass)", marginBottom: 8 }}>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--atelier-brass-light)", marginBottom: 8 }}>
             Stylist Security Gate
           </div>
           <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 26, color: "var(--atelier-text-title)", fontWeight: 400, marginBottom: 8 }}>
@@ -185,7 +216,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
                     border: error
                       ? "1px solid var(--atelier-terracotta)"
                       : isFilled
-                      ? "1px solid var(--atelier-brass)"
+                      ? "1px solid var(--atelier-brass-light)"
                       : "1px solid var(--atelier-hairline)",
                     display: "flex",
                     alignItems: "center",
@@ -298,6 +329,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
 
 export default function App() {
   const [authenticated, setAuthenticated] = useState(false);
+  const [theme, toggleTheme] = useTheme();
 
   if (!authenticated) {
     return <LoginScreen onLogin={() => setAuthenticated(true)} />;
@@ -340,6 +372,14 @@ export default function App() {
 
         {/* Operational Actions */}
         <div className="masthead-actions">
+          <button
+            id="theme-toggle-btn"
+            className="theme-toggle"
+            onClick={toggleTheme}
+            title={theme === "light" ? "Switch to dark theme" : "Switch to light theme"}
+          >
+            {theme === "light" ? <IconMoon /> : <IconSun />}
+          </button>
           <a
             id="launch-kiosk-btn"
             href="http://localhost:5174"
@@ -374,3 +414,4 @@ export default function App() {
     </div>
   );
 }
+
