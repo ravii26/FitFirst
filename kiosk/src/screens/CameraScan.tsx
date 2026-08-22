@@ -5,6 +5,13 @@ import { sampleSkinToneFromCanvas, sampleBodyShapeFromCanvas, SkinToneBucket, Bo
 
 type Gender = "MEN" | "WOMEN" | "KIDS" | "UNISEX";
 
+const skinColorMap: Record<string, string> = {
+  FAIR: "#F7E6D0",
+  WHEATISH: "#D49C65",
+  MEDIUM: "#9E6B43",
+  DEEP: "#543422",
+};
+
 export default function CameraScan({
   initialGender,
   onDetected,
@@ -101,11 +108,11 @@ export default function CameraScan({
   };
 
   return (
-    <div className="screen screen-scrollable" id="screen-camera-scan" style={{ paddingTop: 76, paddingBottom: 60, justifyContent: "flex-start" }}>
+    <div className="screen screen-scrollable" id="screen-camera-scan" style={{ paddingTop: 96, paddingBottom: 60, justifyContent: "flex-start" }}>
       {/* Hidden processing canvas */}
       <canvas ref={canvasRef} style={{ display: "none" }} />
 
-      <div style={{ textAlign: "center", marginBottom: 16 }}>
+      <div style={{ textAlign: "center", marginBottom: 24 }}>
         <div style={{
           display: "inline-flex",
           alignItems: "center",
@@ -119,14 +126,14 @@ export default function CameraScan({
           color: "var(--brass-bright)",
           letterSpacing: "0.08em",
           textTransform: "uppercase",
-          marginBottom: 8,
+          marginBottom: 10,
         }}>
           100% On-Device &bull; No Photos Saved
         </div>
-        <h2 className="h2" style={{ marginBottom: 4 }}>
+        <h2 className="h2" style={{ marginBottom: 6 }}>
           {scanning ? "Analyzing Tone & Silhouette" : "Analysis Complete"}
         </h2>
-        <p className="subtitle" style={{ fontSize: 14 }}>
+        <p className="subtitle" style={{ fontSize: 14, margin: "0 auto", maxWidth: 500 }}>
           {scanning
             ? "Align your upper body inside the frame below for automatic estimation."
             : "Review your detected attributes or make manual adjustments."}
@@ -144,107 +151,167 @@ export default function CameraScan({
           </button>
         </div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: 640 }}>
-          {/* Video Container — Shrinks smoothly when scan completes */}
-          <div style={{
-            position: "relative",
-            width: scanning ? 300 : 160,
-            height: scanning ? 300 : 160,
-            borderRadius: "50%",
-            overflow: "hidden",
-            border: scanning ? "3px solid var(--brass)" : "3px solid var(--moss)",
-            boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
-            background: "#000",
-            marginBottom: 16,
-            transition: "all 0.4s var(--ease-out)",
-            flexShrink: 0,
-          }}>
-            <video
-              ref={videoRef}
-              playsInline
-              muted
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                transform: "scaleX(-1)", // Mirror video
-              }}
-            />
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: scanComplete ? "1fr 1.2fr" : "1fr",
+          gap: 40,
+          width: "100%",
+          maxWidth: scanComplete ? 1040 : 600,
+          alignItems: "center",
+          margin: "0 auto",
+        }}>
+          {/* Column 1: Scanner Viewport */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+            <div style={{
+              position: "relative",
+              width: scanning ? 280 : 200,
+              height: scanning ? 280 : 200,
+              borderRadius: "50%",
+              overflow: "hidden",
+              border: scanning ? "3.5px solid var(--brass-bright)" : "3.5px solid var(--moss)",
+              boxShadow: scanning 
+                ? "0 12px 32px rgba(140, 109, 59, 0.25)" 
+                : "0 8px 24px rgba(54, 101, 56, 0.15)",
+              background: "#000",
+              marginBottom: 16,
+              transition: "all 0.5s var(--ease-out)",
+              flexShrink: 0,
+              animation: scanning ? "pulseScanner 2s infinite" : "none",
+            }}>
+              <video
+                ref={videoRef}
+                playsInline
+                muted
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  transform: "scaleX(-1)", // Mirror video
+                }}
+              />
 
-            {/* Scanning Overlay Sweep */}
-            {scanning && (
-              <div style={{
-                position: "absolute",
-                inset: 0,
-                background: "linear-gradient(180deg, transparent 0%, rgba(185, 138, 70, 0.2) 50%, transparent 100%)",
-                animation: "scanSweep 2s ease-in-out infinite",
-                pointerEvents: "none",
-              }} />
-            )}
+              {/* Glowing Scan Sweep Line */}
+              {scanning && (
+                <div style={{
+                  position: "absolute",
+                  left: 0,
+                  width: "100%",
+                  height: 3,
+                  background: "linear-gradient(90deg, transparent, var(--brass-bright), transparent)",
+                  boxShadow: "0 0 12px var(--brass-bright), 0 0 4px var(--brass-bright)",
+                  animation: "scanSweepLine 2s ease-in-out infinite",
+                  pointerEvents: "none",
+                }} />
+              )}
 
-            {/* Countdown Badge */}
-            {scanning && (
+              {/* Overlay Grid Crosshairs */}
+              {scanning && (
+                <>
+                  <div style={{ position: "absolute", top: 24, left: 24, width: 16, height: 16, borderLeft: "2px solid rgba(212, 200, 181, 0.5)", borderTop: "2px solid rgba(212, 200, 181, 0.5)" }} />
+                  <div style={{ position: "absolute", top: 24, right: 24, width: 16, height: 16, borderRight: "2px solid rgba(212, 200, 181, 0.5)", borderTop: "2px solid rgba(212, 200, 181, 0.5)" }} />
+                  <div style={{ position: "absolute", bottom: 24, left: 24, width: 16, height: 16, borderLeft: "2px solid rgba(212, 200, 181, 0.5)", borderBottom: "2px solid rgba(212, 200, 181, 0.5)" }} />
+                  <div style={{ position: "absolute", bottom: 24, right: 24, width: 16, height: 16, borderRight: "2px solid rgba(212, 200, 181, 0.5)", borderBottom: "2px solid rgba(212, 200, 181, 0.5)" }} />
+                </>
+              )}
+
+              {/* Countdown Badge */}
+              {scanning && (
+                <div style={{
+                  position: "absolute",
+                  bottom: 20,
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  background: "rgba(22, 20, 18, 0.85)",
+                  backdropFilter: "blur(8px)",
+                  padding: "6px 16px",
+                  borderRadius: "var(--radius-full)",
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: "var(--brass-bright)",
+                  border: "1px solid var(--brass-border)",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                }}>
+                  Scanning&hellip; {countdown}s
+                </div>
+              )}
+            </div>
+
+            {!scanning && (
               <div style={{
-                position: "absolute",
-                bottom: 16,
-                left: "50%",
-                transform: "translateX(-50%)",
-                background: "rgba(20, 18, 14, 0.85)",
-                backdropFilter: "blur(8px)",
-                padding: "6px 16px",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "8px 20px",
                 borderRadius: "var(--radius-full)",
+                background: "var(--moss-dim)",
+                border: "1px solid rgba(54, 101, 56, 0.2)",
                 fontFamily: "var(--font-mono)",
-                fontSize: 13,
-                color: "var(--brass-bright)",
-                border: "1px solid var(--brass-border)",
+                fontSize: 12,
+                fontWeight: 600,
+                color: "var(--moss)",
+                textTransform: "uppercase",
+                letterSpacing: "0.06em",
               }}>
-                Scanning&hellip; {countdown}s
+                <span style={{ fontSize: 14 }}>✓</span> Scan Successful
               </div>
             )}
           </div>
 
           <style>{`
-            @keyframes scanSweep {
-              0% { transform: translateY(-100%); }
-              100% { transform: translateY(100%); }
+            @keyframes scanSweepLine {
+              0% { top: 0%; }
+              50% { top: 100%; }
+              100% { top: 0%; }
+            }
+            @keyframes pulseScanner {
+              0% { box-shadow: 0 0 0 0 rgba(140, 109, 59, 0.3); }
+              70% { box-shadow: 0 0 0 12px rgba(140, 109, 59, 0); }
+              100% { box-shadow: 0 0 0 0 rgba(140, 109, 59, 0); }
+            }
+            @keyframes slideUpFade {
+              from { opacity: 0; transform: translateY(16px); }
+              to { opacity: 1; transform: translateY(0); }
             }
           `}</style>
 
-          {/* Results Card & Action Buttons */}
+          {/* Column 2: Results Card */}
           {scanComplete && (
             <div style={{
               width: "100%",
-              maxWidth: 500,
-              padding: "18px 24px 24px",
-              borderRadius: "var(--radius-lg)",
+              padding: "32px 36px",
+              borderRadius: "var(--radius-xl)",
               background: "var(--ink-2)",
-              border: "1px solid var(--brass-border)",
-              textAlign: "center",
+              border: "1px solid var(--line-strong)",
+              boxShadow: "0 12px 40px rgba(22, 20, 18, 0.05)",
+              textAlign: "left",
+              animation: "slideUpFade 0.4s var(--ease-out) both",
             }}>
-              <div style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--brass)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>
-                Detected Silhouette & Department
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--brass)", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 20 }}>
+                Calibrated Scan Profile
               </div>
 
               {/* Department / Gender selector */}
-              <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 11, color: "var(--stone-dim)", textTransform: "uppercase", fontWeight: 700, marginBottom: 6 }}>
-                  Shopping Department
+              <div style={{ marginBottom: 24 }}>
+                <div style={{ fontSize: 11, color: "var(--stone-dim)", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.06em", marginBottom: 10 }}>
+                  Selected Department
                 </div>
-                <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                   {(["MEN", "WOMEN", "KIDS", "UNISEX"] as Gender[]).map((g) => (
                     <button
                       key={g}
                       onClick={() => setSelectedGender(g)}
                       style={{
-                        padding: "6px 16px",
-                        borderRadius: "var(--radius-sm)",
+                        padding: "8px 18px",
+                        borderRadius: "var(--radius-full)",
                         fontSize: 13,
-                        fontWeight: 700,
-                        border: selectedGender === g ? "1.5px solid var(--brass)" : "1px solid var(--line)",
-                        background: selectedGender === g ? "var(--brass-dim)" : "var(--ink-3)",
-                        color: selectedGender === g ? "var(--brass-bright)" : "var(--stone-dim)",
+                        fontWeight: 600,
+                        border: "1.5px solid " + (selectedGender === g ? "var(--brass)" : "var(--line)"),
+                        background: selectedGender === g ? "var(--brass-dim)" : "var(--ink-2)",
+                        color: selectedGender === g ? "var(--brass-bright)" : "var(--stone)",
                         cursor: "pointer",
-                        transition: "all 0.2s ease",
+                        transition: "all 0.15s var(--ease-out)",
+                        boxShadow: selectedGender === g ? "0 4px 12px rgba(22, 20, 18, 0.04)" : "none",
                       }}
                     >
                       {g === "MEN" ? "Men's" : g === "WOMEN" ? "Women's" : g === "KIDS" ? "Kids" : "Unisex"}
@@ -254,29 +321,73 @@ export default function CameraScan({
               </div>
 
               {/* Attributes badges */}
-              <div style={{ display: "flex", justifyContent: "center", gap: 16, marginBottom: 20 }}>
-                <div style={{ background: "var(--ink-3)", padding: "10px 18px", borderRadius: "var(--radius-md)", border: "1px solid var(--line)", minWidth: 140 }}>
-                  <div style={{ fontSize: 10, color: "var(--stone-dim)", fontWeight: 700, marginBottom: 2, textTransform: "uppercase" }}>Skin Tone</div>
-                  <div style={{ fontFamily: "var(--font-mono)", fontSize: 14, color: "var(--brass-bright)" }}>{detectedSkin}</div>
+              <div style={{ display: "flex", gap: 16, marginBottom: 20 }}>
+                {/* Skin Tone */}
+                <div style={{
+                  background: "var(--ink-3)",
+                  padding: "14px 18px",
+                  borderRadius: "var(--radius-md)",
+                  border: "1px solid var(--line)",
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  gap: 8,
+                }}>
+                  <div style={{ fontSize: 10, color: "var(--stone-dim)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                    Complexion Tone
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <div style={{
+                      width: 14,
+                      height: 14,
+                      borderRadius: "50%",
+                      background: skinColorMap[detectedSkin] || "#D49C65",
+                      border: "1px solid rgba(0,0,0,0.15)",
+                    }} />
+                    <strong style={{ fontFamily: "var(--font-display)", fontSize: 14, color: "var(--paper)" }}>
+                      {detectedSkin.charAt(0) + detectedSkin.slice(1).toLowerCase()}
+                    </strong>
+                  </div>
                 </div>
-                <div style={{ background: "var(--ink-3)", padding: "10px 18px", borderRadius: "var(--radius-md)", border: "1px solid var(--line)", minWidth: 140 }}>
-                  <div style={{ fontSize: 10, color: "var(--stone-dim)", fontWeight: 700, marginBottom: 2, textTransform: "uppercase" }}>Body Silhouette</div>
-                  <div style={{ fontFamily: "var(--font-mono)", fontSize: 14, color: "var(--brass-bright)" }}>{detectedBody}</div>
+
+                {/* Body Shape */}
+                <div style={{
+                  background: "var(--ink-3)",
+                  padding: "14px 18px",
+                  borderRadius: "var(--radius-md)",
+                  border: "1px solid var(--line)",
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  gap: 8,
+                }}>
+                  <div style={{ fontSize: 10, color: "var(--stone-dim)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                    Silhouette Cut
+                  </div>
+                  <strong style={{ fontFamily: "var(--font-display)", fontSize: 14, color: "var(--paper)" }}>
+                    {detectedBody === "INVERTED_T" ? "Broad Shoulder" : detectedBody.charAt(0) + detectedBody.slice(1).toLowerCase()}
+                  </strong>
                 </div>
               </div>
 
-              <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+              <p style={{ fontSize: 12, color: "var(--stone-dim)", maxWidth: 400, marginBottom: 24, lineHeight: 1.5 }}>
+                These are on-device camera estimates, not precise measurements. If either detected value looks incorrect, you can adjust them manually.
+              </p>
+
+              <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                 <button
                   className="btn-kiosk btn-primary"
                   onClick={handleConfirm}
-                  style={{ fontSize: 15, padding: "0 32px", minHeight: 48 }}
+                  style={{ fontSize: 15, padding: "0 36px", minHeight: 52 }}
                 >
                   Use These Attributes &rarr;
                 </button>
                 <button
                   className="btn-kiosk btn-ghost"
                   onClick={onCancel}
-                  style={{ fontSize: 14, padding: "0 20px", minHeight: 48 }}
+                  style={{ fontSize: 14, padding: "0 24px", minHeight: 52 }}
                 >
                   Adjust Manually
                 </button>

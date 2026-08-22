@@ -62,6 +62,7 @@ export default function Recommendations({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loadingStage, setLoadingStage] = useState(0);
+  const [selectedRecId, setSelectedRecId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading) return;
@@ -178,13 +179,14 @@ export default function Recommendations({
     );
   }
 
-  const [topPick, ...rest] = recs;
+  const activeRec = recs.find((r) => r.product.id === selectedRecId) || recs[0];
+  const rest = recs.filter((r) => r.product.id !== activeRec.product.id);
 
   return (
     <div
       className="screen screen-scrollable"
       id="screen-recommendations"
-      style={{ padding: "32px 48px", justifyContent: "flex-start", alignItems: "center" }}
+      style={{ padding: "96px 48px 48px", justifyContent: "flex-start", alignItems: "center" }}
     >
       <div style={{ width: "100%", maxWidth: 1040 }}>
         {/* Header */}
@@ -203,10 +205,10 @@ export default function Recommendations({
         </div>
 
         {/* 2-Column Curated Lookbook */}
-        <div style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 28, marginBottom: 28 }}>
-          {/* Primary Top Pick */}
+        <div style={{ display: "grid", gridTemplateColumns: rest.length > 0 ? "1.1fr 1fr" : "1fr", gap: 28, marginBottom: 28 }}>
+          {/* Primary Active Pick */}
           <div
-            id="rec-card-1"
+            id={`rec-card-${activeRec.rank}`}
             style={{
               background: "var(--ink-2)",
               border: "1px solid var(--brass-bright)",
@@ -218,8 +220,8 @@ export default function Recommendations({
           >
             <div style={{ height: 260, position: "relative", overflow: "hidden", background: "var(--ink-3)" }}>
               <img
-                src={imageFor(topPick)}
-                alt={topPick.product.name}
+                src={imageFor(activeRec)}
+                alt={activeRec.product.name}
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 onError={(e) => { (e.target as HTMLElement).style.display = "none"; }}
               />
@@ -239,7 +241,7 @@ export default function Recommendations({
                 letterSpacing: "0.06em",
                 textTransform: "uppercase",
               }}>
-                Primary Showroom Recommendation
+                {activeRec.product.id === recs[0].product.id ? "Primary Showroom Recommendation" : `Selected Fit Match #${activeRec.rank}`}
               </div>
             </div>
 
@@ -247,18 +249,18 @@ export default function Recommendations({
               <div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
                   <div style={{ fontFamily: "var(--font-serif)", fontSize: 24, color: "var(--paper)", fontWeight: 500 }}>
-                    {topPick.product.name}
+                    {activeRec.product.name}
                   </div>
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: 20, color: "var(--brass-bright)", fontWeight: 600 }}>
-                    &#8377;{topPick.product.price.toLocaleString("en-IN")}
+                    &#8377;{activeRec.product.price.toLocaleString("en-IN")}
                   </div>
                 </div>
 
                 <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--stone-dim)", marginBottom: 14 }}>
-                  SKU: {topPick.product.sku} &bull; Category: {topPick.product.category.replace(/_/g, " ")}
+                  SKU: {activeRec.product.sku} &bull; Category: {activeRec.product.category.replace(/_/g, " ")}
                 </div>
 
-                {topPick.reasons.length > 0 && (
+                {activeRec.reasons.length > 0 && (
                   <div style={{
                     background: "rgba(200, 155, 83, 0.08)",
                     borderLeft: "2px solid var(--brass)",
@@ -267,7 +269,7 @@ export default function Recommendations({
                     color: "var(--paper-soft)",
                     lineHeight: 1.5,
                   }}>
-                    {topPick.reasons[0]}
+                    {activeRec.reasons[0]}
                   </div>
                 )}
               </div>
@@ -275,54 +277,59 @@ export default function Recommendations({
           </div>
 
           {/* Secondary Curated Pieces List */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--stone-dim)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
-              Alternative Floor Matches
-            </div>
-
-            {rest.map((rec) => (
-              <div
-                key={rec.product.id}
-                id={`rec-card-${rec.rank}`}
-                style={{
-                  background: "var(--ink-2)",
-                  border: "1px solid var(--line)",
-                  borderRadius: "var(--radius-md)",
-                  padding: "14px 16px",
-                  display: "grid",
-                  gridTemplateColumns: "auto 56px 1fr auto",
-                  gap: 14,
-                  alignItems: "center",
-                }}
-              >
-                <div style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--brass)", fontWeight: 600 }}>
-                  #{rec.rank}
-                </div>
-
-                <div style={{ width: 56, height: 56, borderRadius: "var(--radius-sm)", overflow: "hidden", background: "var(--ink-3)" }}>
-                  <img
-                    src={imageFor(rec)}
-                    alt={rec.product.name}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                    onError={(e) => { (e.target as HTMLElement).style.visibility = "hidden"; }}
-                  />
-                </div>
-
-                <div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: "var(--paper)", marginBottom: 2 }}>
-                    {rec.product.name}
-                  </div>
-                  <div style={{ fontSize: 11, color: "var(--stone-dim)" }}>
-                    {rec.reasons[0] || `SKU ${rec.product.sku}`}
-                  </div>
-                </div>
-
-                <div style={{ fontFamily: "var(--font-mono)", fontSize: 14, fontWeight: 600, color: "var(--paper)" }}>
-                  &#8377;{rec.product.price.toLocaleString("en-IN")}
-                </div>
+          {rest.length > 0 && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--stone-dim)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                Alternative Floor Matches (Click to inspect)
               </div>
-            ))}
-          </div>
+
+              {rest.map((rec) => (
+                <div
+                  key={rec.product.id}
+                  id={`rec-card-${rec.rank}`}
+                  className="rec-alt-card"
+                  onClick={() => setSelectedRecId(rec.product.id)}
+                  style={{
+                    background: "var(--ink-2)",
+                    border: "1px solid var(--line)",
+                    borderRadius: "var(--radius-md)",
+                    padding: "14px 16px",
+                    display: "grid",
+                    gridTemplateColumns: "auto 56px 1fr auto",
+                    gap: 14,
+                    alignItems: "center",
+                    cursor: "pointer",
+                  }}
+                >
+                  <div style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--brass)", fontWeight: 600 }}>
+                    #{rec.rank}
+                  </div>
+
+                  <div style={{ width: 56, height: 56, borderRadius: "var(--radius-sm)", overflow: "hidden", background: "var(--ink-3)" }}>
+                    <img
+                      src={imageFor(rec)}
+                      alt={rec.product.name}
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      onError={(e) => { (e.target as HTMLElement).style.visibility = "hidden"; }}
+                    />
+                  </div>
+
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "var(--paper)", marginBottom: 2 }}>
+                      {rec.product.name}
+                    </div>
+                    <div style={{ fontSize: 11, color: "var(--stone-dim)" }}>
+                      {rec.reasons[0] || `SKU ${rec.product.sku}`}
+                    </div>
+                  </div>
+
+                  <div style={{ fontFamily: "var(--font-mono)", fontSize: 14, fontWeight: 600, color: "var(--paper)" }}>
+                    &#8377;{rec.product.price.toLocaleString("en-IN")}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Footer Action Bar */}

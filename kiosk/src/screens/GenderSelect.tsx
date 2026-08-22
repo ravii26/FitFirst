@@ -112,7 +112,7 @@ export default function GenderSelect({
                           background: isSelected ? "rgba(200, 155, 83, 0.15)" : "var(--ink-3)",
                           color: isSelected ? "var(--brass-bright)" : "var(--stone-dim)",
                           padding: "3px 8px",
-                          borderRadius: 4,
+                          borderRadius: "var(--radius-sm)",
                           border: "1px solid " + (isSelected ? "rgba(200, 155, 83, 0.3)" : "var(--line)"),
                         }}
                       >

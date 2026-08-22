@@ -47,12 +47,36 @@ interface ChartEntry {
   isKioskActive: boolean;
 }
 
+interface TopRecommendation {
+  product: { id: string; name: string; sku: string; category: string; price: number } | undefined;
+  timesRecommended: number;
+  avgScore: number;
+  avgRank: number;
+}
+
+interface SlowStockItem {
+  id: string;
+  sku: string;
+  name: string;
+  category: string;
+  daysInStock: number;
+  stockQty: number;
+  price: number;
+  colorFamily: string;
+  fitType: string;
+  _count: { recommendations: number; purchaseEvents: number };
+}
+
 function fmtINR(n: number) {
   return "₹" + Math.round(n).toLocaleString("en-IN");
 }
 
 function fmtPct(n: number) {
   return (n >= 0 ? "+" : "") + n.toFixed(1) + "%";
+}
+
+function titleCase(s: string) {
+  return s.toLowerCase().replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 const IconCheck = () => (
@@ -74,18 +98,24 @@ const IconClock = () => (
 export default function Analytics() {
   const [summary, setSummary] = useState<Summary | null>(null);
   const [chartData, setChartData] = useState<ChartEntry[]>([]);
+  const [topRecs, setTopRecs] = useState<TopRecommendation[]>([]);
+  const [slowStock, setSlowStock] = useState<SlowStockItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function load() {
       try {
-        const [s, c] = await Promise.all([
+        const [s, c, t, ss] = await Promise.all([
           apiFetch(`${API}/analytics/summary`).then((r) => r.json()),
           apiFetch(`${API}/analytics/baseline-chart`).then((r) => r.json()),
+          apiFetch(`${API}/analytics/top-recommendations`).then((r) => r.json()),
+          apiFetch(`${API}/analytics/slow-stock`).then((r) => r.json()),
         ]);
         setSummary(s);
         setChartData(c);
+        setTopRecs(t);
+        setSlowStock(ss);
       } catch (e) {
         setError("Could not load analytics. Make sure the backend is running.");
       } finally {
@@ -296,6 +326,103 @@ export default function Analytics() {
           </p>
         </div>
       )}
+
+      {/* Top Recommended Products + Slow-Moving Stock */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginTop: 28 }}>
+        <div>
+          <div className="card-title" style={{ fontFamily: "var(--font-serif)", fontSize: 18, color: "var(--atelier-text-title)", marginBottom: 4 }}>
+            Top Recommended Products
+          </div>
+          <p style={{ fontSize: 11, color: "var(--atelier-text-muted)", marginBottom: 16 }}>
+            Pieces the scoring engine surfaces most often across all consultations
+          </p>
+          {topRecs.length === 0 ? (
+            <div className="card" style={{ textAlign: "center", padding: 32 }}>
+              <p style={{ color: "var(--atelier-text-muted)", fontSize: 13 }}>
+                No recommendations served yet.
+              </p>
+            </div>
+          ) : (
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>SKU</th>
+                    <th>Times Shown</th>
+                    <th>Avg Match</th>
+                    <th>Avg Rank</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {topRecs.map((r, i) => (
+                    <tr key={r.product?.id ?? i}>
+                      <td>
+                        {r.product?.name ?? "Unknown item"}
+                        <div style={{ fontSize: 11, color: "var(--atelier-text-muted)" }}>
+                          {r.product ? titleCase(r.product.category) : ""}
+                        </div>
+                      </td>
+                      <td style={{ fontFamily: "var(--font-mono)", fontSize: 12 }}>{r.product?.sku ?? "—"}</td>
+                      <td>{r.timesRecommended}</td>
+                      <td>{(r.avgScore * 100).toFixed(0)}%</td>
+                      <td>#{r.avgRank}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        <div>
+          <div className="card-title" style={{ fontFamily: "var(--font-serif)", fontSize: 18, color: "var(--atelier-text-title)", marginBottom: 4 }}>
+            Slow-Moving Stock
+          </div>
+          <p style={{ fontSize: 11, color: "var(--atelier-text-muted)", marginBottom: 16 }}>
+            Active pieces in stock over 30 days — eligible for the engine's aging tiebreak boost
+          </p>
+          {slowStock.length === 0 ? (
+            <div className="card" style={{ textAlign: "center", padding: 32 }}>
+              <p style={{ color: "var(--atelier-text-muted)", fontSize: 13 }}>
+                No items have aged past 30 days in stock.
+              </p>
+            </div>
+          ) : (
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>SKU</th>
+                    <th>Days In</th>
+                    <th>Stock</th>
+                    <th>Shown / Sold</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {slowStock.map((p) => (
+                    <tr key={p.id}>
+                      <td>
+                        {p.name}
+                        <div style={{ fontSize: 11, color: "var(--atelier-text-muted)" }}>
+                          {titleCase(p.category)}
+                        </div>
+                      </td>
+                      <td style={{ fontFamily: "var(--font-mono)", fontSize: 12 }}>{p.sku}</td>
+                      <td style={{ color: p.daysInStock > 60 ? "var(--atelier-terracotta)" : "var(--atelier-text-title)", fontWeight: p.daysInStock > 60 ? 600 : 400 }}>
+                        {p.daysInStock}d
+                      </td>
+                      <td>{p.stockQty}</td>
+                      <td>{p._count.recommendations} / {p._count.purchaseEvents}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

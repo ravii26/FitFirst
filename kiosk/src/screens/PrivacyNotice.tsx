@@ -62,7 +62,7 @@ export default function PrivacyNotice({
   ];
 
   return (
-    <div className="screen screen-scrollable" id="screen-privacy" style={{ paddingTop: 80, paddingBottom: 60 }}>
+    <div className="screen screen-scrollable" id="screen-privacy" style={{ paddingTop: 96, paddingBottom: 60 }}>
       <h2 className="h2" style={{ marginBottom: 8 }}>Privacy & Data Guarantee</h2>
       <p className="subtitle" style={{ marginBottom: 32 }}>
         Transparent, on-device analysis built in accordance with India's DPDP Act.

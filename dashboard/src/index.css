@@ -79,10 +79,11 @@
   --font-mono:        'JetBrains Mono', ui-monospace, monospace;
 
   /* Sizing & Geometry */
-  --radius-xs:        2px;
-  --radius-sm:        4px;
-  --radius-md:        6px;
-  --radius-lg:        8px;
+  --radius-xs:        6px;
+  --radius-sm:        10px;
+  --radius-md:        16px;
+  --radius-lg:        24px;
+  --radius-xl:        32px;
   --radius-full:      9999px;
 
   /* Spacing */
@@ -313,6 +314,12 @@ html, body, #root {
   overflow-y: auto;
   padding: var(--space-xl) var(--space-2xl);
   background: var(--atelier-bg);
+}
+
+.atelier-viewport > div {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .atelier-viewport::-webkit-scrollbar {
