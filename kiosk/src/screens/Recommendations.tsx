@@ -40,6 +40,7 @@ interface RecommendedProduct {
     price: number;
     stockQty: number;
     imageUrl?: string;
+    sizeMatched?: string;
   };
 }
 
@@ -59,6 +60,7 @@ export default function Recommendations({
   onReset: () => void;
 }) {
   const [recs, setRecs] = useState<RecommendedProduct[]>([]);
+  const [isSizeRelaxed, setIsSizeRelaxed] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loadingStage, setLoadingStage] = useState(0);
@@ -99,6 +101,7 @@ export default function Recommendations({
         if (!recRes.ok) throw new Error("Failed to fetch recommendations");
         const data = await recRes.json();
         setRecs(data.recommendations ?? []);
+        setIsSizeRelaxed(data.isSizeRelaxed ?? false);
       } catch (e: any) {
         setError(e.message ?? "Could not load recommendations. Please speak with a store stylist.");
       } finally {
@@ -192,8 +195,8 @@ export default function Recommendations({
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 24, borderBottom: "1px solid var(--line)", paddingBottom: 16 }}>
           <div>
-            <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--brass)", marginBottom: 4 }}>
-              Curated Lookbook &bull; Size {session.sizeInput}
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: isSizeRelaxed ? "var(--rust)" : "var(--brass)", marginBottom: 4 }}>
+              {isSizeRelaxed ? "✨ Nearby Size Matches Offered (Exact size depleted)" : `Curated Lookbook • Size ${session.sizeInput}`}
             </div>
             <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 32, color: "var(--paper)", fontWeight: 400, letterSpacing: "-0.01em" }}>
               In-Stock Showroom Recommendations
@@ -203,6 +206,28 @@ export default function Recommendations({
             {recs.length} Pieces Available on Floor Today
           </div>
         </div>
+
+        {isSizeRelaxed && (
+          <div style={{
+            background: "rgba(140, 109, 59, 0.06)",
+            border: "1px solid var(--brass-border)",
+            borderRadius: "var(--radius-md)",
+            padding: "16px 20px",
+            marginBottom: 24,
+            fontSize: 13.5,
+            color: "var(--stone)",
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            lineHeight: 1.5,
+            textAlign: "left"
+          }}>
+            <span style={{ fontSize: 20 }}>💡</span>
+            <span>
+              We are currently out of exact matches in <strong>Size {session.sizeInput}</strong>. We have surfaced highly compatible fits in adjacent sizes (e.g. matching cuts in one size up or down) available in showroom stock today.
+            </span>
+          </div>
+        )}
 
         {/* 2-Column Curated Lookbook */}
         <div style={{ display: "grid", gridTemplateColumns: rest.length > 0 ? "1.1fr 1fr" : "1fr", gap: 28, marginBottom: 28 }}>
@@ -257,7 +282,7 @@ export default function Recommendations({
                 </div>
 
                 <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--stone-dim)", marginBottom: 14 }}>
-                  SKU: {activeRec.product.sku} &bull; Category: {activeRec.product.category.replace(/_/g, " ")}
+                  SKU: {activeRec.product.sku} &bull; Category: {activeRec.product.category.replace(/_/g, " ")} &bull; Matched Size: {activeRec.product.sizeMatched || session.sizeInput}
                 </div>
 
                 {activeRec.reasons.length > 0 && (
@@ -319,7 +344,7 @@ export default function Recommendations({
                       {rec.product.name}
                     </div>
                     <div style={{ fontSize: 11, color: "var(--stone-dim)" }}>
-                      {rec.reasons[0] || `SKU ${rec.product.sku}`}
+                      {rec.reasons[0] || `SKU ${rec.product.sku}`} &bull; Size {rec.product.sizeMatched || session.sizeInput}
                     </div>
                   </div>
 
@@ -341,7 +366,9 @@ export default function Recommendations({
           alignItems: "center",
         }}>
           <div style={{ fontSize: 12, color: "var(--stone-dim)" }}>
-            Stylist will pull these exact pieces in Size {session.sizeInput} for fitting.
+            {isSizeRelaxed
+              ? "Stylist will pull these adjacent sized pieces for fitting."
+              : `Stylist will pull these exact pieces in Size ${session.sizeInput} for fitting.`}
           </div>
 
           <button

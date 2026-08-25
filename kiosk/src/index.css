@@ -61,7 +61,7 @@
 
   /* Typography */
   --font-serif:   'Fraunces', Georgia, serif;
-  --font-display: 'Manrope', system-ui, -apple-system, sans-serif;
+  --font-display: 'Fraunces', Georgia, serif;
   --font-sans:    'Manrope', system-ui, -apple-system, sans-serif;
   --font-mono:    'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
 

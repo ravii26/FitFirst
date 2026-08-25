@@ -199,6 +199,79 @@ export default function Inventory() {
     imageUrl: "",
   });
 
+  // CSV Bulk Import state
+  const [showBulkModal, setShowBulkModal] = useState(false);
+  const [bulkImporting, setBulkImporting] = useState(false);
+  const [bulkMsg, setBulkMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [bulkErrors, setBulkErrors] = useState<string[]>([]);
+
+  const handleBulkImport = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const file = formData.get("csv-file") as File;
+    if (!file || !file.name) {
+      setBulkMsg({ type: "error", text: "Please select a valid CSV file." });
+      return;
+    }
+
+    setBulkImporting(true);
+    setBulkMsg(null);
+    setBulkErrors([]);
+
+    try {
+      const csvText = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => resolve(event.target?.result as string || "");
+        reader.onerror = (err) => reject(err);
+        reader.readAsText(file);
+      });
+
+      const res = await apiFetch(`${API}/products/bulk`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ csvText }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        if (data.errors) {
+          setBulkErrors(data.errors);
+          throw new Error(data.message || "CSV validation failed");
+        }
+        throw new Error(data.message || "Bulk import failed");
+      }
+
+      setBulkMsg({
+        type: "success",
+        text: `Success! Created ${data.createdCount} products, updated ${data.updatedCount} products.`,
+      });
+      loadProducts();
+      setTimeout(() => {
+        setShowBulkModal(false);
+        setBulkMsg(null);
+        setBulkErrors([]);
+      }, 2000);
+    } catch (err: any) {
+      setBulkMsg({ type: "error", text: err.message || "Bulk import failed" });
+    } finally {
+      setBulkImporting(false);
+    }
+  };
+
+  const downloadCSVTemplate = () => {
+    const headers = "sku,name,category,gender,colorFamily,pattern,fitType,sizeRange,price,stockQty,daysInStock,imageUrl\n";
+    const sample = "KRT-W-001,Handcrafted Silk Kurta,KURTA,WOMEN,JEWEL_TONES,EMBROIDERED,FLARED_ANARKALI,XS;S;M;L;XL,4500,12,14,https://images.unsplash.com/photo-1610030469983-98e550d6193c\n";
+    const blob = new Blob([headers + sample], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "fitfirst_inventory_template.csv");
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   async function loadProducts() {
     setLoading(true);
     try {
@@ -343,12 +416,21 @@ export default function Inventory() {
             {filtered.length} curated pieces &bull; Live inventory sync &bull; AI vision auto-tagging
           </p>
         </div>
-        <button
-          className="btn btn-primary"
-          onClick={() => setShowAddModal(true)}
-        >
-          + Add Showroom Piece
-        </button>
+        <div style={{ display: "flex", gap: 12 }}>
+          <button
+            className="btn btn-secondary"
+            onClick={() => setShowBulkModal(true)}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+          >
+            📂 Bulk Import CSV
+          </button>
+          <button
+            className="btn btn-primary"
+            onClick={() => setShowAddModal(true)}
+          >
+            + Add Showroom Piece
+          </button>
+        </div>
       </div>
 
       {/* Search & Filter Bar */}
@@ -780,6 +862,112 @@ export default function Inventory() {
                 </button>
                 <button type="submit" className="btn btn-primary">
                   Create SKU
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* CSV Bulk Import Modal */}
+      {showBulkModal && (
+        <div style={{
+          position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", backdropFilter: "blur(6px)",
+          display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: 20
+        }}>
+          <div className="card" style={{ width: "100%", maxWidth: 520, background: "var(--bg-card)", border: "1px solid var(--border-accent)", padding: 28 }}>
+            <h3 style={{ fontSize: 20, fontFamily: "var(--font-display)", marginBottom: 6, color: "var(--text-primary)" }}>
+              Bulk Import Garment Catalog
+            </h3>
+            <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 20 }}>
+              Upload a comma-separated CSV file containing your inventory items. This will create new items or update existing SKUs in bulk.
+            </p>
+
+            <div style={{
+              background: "var(--bg-hover)",
+              border: "1px solid var(--border)",
+              borderRadius: "var(--radius-sm)",
+              padding: "12px 16px",
+              fontSize: 12.5,
+              color: "var(--text-secondary)",
+              lineHeight: 1.5,
+              marginBottom: 20,
+            }}>
+              <strong>Format Requirements:</strong>
+              <ul style={{ paddingLeft: 20, marginTop: 4, textAlign: "left" }}>
+                <li>Required Headers: <code>sku, name, category, gender, colorFamily, pattern, fitType, sizeRange, price, stockQty</code></li>
+                <li>Size Range arrays must be separated by semicolons (e.g., <code>XS;S;M;L;XL</code>).</li>
+                <li>Fields like category, gender, color, fit, and pattern must match system enums.</li>
+              </ul>
+              <button
+                type="button"
+                onClick={downloadCSVTemplate}
+                style={{
+                  background: "transparent", border: "none", color: "var(--text-accent)",
+                  padding: 0, marginTop: 8, fontSize: 12, cursor: "pointer", fontWeight: 600,
+                  textDecoration: "underline", display: "block"
+                }}
+              >
+                📥 Download sample CSV template &rarr;
+              </button>
+            </div>
+
+            <form onSubmit={handleBulkImport}>
+              <div className="form-group" style={{ marginBottom: 20 }}>
+                <label style={{ fontSize: 12, color: "var(--text-primary)" }}>Select CSV file</label>
+                <input
+                  type="file"
+                  name="csv-file"
+                  accept=".csv"
+                  required
+                  style={{
+                    background: "var(--bg-hover)", color: "var(--text-primary)",
+                    border: "1px solid var(--border)", cursor: "pointer", padding: "8px 12px"
+                  }}
+                />
+              </div>
+
+              {bulkMsg && (
+                <div style={{
+                  fontSize: 13, padding: "10px 14px", borderRadius: "var(--radius-sm)", marginBottom: 16,
+                  background: bulkMsg.type === "error" ? "rgba(158, 50, 36, 0.08)" : "rgba(54, 101, 56, 0.08)",
+                  border: "1.5px solid " + (bulkMsg.type === "error" ? "var(--danger)" : "var(--success)"),
+                  color: bulkMsg.type === "error" ? "var(--danger)" : "var(--success)",
+                  lineHeight: 1.4,
+                  textAlign: "left"
+                }}>
+                  {bulkMsg.text}
+                </div>
+              )}
+
+              {bulkErrors.length > 0 && (
+                <div style={{
+                  maxHeight: 120, overflowY: "auto", fontSize: 11.5, background: "rgba(10,9,8,0.5)",
+                  padding: "10px 14px", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)",
+                  color: "var(--danger)", marginBottom: 20, textAlign: "left", display: "flex", flexDirection: "column", gap: 4
+                }}>
+                  <strong>CSV Parsing Errors ({bulkErrors.length}):</strong>
+                  {bulkErrors.map((err, i) => (
+                    <span key={i}>&bull; {err}</span>
+                  ))}
+                </div>
+              )}
+
+              <div style={{ display: "flex", gap: 12, justifyContent: "flex-end" }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => { setShowBulkModal(false); setBulkMsg(null); setBulkErrors([]); }}
+                  disabled={bulkImporting}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={bulkImporting}
+                >
+                  {bulkImporting ? "Processing CSV..." : "Process Bulk Upload"}
                 </button>
               </div>
             </form>

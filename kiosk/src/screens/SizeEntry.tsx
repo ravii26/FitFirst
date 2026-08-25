@@ -12,14 +12,28 @@ export default function SizeEntry({
   gender,
   value,
   onSelect,
+  onNext,
 }: {
   gender: "MEN" | "WOMEN" | "KIDS" | "UNISEX" | null;
   value: string;
   onSelect: (size: string) => void;
+  onNext: () => void;
 }) {
   const isKids = gender === "KIDS";
   const alphaList = gender === "WOMEN" ? WOMEN_ALPHA : MEN_ALPHA;
   const numericList = gender === "WOMEN" ? WOMEN_NUMERIC : MEN_NUMERIC;
+
+  const selectedSizes = value ? value.split(";").map((s) => s.trim()).filter(Boolean) : [];
+
+  const handleToggle = (s: string) => {
+    let next: string[];
+    if (selectedSizes.includes(s)) {
+      next = selectedSizes.filter((item) => item !== s);
+    } else {
+      next = [...selectedSizes, s];
+    }
+    onSelect(next.join(";"));
+  };
 
   return (
     <div className="screen" id="screen-size">
@@ -31,11 +45,11 @@ export default function SizeEntry({
               Step 02 / 04 &bull; Tailored Measurement
             </div>
             <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 36, color: "var(--paper)", fontWeight: 400, letterSpacing: "-0.01em" }}>
-              Select your primary fit size
+              Select your fit sizes
             </h2>
           </div>
-          <div style={{ fontSize: 13, color: "var(--stone-dim)", maxWidth: 280, textAlign: "right" }}>
-            Garments out of stock in this size will be hidden automatically.
+          <div style={{ fontSize: 13, color: "var(--stone-dim)", maxWidth: 300, textAlign: "right" }}>
+            Select one or more sizes that usually fit you. Out-of-stock items will be filtered automatically.
           </div>
         </div>
 
@@ -47,12 +61,12 @@ export default function SizeEntry({
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
               {KIDS_SIZES.map((s) => {
-                const isSel = value === s;
+                const isSel = selectedSizes.includes(s);
                 return (
                   <button
                     key={s}
                     id={`size-${s}`}
-                    onClick={() => onSelect(s)}
+                    onClick={() => handleToggle(s)}
                     style={{
                       minWidth: 90,
                       height: 56,
@@ -82,12 +96,12 @@ export default function SizeEntry({
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
                 {alphaList.map((s) => {
-                  const isSel = value === s;
+                  const isSel = selectedSizes.includes(s);
                   return (
                     <button
                       key={s}
                       id={`size-${s}`}
-                      onClick={() => onSelect(s)}
+                      onClick={() => handleToggle(s)}
                       style={{
                         minWidth: 84,
                         height: 54,
@@ -116,12 +130,12 @@ export default function SizeEntry({
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
                 {numericList.map((s) => {
-                  const isSel = value === s;
+                  const isSel = selectedSizes.includes(s);
                   return (
                     <button
                       key={s}
                       id={`size-${s}`}
-                      onClick={() => onSelect(s)}
+                      onClick={() => handleToggle(s)}
                       style={{
                         minWidth: 72,
                         height: 50,
@@ -145,19 +159,38 @@ export default function SizeEntry({
           </div>
         )}
 
-        {/* Sub-note */}
+        {/* Sub-note & CTA Action Bar */}
         <div style={{
           marginTop: 40,
           borderTop: "1px solid var(--line)",
-          paddingTop: 18,
+          paddingTop: 24,
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          fontSize: 12,
-          color: "var(--stone-dim)",
         }}>
-          <span>Selected Fit: <strong style={{ color: "var(--brass-bright)", fontFamily: "var(--font-mono)", fontSize: 14 }}>{value || "None chosen"}</strong></span>
-          <span>Need measurement tape? Ask your floor stylist.</span>
+          <div style={{ fontSize: 13, color: "var(--stone)" }}>
+            {selectedSizes.length > 0 ? (
+              <span>Selected Fit: <strong style={{ color: "var(--brass-bright)", fontFamily: "var(--font-mono)", fontSize: 14 }}>{selectedSizes.join(", ")}</strong></span>
+            ) : (
+              <span style={{ color: "var(--stone-dim)" }}>Please select at least one fit size</span>
+            )}
+          </div>
+
+          <button
+            id="size-next-btn"
+            className="btn-kiosk btn-primary"
+            onClick={onNext}
+            disabled={selectedSizes.length === 0}
+            style={{
+              minHeight: 52,
+              padding: "0 36px",
+              fontSize: 15,
+              opacity: selectedSizes.length === 0 ? 0.4 : 1,
+              cursor: selectedSizes.length === 0 ? "not-allowed" : "pointer"
+            }}
+          >
+            Continue to Preferences &arr;
+          </button>
         </div>
       </div>
     </div>

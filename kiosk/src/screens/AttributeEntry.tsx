@@ -18,8 +18,10 @@ const BODY_SHAPES: { value: BodyShape; label: string; sub: string; icon: JSX.Ele
     label: "Athletic & Straight",
     sub: "Balanced shoulders and hips",
     icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <rect x="7" y="4" width="10" height="16" rx="2" />
+      <svg width="32" height="40" viewBox="0 0 24 32" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <circle cx="12" cy="4" r="2.2" />
+        <path d="M12 6.2v2.3" />
+        <path d="M6.5 10 C8.5 10, 9.5 11, 10.5 15 C11 17, 11 18.5, 12 18.5 C13 18.5, 13 17, 13.5 15 C14.5 11, 15.5 10, 17.5 10 C18.5 10, 18.5 14, 18 18 C17.5 23, 17 28, 16 31 H8 C7 28, 6.5 23, 6 18 C5.5 14, 5.5 10, 6.5 10 Z" fill="currentColor" fillOpacity="0.06" />
       </svg>
     ),
   },
@@ -28,8 +30,10 @@ const BODY_SHAPES: { value: BodyShape; label: string; sub: string; icon: JSX.Ele
     label: "Pear / A-Line",
     sub: "Fuller hip taper & narrow shoulders",
     icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <path d="M12 4L4 20H20L12 4Z" />
+      <svg width="32" height="40" viewBox="0 0 24 32" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <circle cx="12" cy="4" r="2.2" />
+        <path d="M12 6.2v2.3" />
+        <path d="M8 10 C9.5 10, 10.5 13, 11 16.5 C11.5 18, 11.5 18.5, 12 18.5 C12.5 18.5, 12.5 18, 13 16.5 C13.5 13, 14.5 10, 16 10 C17.5 10, 18 14, 19.5 18 C21 22, 21.5 27, 17.5 31 H6.5 C2.5 27, 3 22, 4.5 18 C6 14, 6.5 10, 8 10 Z" fill="currentColor" fillOpacity="0.06" />
       </svg>
     ),
   },
@@ -38,8 +42,10 @@ const BODY_SHAPES: { value: BodyShape; label: string; sub: string; icon: JSX.Ele
     label: "Broad Shoulder",
     sub: "Structured upper frame",
     icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <path d="M4 4H20L12 20L4 4Z" />
+      <svg width="32" height="40" viewBox="0 0 24 32" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <circle cx="12" cy="4" r="2.2" />
+        <path d="M12 6.2v2.3" />
+        <path d="M5 10 C7.5 10, 9 13, 10.5 16.5 C11 18, 11.5 18.5, 12 18.5 C12.5 18.5, 13 18, 13.5 16.5 C15 13, 16.5 10, 19 10 C20.5 10, 19 14, 17.5 18 C16 22, 15 27, 14.5 31 H9.5 C9 27, 8 22, 6.5 18 C5 14, 3.5 10, 5 10 Z" fill="currentColor" fillOpacity="0.06" />
       </svg>
     ),
   },
@@ -48,8 +54,10 @@ const BODY_SHAPES: { value: BodyShape; label: string; sub: string; icon: JSX.Ele
     label: "Curvy & Defined",
     sub: "Proportional frame & waist definition",
     icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <path d="M6 4H18L13 12L18 20H6L11 12L6 4Z" />
+      <svg width="32" height="40" viewBox="0 0 24 32" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <circle cx="12" cy="4" r="2.2" />
+        <path d="M12 6.2v2.3" />
+        <path d="M6 10 C8 10, 9.5 13, 10.5 16.5 C11 18, 11.5 18.5, 12 18.5 C12.5 18.5, 13 18, 13.5 16.5 C14.5 13, 16 10, 18 10 C19.5 10, 19.5 14, 19.5 18 C19.5 23, 17 28, 15.5 31 H8.5 C7 28, 4.5 23, 4.5 18 C4.5 14, 4.5 10, 6 10 Z" fill="currentColor" fillOpacity="0.06" />
       </svg>
     ),
   },

@@ -75,7 +75,10 @@ export function scoreProducts(
   candidates: ProductCandidate[]
 ): ScoredProduct[] {
   const normalizedPrefs = session.preferenceTags.map((t) => t.toUpperCase());
-  const normalizedSize = session.sizeInput.toUpperCase().trim();
+  const selectedSizes = session.sizeInput
+    .split(";")
+    .map((s) => s.toUpperCase().trim())
+    .filter(Boolean);
 
   const scored: ScoredProduct[] = [];
 
@@ -84,8 +87,8 @@ export function scoreProducts(
     if (!product.isActive || product.stockQty <= 0) continue;
 
     // Hard Filter 2: Size match
-    const sizeMatch = product.sizeRange.some(
-      (s) => s.toUpperCase().trim() === normalizedSize
+    const sizeMatch = product.sizeRange.some((s) =>
+      selectedSizes.includes(s.toUpperCase().trim())
     );
     if (!sizeMatch) continue;
 

@@ -31,11 +31,9 @@ const IconChoice = () => (
 
 export default function PrivacyNotice({
   onContinue,
-  onCameraScan,
   onDecline,
 }: {
   onContinue: () => void;
-  onCameraScan?: () => void;
   onDecline: () => void;
 }) {
   const items = [
@@ -96,21 +94,12 @@ export default function PrivacyNotice({
       </div>
 
       <div style={{ display: "flex", gap: 14, flexWrap: "wrap", justifyContent: "center" }}>
-        {onCameraScan && (
-          <button
-            id="privacy-camera-btn"
-            className="btn-kiosk btn-primary"
-            onClick={onCameraScan}
-          >
-            Start Fast Camera Scan &rarr;
-          </button>
-        )}
         <button
           id="privacy-continue-btn"
-          className="btn-kiosk btn-ghost"
+          className="btn-kiosk btn-primary"
           onClick={onContinue}
         >
-          Manual Selection &rarr;
+          Continue to Shop &rarr;
         </button>
         <button
           id="privacy-decline-btn"

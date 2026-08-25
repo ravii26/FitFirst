@@ -1,9 +1,7 @@
-// On-Device Camera Scan Screen — Phase 2 Vision AI Prototype
+// On-Device Camera Scan Screen — Complexion Calibration Helper
 
 import { useEffect, useRef, useState } from "react";
-import { sampleSkinToneFromCanvas, sampleBodyShapeFromCanvas, SkinToneBucket, BodyShapeBucket } from "../utils/visionAnalyzer";
-
-type Gender = "MEN" | "WOMEN" | "KIDS" | "UNISEX";
+import { sampleSkinToneFromCanvas, SkinToneBucket } from "../utils/visionAnalyzer";
 
 const skinColorMap: Record<string, string> = {
   FAIR: "#F7E6D0",
@@ -13,12 +11,10 @@ const skinColorMap: Record<string, string> = {
 };
 
 export default function CameraScan({
-  initialGender,
   onDetected,
   onCancel,
 }: {
-  initialGender: Gender | null;
-  onDetected: (skin: SkinToneBucket, body: BodyShapeBucket, gender: Gender) => void;
+  onDetected: (skin: SkinToneBucket) => void;
   onCancel: () => void;
 }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -30,8 +26,6 @@ export default function CameraScan({
   const [cameraError, setCameraError] = useState<string | null>(null);
 
   const [detectedSkin, setDetectedSkin] = useState<SkinToneBucket>("WHEATISH");
-  const [detectedBody, setDetectedBody] = useState<BodyShapeBucket>("HOURGLASS");
-  const [selectedGender, setSelectedGender] = useState<Gender>(initialGender || "MEN");
   const [scanComplete, setScanComplete] = useState(false);
 
   // Initialize camera stream
@@ -82,9 +76,7 @@ export default function CameraScan({
           if (ctx) {
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
             const { tone } = sampleSkinToneFromCanvas(canvas);
-            const shape = sampleBodyShapeFromCanvas(canvas);
             setDetectedSkin(tone);
-            setDetectedBody(shape);
           }
         }
         setCountdown((c) => c - 1);
@@ -104,7 +96,7 @@ export default function CameraScan({
   }, [countdown, scanning, cameraError, stream]);
 
   const handleConfirm = () => {
-    onDetected(detectedSkin, detectedBody, selectedGender);
+    onDetected(detectedSkin);
   };
 
   return (
@@ -128,15 +120,15 @@ export default function CameraScan({
           textTransform: "uppercase",
           marginBottom: 10,
         }}>
-          100% On-Device &bull; No Photos Saved
+          100% On-Device &bull; Privacy Guaranteed
         </div>
         <h2 className="h2" style={{ marginBottom: 6 }}>
-          {scanning ? "Analyzing Tone & Silhouette" : "Analysis Complete"}
+          {scanning ? "Calibrating Complexion Tone" : "Calibration Complete"}
         </h2>
         <p className="subtitle" style={{ fontSize: 14, margin: "0 auto", maxWidth: 500 }}>
           {scanning
-            ? "Align your upper body inside the frame below for automatic estimation."
-            : "Review your detected attributes or make manual adjustments."}
+            ? "Align your face/neck inside the camera frame below to analyze complexion tone."
+            : "Review your calibrated complexion tone below before returning to attributes."}
         </p>
       </div>
 
@@ -291,98 +283,47 @@ export default function CameraScan({
                 Calibrated Scan Profile
               </div>
 
-              {/* Department / Gender selector */}
-              <div style={{ marginBottom: 24 }}>
-                <div style={{ fontSize: 11, color: "var(--stone-dim)", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.06em", marginBottom: 10 }}>
-                  Selected Department
+              {/* Skin Tone */}
+              <div style={{
+                background: "var(--ink-3)",
+                padding: "18px 24px",
+                borderRadius: "var(--radius-md)",
+                border: "1px solid var(--line)",
+                marginBottom: 20,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                gap: 8,
+              }}>
+                <div style={{ fontSize: 10, color: "var(--stone-dim)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  Estimated Complexion Tone
                 </div>
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                  {(["MEN", "WOMEN", "KIDS", "UNISEX"] as Gender[]).map((g) => (
-                    <button
-                      key={g}
-                      onClick={() => setSelectedGender(g)}
-                      style={{
-                        padding: "8px 18px",
-                        borderRadius: "var(--radius-full)",
-                        fontSize: 13,
-                        fontWeight: 600,
-                        border: "1.5px solid " + (selectedGender === g ? "var(--brass)" : "var(--line)"),
-                        background: selectedGender === g ? "var(--brass-dim)" : "var(--ink-2)",
-                        color: selectedGender === g ? "var(--brass-bright)" : "var(--stone)",
-                        cursor: "pointer",
-                        transition: "all 0.15s var(--ease-out)",
-                        boxShadow: selectedGender === g ? "0 4px 12px rgba(22, 20, 18, 0.04)" : "none",
-                      }}
-                    >
-                      {g === "MEN" ? "Men's" : g === "WOMEN" ? "Women's" : g === "KIDS" ? "Kids" : "Unisex"}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Attributes badges */}
-              <div style={{ display: "flex", gap: 16, marginBottom: 20 }}>
-                {/* Skin Tone */}
-                <div style={{
-                  background: "var(--ink-3)",
-                  padding: "14px 18px",
-                  borderRadius: "var(--radius-md)",
-                  border: "1px solid var(--line)",
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                  gap: 8,
-                }}>
-                  <div style={{ fontSize: 10, color: "var(--stone-dim)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                    Complexion Tone
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <div style={{
-                      width: 14,
-                      height: 14,
-                      borderRadius: "50%",
-                      background: skinColorMap[detectedSkin] || "#D49C65",
-                      border: "1px solid rgba(0,0,0,0.15)",
-                    }} />
-                    <strong style={{ fontFamily: "var(--font-display)", fontSize: 14, color: "var(--paper)" }}>
-                      {detectedSkin.charAt(0) + detectedSkin.slice(1).toLowerCase()}
-                    </strong>
-                  </div>
-                </div>
-
-                {/* Body Shape */}
-                <div style={{
-                  background: "var(--ink-3)",
-                  padding: "14px 18px",
-                  borderRadius: "var(--radius-md)",
-                  border: "1px solid var(--line)",
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                  gap: 8,
-                }}>
-                  <div style={{ fontSize: 10, color: "var(--stone-dim)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                    Silhouette Cut
-                  </div>
-                  <strong style={{ fontFamily: "var(--font-display)", fontSize: 14, color: "var(--paper)" }}>
-                    {detectedBody === "INVERTED_T" ? "Broad Shoulder" : detectedBody.charAt(0) + detectedBody.slice(1).toLowerCase()}
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: "50%",
+                    background: skinColorMap[detectedSkin] || "#D49C65",
+                    border: "1px solid rgba(0,0,0,0.15)",
+                  }} />
+                  <strong style={{ fontFamily: "var(--font-display)", fontSize: 18, color: "var(--paper)" }}>
+                    {detectedSkin.charAt(0) + detectedSkin.slice(1).toLowerCase()}
                   </strong>
                 </div>
               </div>
 
               <p style={{ fontSize: 12, color: "var(--stone-dim)", maxWidth: 400, marginBottom: 24, lineHeight: 1.5 }}>
-                These are on-device camera estimates, not precise measurements. If either detected value looks incorrect, you can adjust them manually.
+                This estimation is computed on-device using local color science analysis. You will confirm your silhouette manually on the next screen.
               </p>
 
               <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                 <button
+                  id="confirm-complexion-btn"
                   className="btn-kiosk btn-primary"
                   onClick={handleConfirm}
                   style={{ fontSize: 15, padding: "0 36px", minHeight: 52 }}
                 >
-                  Use These Attributes &rarr;
+                  Use Calibrated Complexion &rarr;
                 </button>
                 <button
                   className="btn-kiosk btn-ghost"

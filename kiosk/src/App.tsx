@@ -121,7 +121,6 @@ export default function App() {
       {screen === "PRIVACY" && (
         <PrivacyNotice
           onContinue={() => go("GENDER")}
-          onCameraScan={() => go("CAMERA")}
           onDecline={reset}
         />
       )}
@@ -135,7 +134,8 @@ export default function App() {
         <SizeEntry
           gender={session.gender}
           value={session.sizeInput}
-          onSelect={(s) => { updateSession({ sizeInput: s }); go("PREFS"); }}
+          onSelect={(s) => updateSession({ sizeInput: s })}
+          onNext={() => go("PREFS")}
         />
       )}
       {screen === "PREFS" && (
@@ -159,10 +159,9 @@ export default function App() {
       )}
       {screen === "CAMERA" && (
         <CameraScan
-          initialGender={session.gender}
-          onDetected={(skin, body, gender) => {
-            updateSession({ skinToneBucket: skin, bodyShapeBucket: body, gender });
-            go("RECOMMENDATIONS");
+          onDetected={(skin) => {
+            updateSession({ skinToneBucket: skin });
+            go("ATTRIBUTES");
           }}
           onCancel={() => go("ATTRIBUTES")}
         />

@@ -1,0 +1,5 @@
+sku,name,category,gender,colorFamily,pattern,fitType,sizeRange,price,stockQty,daysInStock,imageUrl
+KRT-W-001,Handcrafted Silk Kurta,KURTA,WOMEN,JEWEL_TONES,EMBROIDERED,FLARED_ANARKALI,XS;S;M;L;XL,4500,12,14,https://images.unsplash.com/photo-1610030469983-98e550d6193c
+SHR-M-002,Tailored Linen Shirt,SHIRT,MEN,LIGHT_PASTELS,SOLID,REGULAR,S;M;L;XL,2499,8,5,https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf
+SAR-W-003,Banarasi Katan Silk Saree,SAREE,WOMEN,BRIGHT_WARM,GEOMETRIC,REGULAR,UNISEX,12500,3,45,https://images.unsplash.com/photo-1617627143750-d86bc21e42bb
+KDS-B-004,Boys Festive Dhoti Set,KIDS_KURTA,KIDS,BRIGHT_WARM,SOLID,REGULAR,2Y;4Y;6Y;8Y,1899,15,3,https://images.unsplash.com/photo-1610030469983-98e550d6193c
