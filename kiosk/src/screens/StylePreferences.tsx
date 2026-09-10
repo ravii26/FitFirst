@@ -36,11 +36,11 @@ const KIDS_PREFS: PrefOption[] = [
   { tag: "KIDS_KURTA", label: "Junior Kurtas", category: "GARMENT" },
   { tag: "KIDS_DRESS", label: "Party Frocks", category: "GARMENT" },
   { tag: "KIDS_SHIRT", label: "Smart Shirts", category: "GARMENT" },
-  { tag: "FESTIVE", label: "Festive Sets", category: "GARMENT" },
+  { tag: "KIDS_TROUSERS", label: "Trousers", category: "GARMENT" },
   { tag: "FLORAL", label: "Vibrant Prints", category: "SURFACE" },
   { tag: "CHECKS", label: "Classic Checks", category: "SURFACE" },
   { tag: "BRIGHT_WARM", label: "Celebration Tones", category: "SURFACE" },
-  { tag: "CASUAL", label: "Daily Cottons", category: "SURFACE" },
+  { tag: "SOLID", label: "Plain colours", category: "SURFACE" },
 ];
 
 function getPrefs(gender: "MEN" | "WOMEN" | "KIDS" | "UNISEX" | null): PrefOption[] {

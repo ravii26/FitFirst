@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { apiFetch } from "../lib/api";
+import { apiFetch, ApiError } from "../lib/api";
 
 const API = "/api";
 
@@ -92,6 +92,8 @@ interface Product {
 }
 
 export default function Inventory() {
+  const [pageError, setPageError] = useState("");
+  const [creating, setCreating] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -233,13 +235,6 @@ export default function Inventory() {
       });
 
       const data = await res.json();
-      if (!res.ok) {
-        if (data.errors) {
-          setBulkErrors(data.errors);
-          throw new Error(data.message || "CSV validation failed");
-        }
-        throw new Error(data.message || "Bulk import failed");
-      }
 
       setBulkMsg({
         type: "success",
@@ -252,6 +247,7 @@ export default function Inventory() {
         setBulkErrors([]);
       }, 2000);
     } catch (err: any) {
+      if (err instanceof ApiError && Array.isArray(err.details.errors)) setBulkErrors(err.details.errors);
       setBulkMsg({ type: "error", text: err.message || "Bulk import failed" });
     } finally {
       setBulkImporting(false);
@@ -274,6 +270,7 @@ export default function Inventory() {
 
   async function loadProducts() {
     setLoading(true);
+    setPageError("");
     try {
       const params = new URLSearchParams();
       if (filterGender) params.set("gender", filterGender);
@@ -281,7 +278,7 @@ export default function Inventory() {
       if (search) params.set("search", search);
       const res = await apiFetch(`${API}/products?${params}`);
       setProducts(await res.json());
-    } finally {
+    } catch (e) { setPageError(e instanceof Error ? e.message : "Could not load products"); } finally {
       setLoading(false);
     }
   }
@@ -304,23 +301,18 @@ export default function Inventory() {
   };
 
   const saveStock = async (id: string) => {
-    setSavingStock(true);
-    await apiFetch(`${API}/products/${id}/stock`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ stockQty: stockValue }),
-    });
-    setSavingStock(false);
-    setEditingStock(null);
-    setSuccessId(id);
-    setTimeout(() => setSuccessId(null), 2000);
-    loadProducts();
+    if (!Number.isInteger(stockValue) || stockValue < 0) { setPageError("Enter a whole stock quantity of zero or more."); return; }
+    setSavingStock(true); setPageError("");
+    try {
+      await apiFetch(`${API}/products/${id}/stock`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ stockQty: stockValue }) });
+      setEditingStock(null); setSuccessId(id); setTimeout(() => setSuccessId(null), 2000); await loadProducts();
+    } catch (e) { setPageError(e instanceof Error ? e.message : "Could not save stock"); }
+    finally { setSavingStock(false); }
   };
-
   const deactivate = async (id: string) => {
     if (!confirm("Mark this product as inactive? It won't appear in recommendations.")) return;
-    await apiFetch(`${API}/products/${id}`, { method: "DELETE" });
-    loadProducts();
+    try { await apiFetch(`${API}/products/${id}`, { method: "DELETE" }); await loadProducts(); }
+    catch (e) { setPageError(e instanceof Error ? e.message : "Could not deactivate product"); }
   };
 
   // Upload Photo handler
@@ -370,6 +362,8 @@ export default function Inventory() {
   // Create Product handler
   const handleCreateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (creating) return;
+    setCreating(true);
     try {
       const sizes = newProduct.sizeRange.split(",").map((s) => s.trim()).filter(Boolean);
       const res = await apiFetch(`${API}/products`, {
@@ -398,7 +392,7 @@ export default function Inventory() {
       loadProducts();
     } catch (err: any) {
       alert(err.message);
-    }
+    } finally { setCreating(false); }
   };
 
   const filtered = products.filter((p) =>
@@ -409,6 +403,7 @@ export default function Inventory() {
 
   return (
     <div className="fade-in">
+      {pageError && <div role="alert" className="alert alert-error">{pageError} <button className="btn btn-secondary" onClick={loadProducts}>Retry</button></div>}
       <div className="page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 16 }}>
         <div>
           <h1 className="page-title">Showroom Catalog & Garment Inventory</h1>
@@ -860,8 +855,8 @@ export default function Inventory() {
                 <button type="button" className="btn btn-secondary" onClick={() => setShowAddModal(false)}>
                   Cancel
                 </button>
-                <button type="submit" className="btn btn-primary">
-                  Create SKU
+                <button type="submit" className="btn btn-primary" disabled={creating}>
+                  {creating ? "Saving…" : "Create SKU"}
                 </button>
               </div>
             </form>

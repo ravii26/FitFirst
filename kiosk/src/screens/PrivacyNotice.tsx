@@ -40,17 +40,17 @@ export default function PrivacyNotice({
     {
       icon: <IconLock />,
       title: "What we observe",
-      text: "The kiosk briefly analyzes skin tone & body silhouette on-device solely to filter flattering in-store garments.",
+      text: "You select your size, style, skin tone and body shape. The optional camera estimates skin tone only.",
     },
     {
       icon: <IconNoPhoto />,
       title: "No photos stored",
-      text: "No photo, video, or biometric data is ever saved or transmitted. Analysis runs 100% locally and is deleted immediately.",
+      text: "Camera images are processed in this browser and are not uploaded or saved by FitFirst.",
     },
     {
       icon: <IconDocument />,
       title: "What you share",
-      text: "Your size & style preferences are used temporarily to show stock recommendations. No identity is collected.",
+      text: "Your selected attributes, size, preferences and recommendations are saved in the store database so staff can assist and record purchases. We do not ask for your name.",
     },
     {
       icon: <IconChoice />,
@@ -63,7 +63,7 @@ export default function PrivacyNotice({
     <div className="screen screen-scrollable" id="screen-privacy" style={{ paddingTop: 96, paddingBottom: 60 }}>
       <h2 className="h2" style={{ marginBottom: 8 }}>Privacy & Data Guarantee</h2>
       <p className="subtitle" style={{ marginBottom: 32 }}>
-        Transparent, on-device analysis built in accordance with India's DPDP Act.
+        Understand what is processed on this device and what the store saves.
       </p>
 
       <div className="privacy-box" style={{ marginBottom: 32 }}>
@@ -111,7 +111,7 @@ export default function PrivacyNotice({
       </div>
 
       <p style={{ marginTop: 20, fontSize: 11, color: "var(--stone-dim)", maxWidth: 540, textAlign: "center" }}>
-        Built in full compliance with India's Digital Personal Data Protection (DPDP) Act. Zero cloud photo storage.
+        Declining returns to the welcome screen. You can ask a staff member for help without using the kiosk.
       </p>
     </div>
   );

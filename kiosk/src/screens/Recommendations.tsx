@@ -5,24 +5,8 @@ import type { KioskSession } from "../App";
 
 const API = "/api";
 
-const CATEGORY_IMAGES: Record<string, string> = {
-  KURTA: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&auto=format&fit=crop&q=80",
-  SAREE: "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=600&auto=format&fit=crop&q=80",
-  SALWAR_KAMEEZ: "https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=600&auto=format&fit=crop&q=80",
-  LEHENGA: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&auto=format&fit=crop&q=80",
-  SHERWANI: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&auto=format&fit=crop&q=80",
-  SHIRT: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&auto=format&fit=crop&q=80",
-  TROUSERS: "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=600&auto=format&fit=crop&q=80",
-  JEANS: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=600&auto=format&fit=crop&q=80",
-  DRESS: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=600&auto=format&fit=crop&q=80",
-  JACKET: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600&auto=format&fit=crop&q=80",
-  KIDS_KURTA: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&auto=format&fit=crop&q=80",
-  KIDS_DRESS: "https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?w=600&auto=format&fit=crop&q=80",
-  KIDS_SHIRT: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&auto=format&fit=crop&q=80",
-};
-
 const LOADING_STAGES = [
-  "Analyzing silhouette & undertone",
+  "Checking your selected preferences",
   "Filtering showroom floor inventory",
   "Curating tailored lookbook",
 ];
@@ -45,7 +29,7 @@ interface RecommendedProduct {
 }
 
 function imageFor(rec: RecommendedProduct) {
-  return rec.product.imageUrl || CATEGORY_IMAGES[rec.product.category] || CATEGORY_IMAGES.KURTA;
+  return rec.product.imageUrl || "";
 }
 
 export default function Recommendations({
@@ -53,12 +37,15 @@ export default function Recommendations({
   onSessionCreated,
   onDone,
   onReset,
+  onEdit,
 }: {
   session: KioskSession;
   onSessionCreated: (id: string) => void;
   onDone: () => void;
   onReset: () => void;
+  onEdit: () => void;
 }) {
+  const [attempt, setAttempt] = useState(0);
   const [recs, setRecs] = useState<RecommendedProduct[]>([]);
   const [isSizeRelaxed, setIsSizeRelaxed] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -76,6 +63,9 @@ export default function Recommendations({
 
   useEffect(() => {
     let sessionId = session.sessionId;
+    let active = true;
+    setLoading(true);
+    setError(null);
 
     async function run() {
       try {
@@ -84,6 +74,7 @@ export default function Recommendations({
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
+              requestKey: session.requestKey,
               skinToneBucket: session.skinToneBucket || "WHEATISH",
               bodyShapeBucket: session.bodyShapeBucket || "HOURGLASS",
               gender: session.gender || "WOMEN",
@@ -94,23 +85,27 @@ export default function Recommendations({
           if (!res.ok) throw new Error("Failed to initialize customer session");
           const s = await res.json();
           sessionId = s.id;
+          if (!active) return;
           onSessionCreated(s.id);
         }
 
-        const recRes = await fetch(`${API}/sessions/${sessionId}/recommendations`);
+        const recRes = await fetch(`${API}/sessions/${sessionId}/recommendations`, { headers: { "x-kiosk-key": session.requestKey } });
         if (!recRes.ok) throw new Error("Failed to fetch recommendations");
         const data = await recRes.json();
+        if (!active) return;
         setRecs(data.recommendations ?? []);
         setIsSizeRelaxed(data.isSizeRelaxed ?? false);
       } catch (e: any) {
+        if (!active) return;
         setError(e.message ?? "Could not load recommendations. Please speak with a store stylist.");
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     }
 
     run();
-  }, []);
+    return () => { active = false; };
+  }, [attempt]);
 
   if (loading) {
     return (
@@ -150,7 +145,8 @@ export default function Recommendations({
             Unable to Load Floor Collection
           </h2>
           <p style={{ color: "var(--stone)", marginBottom: 28, fontSize: 14 }}>{error}</p>
-          <button className="btn-kiosk btn-primary" onClick={onReset}>Restart Consultation</button>
+          <button className="btn-kiosk btn-primary" onClick={() => setAttempt(n => n + 1)}>Try again</button>
+          <button className="btn-kiosk btn-ghost" onClick={onReset}>Start over</button>
         </div>
       </div>
     );
@@ -170,7 +166,7 @@ export default function Recommendations({
             Our current showroom inventory has limited stock for this specific combination. Our floor stylists can check upcoming delivery racks or recommend alternative silhouettes.
           </p>
           <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
-            <button className="btn-kiosk btn-secondary" onClick={onReset}>
+            <button className="btn-kiosk btn-secondary" onClick={onEdit}>
               Adjust Preferences
             </button>
             <button className="btn-kiosk btn-primary" onClick={onDone}>
@@ -244,12 +240,13 @@ export default function Recommendations({
             }}
           >
             <div style={{ height: 260, position: "relative", overflow: "hidden", background: "var(--ink-3)" }}>
-              <img
+              {!imageFor(activeRec) && <div style={{ padding: 40, textAlign: "center" }}>Product photo not yet available</div>}
+              {imageFor(activeRec) && <img
                 src={imageFor(activeRec)}
                 alt={activeRec.product.name}
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                onError={(e) => { (e.target as HTMLElement).style.display = "none"; }}
-              />
+                onError={(e) => { e.currentTarget.alt = "Product photo unavailable"; }}
+              />}
               <div style={{
                 position: "absolute",
                 top: 14,
@@ -331,12 +328,12 @@ export default function Recommendations({
                   </div>
 
                   <div style={{ width: 56, height: 56, borderRadius: "var(--radius-sm)", overflow: "hidden", background: "var(--ink-3)" }}>
-                    <img
+                    {imageFor(rec) ? <img
                       src={imageFor(rec)}
                       alt={rec.product.name}
                       style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                      onError={(e) => { (e.target as HTMLElement).style.visibility = "hidden"; }}
-                    />
+                      onError={(e) => { e.currentTarget.alt = "Photo unavailable"; }}
+                    /> : <span style={{ fontSize: 10 }}>No photo</span>}
                   </div>
 
                   <div>
@@ -357,6 +354,8 @@ export default function Recommendations({
           )}
         </div>
 
+        <p style={{ marginBottom: 16, fontSize: 13 }}>These are the items saved for this visit. Staff will confirm current size availability before purchase.</p>
+        <button className="btn-kiosk btn-ghost" onClick={onEdit}>Edit preferences</button>
         {/* Footer Action Bar */}
         <div style={{
           borderTop: "1px solid var(--line)",
@@ -368,7 +367,7 @@ export default function Recommendations({
           <div style={{ fontSize: 12, color: "var(--stone-dim)" }}>
             {isSizeRelaxed
               ? "Stylist will pull these adjacent sized pieces for fitting."
-              : `Stylist will pull these exact pieces in Size ${session.sizeInput} for fitting.`}
+              : `Show your code to staff to check these pieces for fitting.`}
           </div>
 
           <button

@@ -13,7 +13,10 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:reset": "prisma migrate reset --force && tsx prisma/seed.ts",
     "db:studio": "prisma studio",
-    "db:generate": "prisma generate"
+    "db:generate": "prisma generate",
+    "test:integration": "tsx scripts/check-stage1.ts",
+    "db:deploy": "prisma migrate deploy",
+    "db:backup": "node scripts/backup-local.cjs"
   },
   "dependencies": {
     "@fastify/cors": "^9.0.1",

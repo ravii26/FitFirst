@@ -32,7 +32,7 @@ export default function Welcome({ onStart }: { onStart: () => void }) {
         </div>
 
         <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--stone-dim)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-          Live Floor Sync &bull; Ahmedabad Showroom
+          Ahmedabad Showroom
         </div>
       </div>
 
@@ -63,7 +63,7 @@ export default function Welcome({ onStart }: { onStart: () => void }) {
             Discover what fits your <span style={{ fontStyle: "italic", color: "var(--brass-bright)" }}>complexion, size & cut.</span>
           </h1>
           <p style={{ fontSize: 16, color: "var(--stone)", lineHeight: 1.6, maxWidth: 520 }}>
-            Answer three quick questions to immediately filter pieces currently in stock on our showroom floor, calibrated to your natural undertone and silhouette.
+            Answer a few quick questions to immediately filter pieces currently in stock on our showroom floor, matched to your selected preferences.
           </p>
         </div>
 
@@ -82,7 +82,7 @@ export default function Welcome({ onStart }: { onStart: () => void }) {
               60-Second Style Match
             </div>
             <div style={{ fontSize: 13, color: "var(--stone-dim)", lineHeight: 1.5 }}>
-              On-device privacy guarantee &bull; Zero photo storage &bull; Real in-stock inventory
+              Camera photos stay on this device &bull; Matches from available inventory
             </div>
           </div>
 
@@ -125,7 +125,7 @@ export default function Welcome({ onStart }: { onStart: () => void }) {
         borderTop: "1px solid var(--line)",
         paddingTop: 16,
       }}>
-        <span>Compliant with India DPDP Act &bull; 100% Local On-Device Analysis</span>
+        <span>Optional camera estimate &bull; Camera images stay on this device</span>
         <a
           href="http://localhost:5173"
           target="_blank"

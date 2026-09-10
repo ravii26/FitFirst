@@ -1,17 +1,15 @@
-/// <reference types="vite/client" />
+export class ApiError extends Error {
+  constructor(message: string, public details: { errors?: string[] } = {}) { super(message); }
+}
 
-// The backend now requires this same PIN (as x-dashboard-pin) on every
-// staff-only endpoint — see backend/src/authGuard.ts. Previously the PIN
-// only gated the dashboard UI client-side, so anyone with network access
-// to the backend could call these endpoints directly.
-const DASHBOARD_PIN = import.meta.env.VITE_DASHBOARD_PIN ?? "1234";
-
-export function apiFetch(input: string, init: RequestInit = {}) {
-  return fetch(input, {
-    ...init,
-    headers: {
-      ...init.headers,
-      "x-dashboard-pin": DASHBOARD_PIN,
-    },
-  });
+export async function apiFetch(input: string, init: RequestInit = {}) {
+  const headers = new Headers(init.headers);
+  headers.set("x-fitfirst-request", "1");
+  const response = await fetch(input, { ...init, credentials: "same-origin", headers });
+  if (!response.ok) {
+    const data = await response.clone().json().catch(() => ({}));
+    if (response.status === 401 && !input.includes("/auth/")) window.dispatchEvent(new Event("fitfirst:unauthorized"));
+    throw new ApiError(data.message || `Request failed (${response.status}). Please try again.`, data);
+  }
+  return response;
 }

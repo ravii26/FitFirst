@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Welcome from "./screens/Welcome";
 import PrivacyNotice from "./screens/PrivacyNotice";
 import GenderSelect from "./screens/GenderSelect";
@@ -26,6 +26,7 @@ export type Screen =
 const STEP_SCREENS: Screen[] = ["GENDER", "SIZE", "PREFS", "ATTRIBUTES", "RECOMMENDATIONS"];
 
 export interface KioskSession {
+  requestKey: string;
   gender: "MEN" | "WOMEN" | "KIDS" | "UNISEX" | null;
   sizeInput: string;
   preferenceTags: string[];
@@ -35,6 +36,7 @@ export interface KioskSession {
 }
 
 const EMPTY_SESSION: KioskSession = {
+  requestKey: "",
   gender: null,
   sizeInput: "",
   preferenceTags: [],
@@ -48,7 +50,7 @@ const HANDOFF_AUTO_RESET_SECS = 90;
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>("WELCOME");
-  const [session, setSession] = useState<KioskSession>(EMPTY_SESSION);
+  const [session, setSession] = useState<KioskSession>(() => ({ ...EMPTY_SESSION, requestKey: crypto.randomUUID() }));
   const [history, setHistory] = useState<Screen[]>([]);
 
   const go = useCallback((next: Screen) => {
@@ -66,12 +68,35 @@ export default function App() {
 
   const reset = useCallback(() => {
     setScreen("WELCOME");
-    setSession(EMPTY_SESSION);
+    setSession({ ...EMPTY_SESSION, requestKey: crypto.randomUUID() });
     setHistory([]);
   }, []);
 
   const updateSession = (updates: Partial<KioskSession>) => {
     setSession((prev) => ({ ...prev, ...updates }));
+  };
+
+  const lastActivity = useRef(Date.now());
+  const [idleRemaining, setIdleRemaining] = useState<number | null>(null);
+  const continueSession = useCallback(() => { lastActivity.current = Date.now(); setIdleRemaining(null); }, []);
+  useEffect(() => {
+    continueSession();
+    if (screen === "WELCOME" || screen === "HANDOFF") return;
+    const activity = () => { lastActivity.current = Date.now(); };
+    window.addEventListener("pointerdown", activity);
+    window.addEventListener("keydown", activity);
+    window.addEventListener("scroll", activity, true);
+    const timer = window.setInterval(() => {
+      const remaining = Math.ceil((120000 - (Date.now() - lastActivity.current)) / 1000);
+      if (remaining <= 0) { reset(); setIdleRemaining(null); }
+      else setIdleRemaining(remaining <= 20 ? remaining : null);
+    }, 1000);
+    return () => { clearInterval(timer); window.removeEventListener("pointerdown", activity); window.removeEventListener("keydown", activity); window.removeEventListener("scroll", activity, true); };
+  }, [screen, reset, continueSession]);
+  const editPreferences = () => {
+    setSession(prev => ({ ...prev, sessionId: null, requestKey: crypto.randomUUID() }));
+    setHistory(["WELCOME", "PRIVACY", "GENDER", "SIZE"]);
+    setScreen("PREFS");
   };
 
   // Step progress
@@ -112,7 +137,7 @@ export default function App() {
               ))}
             </div>
           )}
-          <div style={{ width: 80 }} />
+          <button className="btn-kiosk btn-ghost" onClick={reset} style={{ minHeight: 40, padding: "0 16px", fontSize: 13 }}>Start over</button>
         </header>
       )}
 
@@ -172,6 +197,7 @@ export default function App() {
           onSessionCreated={(id) => updateSession({ sessionId: id })}
           onDone={() => go("HANDOFF")}
           onReset={reset}
+          onEdit={editPreferences}
         />
       )}
       {screen === "HANDOFF" && (
@@ -182,6 +208,9 @@ export default function App() {
         />
       )}
 
+      {idleRemaining !== null && <div role="alertdialog" aria-modal="true" aria-label="Keep shopping?" style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(0,0,0,.65)", display: "grid", placeItems: "center" }}>
+        <div className="privacy-box" style={{ textAlign: "center" }}><h2>Still shopping?</h2><p>Your answers will be cleared in {idleRemaining} seconds.</p><button className="btn-kiosk btn-primary" onClick={continueSession}>Keep shopping</button><button className="btn-kiosk btn-ghost" onClick={reset}>Finish</button></div>
+      </div>}
       {/* Back button */}
       {showBack && (
         <button id="kiosk-back-btn" className="back-btn" onClick={back}>

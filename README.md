@@ -51,8 +51,9 @@ Or if using a local Postgres, ensure it's running and the `DATABASE_URL` in `bac
 ```bash
 cd backend
 npx prisma generate
-npx prisma migrate dev --name init
-npm run db:seed
+npm run db:deploy
+# Optional: demo data ONLY in a separate, empty development database
+# FITFIRST_DEMO_SEED=1 npm run db:seed
 cd ..
 ```
 
@@ -64,7 +65,7 @@ npm run dev
 
 Opens:
 - Backend API: http://localhost:3000
-- Staff Dashboard: http://localhost:5173 (PIN: 1234)
+- Staff Dashboard: http://localhost:5173 (use the PIN configured in backend/.env)
 - Customer Kiosk: http://localhost:5174
 
 ---
@@ -166,3 +167,11 @@ cd backend && npm test
 ---
 
 *Built by Ravi · Ahmedabad, India · Phase 1 MVP*
+
+## Stage 1 testing
+
+See [STAGE_1_TEST_GUIDE.md](STAGE_1_TEST_GUIDE.md) for the current checkpoint. Staff authentication uses a server-issued HttpOnly cookie; no frontend PIN configuration is needed. The backend loads `backend/.env` before creating its database client.
+
+Run `npm test` and `npm run build` from the project root. Run `npm run test:integration --workspace=backend` for PostgreSQL concurrency and rollback checks; this creates and removes a separate temporary schema in the configured database. Run `npm run db:backup --workspace=backend` to create a private local pg_dump backup (requires PostgreSQL command-line tools). Keep backups outside this repository.
+
+The demo seed refuses production and nonempty databases. Its generated figures are demonstration data, not evidence of store performance. Do not run `db:reset` on a store database.

@@ -93,7 +93,7 @@ export default function AttributeEntry({
               Step 04 / 04 &bull; Tailoring Profile
             </div>
             <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 36, color: "var(--paper)", fontWeight: 400, letterSpacing: "-0.01em" }}>
-              Calibrate tone & silhouette cut
+              Choose skin tone & body shape
             </h2>
           </div>
 
@@ -111,7 +111,7 @@ export default function AttributeEntry({
               }}
             >
               <span>📷</span>
-              <span>Fast Camera Scan</span>
+              <span>Estimate Skin Tone</span>
             </button>
           )}
         </div>
@@ -180,7 +180,7 @@ export default function AttributeEntry({
             padding: "24px 20px",
           }}>
             <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--brass)", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 16 }}>
-              2. Silhouette Architecture
+              2. Body Shape (Select Manually)
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>

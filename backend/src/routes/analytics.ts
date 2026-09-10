@@ -1,3 +1,4 @@
+import { purchaseMetrics, baselineMetrics } from "../analyticsMetrics";
 import { FastifyInstance } from "fastify";
 import { PrismaClient } from "@prisma/client";
 
@@ -16,60 +17,30 @@ export async function analyticsRoutes(app: FastifyInstance) {
     ] = await Promise.all([
       prisma.customerSession.count(),
       prisma.purchaseEvent.count(),
-      prisma.purchaseEvent.findMany({ select: { wasRecommended: true, amount: true } }),
+      prisma.purchaseEvent.findMany({ select: { sessionId: true, wasRecommended: true, amount: true } }),
       prisma.recommendation.count(),
       prisma.dailyBaseline.findMany({ orderBy: { date: "asc" } }),
       prisma.killThreshold.findFirst({ orderBy: { createdAt: "desc" } }),
     ]);
 
-    const recommendedPurchases = allPurchaseEvents.filter((e) => e.wasRecommended);
-    const totalRevenue = allPurchaseEvents.reduce((sum, e) => sum + e.amount, 0);
-    const recommendedRevenue = recommendedPurchases.reduce((sum, e) => sum + e.amount, 0);
-
-    // Recommended purchase rate: recommended purchases / total sessions
-    const recommendedPurchaseRate =
-      totalSessions > 0 ? recommendedPurchases.length / totalSessions : 0;
-
-    // Avg basket value during kiosk period
-    const kioskAvgBasket =
-      totalPurchaseEvents > 0 ? totalRevenue / totalPurchaseEvents : 0;
-
-    // Baseline averages (pre-kiosk days)
-    const preKioskDays = baselines.filter((b) => !b.isKioskActive);
-    const baselineAvgBasket =
-      preKioskDays.length > 0
-        ? preKioskDays.reduce((s, b) => s + b.avgBasketValue, 0) / preKioskDays.length
-        : 0;
-
-    const baselineAvgUnits =
-      preKioskDays.length > 0
-        ? preKioskDays.reduce((s, b) => s + b.avgUnitsPerCustomer, 0) / preKioskDays.length
-        : 0;
-
-    // Basket value lift %
-    const basketValueLiftPct =
-      baselineAvgBasket > 0
-        ? ((kioskAvgBasket - baselineAvgBasket) / baselineAvgBasket) * 100
-        : null;
-
-    // Pilot verdict against kill threshold
-    let pilotVerdict: "PASSING" | "FAILING" | "INSUFFICIENT_DATA" | null = null;
-    if (killThreshold && totalSessions >= 20) {
-      const passing =
-        (basketValueLiftPct ?? 0) >= killThreshold.minBasketValueLiftPct &&
-        recommendedPurchaseRate >= killThreshold.minRecommendedPurchaseRate;
-      pilotVerdict = passing ? "PASSING" : "FAILING";
-    } else if (totalSessions > 0) {
-      pilotVerdict = "INSUFFICIENT_DATA";
-    }
+    const metrics = purchaseMetrics(allPurchaseEvents, totalSessions);
+    const recommendedPurchases = allPurchaseEvents.filter(e => e.wasRecommended);
+    const { recommendedPurchaseRate, totalRevenue, recommendedRevenue } = metrics;
+    const kioskAvgBasket = metrics.spendPerPurchasingSession;
+    const preKioskDays = baselines.filter(b => !b.isKioskActive);
+    const { avgBasket: baselineAvgBasket, avgUnits: baselineAvgUnits } = baselineMetrics(preKioskDays);
+    // A session is not a receipt. Until POS/footfall/pilot-window data exists,
+    // do not compare unlike denominators or issue a pass/fail verdict.
+    const pilotVerdict = "INSUFFICIENT_DATA";
 
     return {
       sessions: {
         total: totalSessions,
-        withPurchase: totalPurchaseEvents > 0 ? totalPurchaseEvents : 0,
+        withPurchase: metrics.purchasingSessions,
       },
       conversions: {
         totalPurchases: totalPurchaseEvents,
+        recommendedSessions: metrics.recommendedSessions,
         recommendedPurchases: recommendedPurchases.length,
         recommendedPurchaseRate: parseFloat(recommendedPurchaseRate.toFixed(4)),
         totalRevenue,
@@ -78,7 +49,8 @@ export async function analyticsRoutes(app: FastifyInstance) {
       basketValue: {
         kioskPeriod: parseFloat(kioskAvgBasket.toFixed(2)),
         baseline: parseFloat(baselineAvgBasket.toFixed(2)),
-        liftPct: basketValueLiftPct !== null ? parseFloat(basketValueLiftPct.toFixed(2)) : null,
+        liftPct: null,
+        label: "Spend per purchasing session",
       },
       baseline: {
         avgUnitsPerCustomer: parseFloat(baselineAvgUnits.toFixed(2)),

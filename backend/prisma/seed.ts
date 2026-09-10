@@ -1,3 +1,4 @@
+import "dotenv/config";
 /**
  * FitFirst Database Seed
  * ~80 realistic Indian clothing SKUs across men's, women's, and kids'
@@ -400,7 +401,13 @@ const products = [
 async function main() {
   console.log("🌱 Seeding FitFirst database...");
 
-  // Clear existing data
+  if (process.env.NODE_ENV === "production" || process.env.FITFIRST_DEMO_SEED !== "1") {
+    throw new Error("Demo seeding is disabled. Use FITFIRST_DEMO_SEED=1 only with an empty development database.");
+  }
+  const records = await Promise.all([prisma.product.count(), prisma.customerSession.count(), prisma.dailyBaseline.count(), prisma.killThreshold.count()]);
+  if (records.some(count => count > 0)) throw new Error("Refusing to overwrite existing data. Demo seeding requires an empty database.");
+
+  // Empty development database only
   await prisma.purchaseEvent.deleteMany();
   await prisma.recommendation.deleteMany();
   await prisma.customerSession.deleteMany();
@@ -432,7 +439,7 @@ async function main() {
       avgBasketValue: totalRevenue / transactions,
       avgUnitsPerCustomer: 1.4 + Math.random() * 0.6,
       isKioskActive: false,
-      notes: "Pre-kiosk baseline",
+      notes: "DEMO: generated pre-kiosk baseline; not store performance",
     });
   }
 

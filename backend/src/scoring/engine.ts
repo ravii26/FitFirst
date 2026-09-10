@@ -1,3 +1,4 @@
+import { matchingSize, selectedSizes as parseSizes } from "./sizes";
 /**
  * FitFirst Scoring Engine -- Phase 1 (Deterministic, No ML)
  *
@@ -75,10 +76,8 @@ export function scoreProducts(
   candidates: ProductCandidate[]
 ): ScoredProduct[] {
   const normalizedPrefs = session.preferenceTags.map((t) => t.toUpperCase());
-  const selectedSizes = session.sizeInput
-    .split(";")
-    .map((s) => s.toUpperCase().trim())
-    .filter(Boolean);
+  const selectedSizes = parseSizes(session.sizeInput);
+  const requestedCategories = normalizedPrefs.filter(p => Object.values(Category).includes(p as Category));
 
   const scored: ScoredProduct[] = [];
 
@@ -87,9 +86,8 @@ export function scoreProducts(
     if (!product.isActive || product.stockQty <= 0) continue;
 
     // Hard Filter 2: Size match
-    const sizeMatch = product.sizeRange.some((s) =>
-      selectedSizes.includes(s.toUpperCase().trim())
-    );
+    const sizeMatch = matchingSize(product.sizeRange, selectedSizes);
+    if (requestedCategories.length && !requestedCategories.includes(product.category)) continue;
     if (!sizeMatch) continue;
 
     // Hard Filter 3: Gender compatibility
@@ -164,6 +162,7 @@ function computePreferenceBoost(
   const productSignals = [
     product.category.toString(),
     product.pattern.toString(),
+    product.colorFamily.toString(),
     product.gender.toString(),
   ];
 
@@ -191,7 +190,7 @@ export function explainScore(scored: ScoredProduct): string[] {
 
   if (preferenceBoost >= 0.9) reasons.push("Matches your stated style preference");
 
-  if (agingBoost > 0.05) reasons.push("A fresh pick -- been in-store for a while, hasn't had its chance yet");
+  if (agingBoost > 0.05) reasons.push("Available from this store’s collection");
 
   if (reasons.length === 0) reasons.push("Solid all-round match");
 

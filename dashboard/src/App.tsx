@@ -6,7 +6,7 @@ import BaselineLog from "./pages/BaselineLog";
 import Inventory from "./pages/Inventory";
 import Sessions from "./pages/Sessions";
 
-const DASHBOARD_PIN = import.meta.env.VITE_DASHBOARD_PIN ?? "1234";
+import { apiFetch } from "./lib/api";
 
 // ── Minimal Architectural Icons ─────────────────────────────────────────────
 
@@ -71,22 +71,23 @@ function useTheme(): [string, () => void] {
 
 function LoginScreen({ onLogin }: { onLogin: () => void }) {
   const [pin, setPin] = useState("");
-  const [error, setError] = useState(false);
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
 
-  const handleDigit = (digit: string) => {
-    if (pin.length >= 4) return;
+  const handleDigit = async (digit: string) => {
+    if (pin.length >= 4 || busy) return;
     const newPin = pin + digit;
     setPin(newPin);
+    setError("");
     if (newPin.length === 4) {
-      if (newPin === DASHBOARD_PIN) {
-        setTimeout(onLogin, 150);
-      } else {
-        setError(true);
-        setTimeout(() => {
-          setPin("");
-          setError(false);
-        }, 800);
-      }
+      setBusy(true);
+      try {
+        await apiFetch("/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pin: newPin }) });
+        onLogin();
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Unable to sign in");
+        setPin("");
+      } finally { setBusy(false); }
     }
   };
 
@@ -317,7 +318,8 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
           </div>
 
           <div style={{ fontSize: 11.5, fontFamily: "var(--font-mono)", color: "var(--atelier-text-muted)" }}>
-            Stylist Access PIN: <span style={{ color: "var(--atelier-brass-light)" }}>1234</span>
+            {busy ? "Signing in…" : "Use the passcode provided by your store manager."}
+            {error && <p role="alert" style={{ marginTop: 12, color: "var(--atelier-terracotta)" }}>{error}</p>}
           </div>
         </div>
       </div>
@@ -330,6 +332,19 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
 export default function App() {
   const [authenticated, setAuthenticated] = useState(false);
   const [theme, toggleTheme] = useTheme();
+  const [checking, setChecking] = useState(true);
+  const [lockError, setLockError] = useState("");
+  useEffect(() => {
+    apiFetch("/api/auth/session").then(() => setAuthenticated(true)).catch(() => setAuthenticated(false)).finally(() => setChecking(false));
+    const expired = () => setAuthenticated(false);
+    window.addEventListener("fitfirst:unauthorized", expired);
+    return () => window.removeEventListener("fitfirst:unauthorized", expired);
+  }, []);
+  const lock = async () => {
+    try { await apiFetch("/api/auth/logout", { method: "POST" }); setAuthenticated(false); setLockError(""); }
+    catch { setLockError("Could not lock the dashboard. Please retry."); }
+  };
+  if (checking) return <div className="loading-center">Checking staff session…</div>;
 
   if (!authenticated) {
     return <LoginScreen onLogin={() => setAuthenticated(true)} />;
@@ -393,13 +408,14 @@ export default function App() {
           <button
             id="logout-btn"
             className="btn btn-secondary btn-sm"
-            onClick={() => setAuthenticated(false)}
+            onClick={lock}
           >
             Lock
           </button>
         </div>
       </header>
 
+      {lockError && <p role="alert" className="alert alert-error">{lockError}</p>}
       {/* Main Viewport */}
       <main className="atelier-viewport">
         <Routes>

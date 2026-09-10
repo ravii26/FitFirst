@@ -19,7 +19,7 @@ out/
 *.tsbuildinfo
 
 # Prisma
-backend/prisma/migrations/*_*/
+
 !backend/prisma/schema.prisma
 
 # Logs & Temp
@@ -36,4 +36,3 @@ temp/
 .idea/
 .DS_Store
 Thumbs.db
-.env.example

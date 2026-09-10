@@ -1,3 +1,4 @@
+import "dotenv/config";
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import sensible from "@fastify/sensible";
@@ -16,7 +17,7 @@ import { productsRoutes } from "./routes/products";
 import { baselineRoutes } from "./routes/baseline";
 import { uploadRoutes } from "./routes/upload";
 import { scanGarmentRoutes } from "./routes/scanGarment";
-import { requireDashboardPin } from "./authGuard";
+import { requireStaffSession, authRoutes } from "./authGuard";
 
 dotenv.config();
 
@@ -29,7 +30,8 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 async function main() {
-  const app = Fastify({ logger: true });
+  const app = Fastify({ logger: { redact: ["req.headers.cookie", "req.headers.authorization"] } });
+  if (!/^\d{4}$/.test(process.env.DASHBOARD_PIN ?? "")) throw new Error("Configure a four-digit DASHBOARD_PIN on the backend");
 
   // ── Plugins ────────────────────────────────────────────────────────────────
   await app.register(cors, {
@@ -41,6 +43,13 @@ async function main() {
   });
 
   await app.register(sensible);
+  app.setErrorHandler((error: any, request, reply) => {
+    if (error.code === "P2002") return reply.code(409).send({ message: "This record already exists. Please check the SKU or request." });
+    if (error.code === "P2025") return reply.code(404).send({ message: "Record not found" });
+    if (error.code === "P2003") return reply.code(400).send({ message: "Related record not found" });
+    request.log.error(error);
+    return reply.code(error.statusCode ?? 500).send({ message: error.statusCode && error.statusCode < 500 ? error.message : "Unable to complete the request. Please try again." });
+  });
 
   await app.register(multipart, {
     limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
@@ -54,15 +63,17 @@ async function main() {
   // ── Prisma Decorator ────────────────────────────────────────────────────────
   app.decorate("prisma", prisma);
 
+  await app.register(authRoutes, { prefix: "/api" });
+
   // ── Routes ────────────────────────────────────────────────────────────────
   // Kiosk-facing: no auth (unattended customer devices can't hold a PIN).
   await app.register(sessionsRoutes, { prefix: "/api" });
   await app.register(recommendationsRoutes, { prefix: "/api" });
 
-  // Staff-facing: require the dashboard PIN sent as x-dashboard-pin.
+  // Staff-facing: require a valid server-issued staff session.
   await app.register(
     async (staffApp) => {
-      staffApp.addHook("preHandler", requireDashboardPin);
+      staffApp.addHook("preHandler", requireStaffSession);
       await staffApp.register(purchaseEventsRoutes);
       await staffApp.register(analyticsRoutes);
       await staffApp.register(productsRoutes);

@@ -19,6 +19,7 @@ interface Summary {
   conversions: {
     totalPurchases: number;
     recommendedPurchases: number;
+    recommendedSessions: number;
     recommendedPurchaseRate: number;
     totalRevenue: number;
     recommendedRevenue: number;
@@ -135,7 +136,7 @@ export default function Analytics() {
   const verdictConfig = {
     PASSING: { cls: "passing", icon: <IconCheck />, title: "Pilot is PASSING", desc: `Basket value lift and conversion rate are both above kill-threshold targets.` },
     FAILING: { cls: "failing", icon: <IconCross />, title: "Pilot is FAILING", desc: `One or more metrics are below kill-threshold. Review honestly before proceeding to Phase 2.` },
-    INSUFFICIENT_DATA: { cls: "insufficient", icon: <IconClock />, title: "Collecting Data", desc: `Need at least 20 sessions to evaluate against the kill threshold.` },
+    INSUFFICIENT_DATA: { cls: "insufficient", icon: <IconClock />, title: "Pilot verdict not available yet", desc: `A valid verdict needs receipt-based basket values, a defined pilot period and footfall data. Current totals describe recorded activity only.` },
   };
   const verdict = pilotVerdict ? verdictConfig[pilotVerdict] : null;
 
@@ -253,10 +254,10 @@ export default function Analytics() {
 
           <div style={{ borderRight: "1px solid var(--atelier-hairline)", paddingRight: 16 }}>
             <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--atelier-text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
-              Attributed Purchases
+              Sessions Buying Recommendations
             </div>
             <div style={{ fontFamily: "var(--font-serif)", fontSize: 32, color: "var(--atelier-brass-light)", fontWeight: 500, lineHeight: 1 }}>
-              {conversions.recommendedPurchases}
+              {conversions.recommendedSessions}
             </div>
             <div style={{ fontSize: 12, color: "var(--atelier-sage)", marginTop: 6, fontWeight: 600 }}>
               {(conversions.recommendedPurchaseRate * 100).toFixed(1)}% Conversion Rate
@@ -265,13 +266,13 @@ export default function Analytics() {
 
           <div style={{ borderRight: "1px solid var(--atelier-hairline)", paddingRight: 16 }}>
             <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--atelier-text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
-              Average Basket Value
+              Spend per Buying Session
             </div>
             <div style={{ fontFamily: "var(--font-serif)", fontSize: 32, color: "var(--atelier-text-title)", fontWeight: 500, lineHeight: 1 }}>
               {fmtINR(basketValue.kioskPeriod)}
             </div>
             <div style={{ fontSize: 12, color: (basketValue.liftPct ?? 0) >= 0 ? "var(--atelier-sage)" : "var(--atelier-terracotta)", marginTop: 6 }}>
-              {basketValue.liftPct !== null ? `${fmtPct(basketValue.liftPct)} vs Baseline` : "Baseline: " + fmtINR(basketValue.baseline)}
+              {basketValue.liftPct !== null ? `${fmtPct(basketValue.liftPct)} vs Baseline` : "Total spend ÷ sessions with a purchase"}
             </div>
           </div>
 
@@ -307,10 +308,10 @@ export default function Analytics() {
 
           <div className="chart-card" id="chart-revenue" style={{ background: "var(--atelier-surface)", border: "1px solid var(--atelier-hairline)", borderRadius: "var(--radius-lg)", padding: 24 }}>
             <div className="card-title" style={{ fontFamily: "var(--font-serif)", fontSize: 18, color: "var(--atelier-text-title)", marginBottom: 4 }}>
-              Daily Revenue Attribution
+              Daily Store Revenue
             </div>
             <p style={{ fontSize: 11, color: "var(--atelier-text-muted)", marginBottom: 16 }}>
-              Recorded transactions from kiosk styling consultations
+              Manually entered daily sales, including baseline and kiosk-active days
             </p>
             <div style={{ height: 210 }}>
               <Line data={revenueChart} options={chartOptions} />
@@ -322,7 +323,7 @@ export default function Analytics() {
       {chartData.length === 0 && (
         <div className="card" style={{ textAlign: "center", padding: 40 }}>
           <p style={{ color: "var(--atelier-text-muted)", fontSize: 14 }}>
-            Log baseline days in the Baseline Log tab or record kiosk purchases to visualize trends.
+            Log daily sales in the Baseline Log tab to visualize these trends.
           </p>
         </div>
       )}
@@ -350,7 +351,7 @@ export default function Analytics() {
                     <th>Product</th>
                     <th>SKU</th>
                     <th>Times Shown</th>
-                    <th>Avg Match</th>
+                    <th>Avg Score</th>
                     <th>Avg Rank</th>
                   </tr>
                 </thead>
@@ -365,7 +366,7 @@ export default function Analytics() {
                       </td>
                       <td style={{ fontFamily: "var(--font-mono)", fontSize: 12 }}>{r.product?.sku ?? "—"}</td>
                       <td>{r.timesRecommended}</td>
-                      <td>{(r.avgScore * 100).toFixed(0)}%</td>
+                      <td>{r.avgScore.toFixed(2)}</td>
                       <td>#{r.avgRank}</td>
                     </tr>
                   ))}

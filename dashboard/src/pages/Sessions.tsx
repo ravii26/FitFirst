@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { format } from "date-fns";
 import { apiFetch } from "../lib/api";
 
@@ -109,13 +109,23 @@ function LogPurchaseModal({
   const [amount, setAmount] = useState(
     session.recommendations[0]?.product?.price?.toString() ?? ""
   );
+  const [catalogue, setCatalogue] = useState<{ id: string; name: string; sku: string; price: number; stockQty: number; isActive: boolean }[]>([]);
+  const [productSearch, setProductSearch] = useState("");
+  const [catalogueError, setCatalogueError] = useState("");
+  const requestRef = useRef({ key: crypto.randomUUID(), fingerprint: "" });
+  useEffect(() => {
+    apiFetch("/api/products?isActive=true").then(r => r.json()).then(setCatalogue).catch(e => setCatalogueError(e.message));
+  }, []);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedProductId || !amount) return;
+    if (!selectedProductId || !amount || saving || success) return;
+    const fingerprint = JSON.stringify([session.id, selectedProductId, Number(amount)]);
+    if (requestRef.current.fingerprint && requestRef.current.fingerprint !== fingerprint) requestRef.current.key = crypto.randomUUID();
+    requestRef.current.fingerprint = fingerprint;
     setSaving(true);
     setError(null);
     try {
@@ -123,10 +133,11 @@ function LogPurchaseModal({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          requestKey: requestRef.current.key,
           sessionId: session.id,
           productId: selectedProductId,
           wasRecommended: session.recommendations.some((r) => r.productId === selectedProductId),
-          amount: parseInt(amount),
+          amount: Number(amount),
         }),
       });
       if (!res.ok) {
@@ -144,8 +155,8 @@ function LogPurchaseModal({
 
   const handleProductChange = (pid: string) => {
     setSelectedProductId(pid);
-    const match = session.recommendations.find((r) => r.productId === pid);
-    if (match?.product?.price) setAmount(match.product.price.toString());
+    const match = catalogue.find(p => p.id === pid);
+    if (match) setAmount(match.price.toString());
   };
 
   return (
@@ -189,28 +200,17 @@ function LogPurchaseModal({
               <label htmlFor="purchase-product" style={{ color: "var(--atelier-text-title)", fontSize: 12 }}>
                 Selected Garment
               </label>
-              {session.recommendations.length > 0 ? (
-                <select
-                  id="purchase-product"
-                  value={selectedProductId}
-                  onChange={(e) => handleProductChange(e.target.value)}
-                  style={{ background: "var(--atelier-surface-sub)", color: "var(--atelier-text-title)", border: "1px solid var(--atelier-hairline)" }}
-                >
-                  {session.recommendations.map((r) => (
-                    <option key={r.productId} value={r.productId}>
-                      Pick #{r.rank} &mdash; {r.product?.name ?? r.productId.slice(0, 12) + "…"} {r.product?.sku ? `(${r.product.sku})` : ""}
-                    </option>
-                  ))}
-                  <option value="__other__">Other In-Store Item (Unlisted)</option>
-                </select>
-              ) : (
-                <input
-                  type="text"
-                  placeholder="Product ID"
-                  value={selectedProductId}
-                  onChange={(e) => setSelectedProductId(e.target.value)}
-                />
-              )}
+              <input aria-label="Search products" placeholder="Search name or SKU" value={productSearch} onChange={e => setProductSearch(e.target.value)} disabled={saving} />
+              <select id="purchase-product" value={selectedProductId} onChange={e => handleProductChange(e.target.value)} disabled={saving} required>
+                <option value="">Choose a product</option>
+                {catalogue.filter(p => p.id === selectedProductId || p.name.toLowerCase().includes(productSearch.toLowerCase()) || p.sku.toLowerCase().includes(productSearch.toLowerCase())).map(p => (
+                  <option key={p.id} value={p.id} disabled={p.stockQty <= 0}>
+                    {session.recommendations.some(r => r.productId === p.id) ? "Recommended · " : ""}{p.name} ({p.sku}) — {p.stockQty} in stock
+                  </option>
+                ))}
+              </select>
+              {catalogueError && <p role="alert">{catalogueError}</p>}
+              <p style={{ fontSize: 12 }}>Records one item. Use Add another item for additional purchases. Full billing and returns are coming in the POS stage.</p>
             </div>
 
             <div className="form-group" style={{ marginBottom: 20 }}>
@@ -241,7 +241,7 @@ function LogPurchaseModal({
                 className="btn btn-primary"
                 disabled={saving || !selectedProductId || !amount}
               >
-                {saving ? "Recording…" : "Complete Attribution"}
+                {saving ? "Recording…" : "Save purchase"}
               </button>
             </div>
           </form>
@@ -362,6 +362,7 @@ function DismissModal({
 // ── Main Sessions Page ───────────────────────────────────────────────────────
 
 export default function Sessions() {
+  const [loadError, setLoadError] = useState("");
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -375,6 +376,7 @@ export default function Sessions() {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(() => new Set());
 
   const loadSessions = () => {
+    setLoadError("");
     setLoading(true);
     apiFetch(`${API}/sessions`)
       .then((r) => r.json())
@@ -387,7 +389,8 @@ export default function Sessions() {
         }
         setLoading(false);
       })
-      .catch(() => {
+      .catch((e) => {
+        setLoadError(e.message || "Could not load sessions");
         setSessions([]);
         setLoading(false);
       });
@@ -460,6 +463,7 @@ export default function Sessions() {
 
   const allExpanded = paginatedSessions.length > 0 && paginatedSessions.every((s) => expandedIds.has(s.id));
 
+  if (loadError) return <div role="alert" className="alert alert-error">{loadError} <button className="btn btn-secondary" onClick={loadSessions}>Retry</button></div>;
   if (loading) return <div className="loading-center"><div className="loading-spinner" /></div>;
 
   return (
@@ -655,7 +659,7 @@ export default function Sessions() {
                           className="btn btn-primary btn-sm"
                           onClick={() => setLogTarget(s)}
                         >
-                          Update Sale
+                          Add another item
                         </button>
                       )}
 
@@ -743,7 +747,7 @@ export default function Sessions() {
                                 >
                                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                     <span className="rec-item-match">
-                                      #{r.rank} &middot; {matchPct}%
+                                      #{r.rank} &middot; Score {matchPct / 100}
                                     </span>
                                     {wasBought && (
                                       <span style={{ fontSize: 10, fontWeight: 700, color: "var(--atelier-sage)", fontFamily: "var(--font-mono)" }}>

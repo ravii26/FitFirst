@@ -1,14 +1,15 @@
 import { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { PrismaClient } from "@prisma/client";
-import { requireDashboardPin } from "../authGuard";
+import { requireStaffSession } from "../authGuard";
 
-const SessionSchema = z.object({
+export const SessionSchema = z.object({
+  requestKey: z.string().uuid(),
   skinToneBucket: z.enum(["FAIR", "WHEATISH", "MEDIUM", "DEEP"]).default("WHEATISH"),
   bodyShapeBucket: z.enum(["RECTANGLE", "TRIANGLE", "INVERTED_T", "HOURGLASS"]).default("HOURGLASS"),
   gender: z.enum(["MEN", "WOMEN", "KIDS", "UNISEX"]).default("WOMEN"),
-  sizeInput: z.string().min(1).max(10).default("M"),
-  preferenceTags: z.array(z.string()).default([]),
+  sizeInput: z.string().min(1).max(100).default("M"),
+  preferenceTags: z.array(z.string().max(40)).max(30).default([]),
 });
 
 export async function sessionsRoutes(app: FastifyInstance) {
@@ -20,14 +21,16 @@ export async function sessionsRoutes(app: FastifyInstance) {
     if (!result.success) {
       return reply.badRequest(result.error.message);
     }
-    const session = await prisma.customerSession.create({
-      data: result.data as any,
+    const session = await prisma.customerSession.upsert({
+      where: { requestKey: result.data.requestKey }, update: {}, create: result.data,
     });
-    return reply.code(201).send(session);
+    const fields = ["skinToneBucket", "bodyShapeBucket", "gender", "sizeInput", "preferenceTags"] as const;
+    if (fields.some(field => JSON.stringify(session[field]) !== JSON.stringify(result.data[field]))) return reply.conflict("Start a new request after changing your answers");
+    return reply.code(201).send({ id: session.id });
   });
 
   // GET /api/sessions/:id — get session details
-  app.get<{ Params: { id: string } }>("/sessions/:id", async (request, reply) => {
+  app.get<{ Params: { id: string } }>("/sessions/:id", { preHandler: requireStaffSession }, async (request, reply) => {
     const session = await prisma.customerSession.findUnique({
       where: { id: request.params.id },
       include: {
@@ -40,7 +43,7 @@ export async function sessionsRoutes(app: FastifyInstance) {
   });
 
   // GET /api/sessions — list recent sessions (staff dashboard)
-  app.get("/sessions", { preHandler: requireDashboardPin }, async (request, reply) => {
+  app.get("/sessions", { preHandler: requireStaffSession }, async (request, reply) => {
     const sessions = await prisma.customerSession.findMany({
       orderBy: { createdAt: "desc" },
       take: 100,

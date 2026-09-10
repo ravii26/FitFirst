@@ -21,7 +21,7 @@ interface BaselineEntry {
   notes?: string;
 }
 
-const today = new Date().toISOString().split("T")[0];
+const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(new Date());
 
 export default function BaselineLog() {
   const [form, setForm] = useState<FormData>({
@@ -102,7 +102,7 @@ export default function BaselineLog() {
 
   const formatDate = (dateStr: string) => {
     try {
-      const d = new Date(dateStr + "T00:00:00");
+      const d = new Date(dateStr.slice(0, 10) + "T00:00:00");
       return d.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
     } catch { return dateStr; }
   };

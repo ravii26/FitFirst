@@ -1,20 +1,21 @@
+import { normalizeSize } from "../scoring/sizes";
 import { FastifyInstance } from "fastify";
 import { z } from "zod";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Category, Gender, ColorFamily, Pattern, FitType } from "@prisma/client";
 
 const ProductCreateSchema = z.object({
   sku: z.string().min(1),
   name: z.string().min(1),
   description: z.string().optional(),
-  category: z.string(),
-  gender: z.string(),
-  colorFamily: z.string(),
-  pattern: z.string(),
-  fitType: z.string(),
-  sizeRange: z.array(z.string()).min(1),
-  price: z.number().int().positive(),
-  stockQty: z.number().int().min(0),
-  daysInStock: z.number().int().min(0).default(0),
+  category: z.nativeEnum(Category),
+  gender: z.nativeEnum(Gender),
+  colorFamily: z.nativeEnum(ColorFamily),
+  pattern: z.nativeEnum(Pattern),
+  fitType: z.nativeEnum(FitType),
+  sizeRange: z.array(z.string().trim().min(1).max(20).transform(normalizeSize)).min(1).max(40),
+  price: z.number().int().positive().max(2147483647),
+  stockQty: z.number().int().min(0).max(2147483647),
+  daysInStock: z.number().int().min(0).max(2147483647).default(0),
   imageUrl: z.string().optional(),
   isActive: z.boolean().default(true),
   aiTagged: z.boolean().default(false),
@@ -35,7 +36,7 @@ export async function productsRoutes(app: FastifyInstance) {
         ...(category && { category: category as any }),
         ...(gender && { gender: gender as any }),
         ...(isActive !== undefined && { isActive: isActive === "true" }),
-        ...(search && { name: { contains: search, mode: "insensitive" } }),
+        ...(search && { OR: [{ name: { contains: search, mode: "insensitive" as const } }, { sku: { contains: search, mode: "insensitive" as const } }] }),
       },
       orderBy: { daysInStock: "desc" },
     });
@@ -71,36 +72,38 @@ export async function productsRoutes(app: FastifyInstance) {
         data: result.data as any,
       });
       return product;
-    } catch {
-      return reply.notFound("Product not found");
+    } catch (error) {
+      throw error;
     }
   });
 
   // PATCH /api/products/:id/image — update product image URL
   app.patch<{ Params: { id: string } }>("/products/:id/image", async (request, reply) => {
-    const { imageUrl } = request.body as { imageUrl: string };
-    if (!imageUrl) return reply.badRequest("imageUrl is required");
+    const parsed = z.object({ imageUrl: z.string().max(2000) }).safeParse(request.body);
+    if (!parsed.success) return reply.badRequest("A valid image URL is required");
+    const { imageUrl } = parsed.data;
     try {
       return await prisma.product.update({
         where: { id: request.params.id },
         data: { imageUrl },
       });
-    } catch {
-      return reply.notFound("Product not found");
+    } catch (error) {
+      throw error;
     }
   });
 
   // PATCH /api/products/:id/stock — quick stock update
   app.patch<{ Params: { id: string } }>("/products/:id/stock", async (request, reply) => {
-    const { stockQty } = request.body as { stockQty: number };
-    if (typeof stockQty !== "number") return reply.badRequest("stockQty is required");
+    const parsed = z.object({ stockQty: z.number().int().min(0).max(2147483647) }).safeParse(request.body);
+    if (!parsed.success) return reply.badRequest("Stock must be a nonnegative whole number");
+    const { stockQty } = parsed.data;
     try {
       return await prisma.product.update({
         where: { id: request.params.id },
         data: { stockQty },
       });
-    } catch {
-      return reply.notFound("Product not found");
+    } catch (error) {
+      throw error;
     }
   });
 
@@ -112,8 +115,8 @@ export async function productsRoutes(app: FastifyInstance) {
         data: { isActive: false },
       });
       return reply.code(204).send();
-    } catch {
-      return reply.notFound("Product not found");
+    } catch (error) {
+      throw error;
     }
   });
 
@@ -217,18 +220,18 @@ export async function productsRoutes(app: FastifyInstance) {
         errors.push(`Row ${idx + 1}: Invalid fitType '${fitType}'.`);
       }
 
-      const price = parseInt(priceRaw);
-      if (isNaN(price) || price <= 0) {
+      const price = Number(priceRaw);
+      if (!Number.isInteger(price) || price <= 0 || price > 2147483647) {
         errors.push(`Row ${idx + 1}: Invalid price '${priceRaw}'. Must be a positive integer`);
       }
 
-      const stockQty = parseInt(stockQtyRaw);
-      if (isNaN(stockQty) || stockQty < 0) {
+      const stockQty = Number(stockQtyRaw);
+      if (!Number.isInteger(stockQty) || !stockQtyRaw.trim() || stockQty < 0 || stockQty > 2147483647) {
         errors.push(`Row ${idx + 1}: Invalid stockQty '${stockQtyRaw}'. Must be a non-negative integer`);
       }
 
-      const daysInStock = parseInt(daysInStockRaw);
-      if (isNaN(daysInStock) || daysInStock < 0) {
+      const daysInStock = Number(daysInStockRaw);
+      if (!Number.isInteger(daysInStock) || daysInStock < 0 || daysInStock > 2147483647) {
         errors.push(`Row ${idx + 1}: Invalid daysInStock '${daysInStockRaw}'. Must be a non-negative integer`);
       }
 

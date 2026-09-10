@@ -121,7 +121,15 @@ model Product {
   purchaseEvents  PurchaseEvent[]
 }
 
+model StaffSession {
+  tokenHash String @id
+  expiresAt DateTime
+  @@index([expiresAt])
+}
+
 model CustomerSession {
+  requestKey String? @unique
+  recommendationSnapshot Json?
   id              String          @id @default(cuid())
   skinToneBucket  SkinToneBucket
   bodyShapeBucket BodyShapeBucket
@@ -149,6 +157,7 @@ model Recommendation {
 }
 
 model PurchaseEvent {
+  requestKey String? @unique
   id              String          @id @default(cuid())
   session         CustomerSession @relation(fields: [sessionId], references: [id])
   sessionId       String

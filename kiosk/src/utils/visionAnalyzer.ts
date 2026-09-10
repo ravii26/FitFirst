@@ -3,7 +3,7 @@
  *
  * Estimates skin tone bucket and body shape category directly inside the
  * HTML5 Video / Canvas context using ITA° (Individual Typology Angle) color science
- * and contour silhouette ratio analysis.
+ * only. This is a lighting-sensitive estimate, not a validated measurement.
  *
  * NO frame data or images are ever transmitted to any server or stored on disk.
  */
@@ -64,12 +64,13 @@ export function classifySkinToneFromRGB(r: number, g: number, b: number): { tone
 /**
  * Samples center ROI pixels from video canvas to estimate skin tone dynamically.
  */
-export function sampleSkinToneFromCanvas(canvas: HTMLCanvasElement): { tone: SkinToneBucket; ita: number } {
+export function sampleSkinToneFromCanvas(canvas: HTMLCanvasElement): { tone: SkinToneBucket; ita: number } | null {
   const ctx = canvas.getContext("2d");
-  if (!ctx) return { tone: "WHEATISH", ita: 32 };
+  if (!ctx) return null;
 
   const width = canvas.width;
   const height = canvas.height;
+  if (width < 10 || height < 10) return null;
 
   // Sample center ROI (face/chest area: 40% to 60% width, 25% to 45% height)
   const roiX = Math.floor(width * 0.4);
@@ -96,66 +97,11 @@ export function sampleSkinToneFromCanvas(canvas: HTMLCanvasElement): { tone: Ski
     }
   }
 
-  if (count === 0) return { tone: "WHEATISH", ita: 32 };
+  if (count < Math.max(20, pixels.length / 16 * 0.15)) return null;
 
   const avgR = totalR / count;
   const avgG = totalG / count;
   const avgB = totalB / count;
 
   return classifySkinToneFromRGB(avgR, avgG, avgB);
-}
-
-// ── 2. Dynamic Body Silhouette Contour Classifier ────────────────────────────
-
-/**
- * Samples upper torso vs lower torso contour widths from the canvas frame
- * to dynamically estimate body silhouette category.
- */
-export function sampleBodyShapeFromCanvas(canvas: HTMLCanvasElement): BodyShapeBucket {
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return "HOURGLASS";
-
-  const width = canvas.width;
-  const height = canvas.height;
-
-  // Measure silhouette width at shoulder line (y = 35% height)
-  const shoulderY = Math.floor(height * 0.35);
-  const shoulderWidth = measureRowContourWidth(ctx, shoulderY, width);
-
-  // Measure silhouette width at hip line (y = 65% height)
-  const hipY = Math.floor(height * 0.65);
-  const hipWidth = measureRowContourWidth(ctx, hipY, width);
-
-  if (hipWidth === 0) return "HOURGLASS";
-
-  const ratio = shoulderWidth / hipWidth;
-
-  if (ratio > 1.08) return "INVERTED_T";
-  if (ratio < 0.94) return "TRIANGLE";
-  if (ratio >= 0.96 && ratio <= 1.04) return "HOURGLASS";
-  return "RECTANGLE";
-}
-
-function measureRowContourWidth(ctx: CanvasRenderingContext2D, y: number, width: number): number {
-  const imgData = ctx.getImageData(0, y, width, 1);
-  const pixels = imgData.data;
-
-  let leftEdge = -1;
-  let rightEdge = -1;
-
-  for (let x = 0; x < width; x++) {
-    const idx = x * 4;
-    const r = pixels[idx];
-    const g = pixels[idx + 1];
-    const b = pixels[idx + 2];
-    const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
-
-    // Detect subject vs background threshold
-    if (luminance < 220 && luminance > 20) {
-      if (leftEdge === -1) leftEdge = x;
-      rightEdge = x;
-    }
-  }
-
-  return leftEdge !== -1 && rightEdge !== -1 ? rightEdge - leftEdge : 0;
 }
