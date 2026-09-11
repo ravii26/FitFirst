@@ -1,11 +1,19 @@
 import { useEffect, useRef, useState } from "react";
-import { sampleSkinToneFromCanvas, SkinToneBucket } from "../utils/visionAnalyzer";
+import { sampleSkinToneFromCanvas, classifySkinToneFromRGB, SkinToneBucket } from "../utils/visionAnalyzer";
+
+interface SampleItem {
+  r: number;
+  g: number;
+  b: number;
+  ita: number;
+  tone: SkinToneBucket;
+}
 
 export default function CameraScan({ onDetected, onCancel }: { onDetected: (skin: SkinToneBucket) => void; onCancel: () => void }) {
   const video = useRef<HTMLVideoElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const stream = useRef<MediaStream | null>(null);
-  const samples = useRef<SkinToneBucket[]>([]);
+  const samples = useRef<SampleItem[]>([]);
   const [attempt, setAttempt] = useState(0);
   const [ready, setReady] = useState(false);
   const [remaining, setRemaining] = useState<number | null>(null);
@@ -39,9 +47,15 @@ export default function CameraScan({ onDetected, onCancel }: { onDetected: (skin
     if (remaining === null) return;
     if (remaining === 0) {
       stop();
-      const counts = samples.current.reduce((map, tone) => ({ ...map, [tone]: (map[tone] || 0) + 1 }), {} as Record<string, number>);
-      const best = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
-      setResult(best && best[1] >= 2 ? best[0] as SkinToneBucket : null);
+      if (samples.current.length > 0) {
+        const avgR = samples.current.reduce((acc, s) => acc + s.r, 0) / samples.current.length;
+        const avgG = samples.current.reduce((acc, s) => acc + s.g, 0) / samples.current.length;
+        const avgB = samples.current.reduce((acc, s) => acc + s.b, 0) / samples.current.length;
+        const finalEst = classifySkinToneFromRGB(avgR, avgG, avgB);
+        setResult(finalEst.tone);
+      } else {
+        setResult(null);
+      }
       setFinished(true); setRemaining(null); return;
     }
     const timer = window.setTimeout(() => {
@@ -50,12 +64,12 @@ export default function CameraScan({ onDetected, onCancel }: { onDetected: (skin
         c.width = v.videoWidth; c.height = v.videoHeight;
         const ctx = c.getContext("2d");
         if (ctx) {
-          try { ctx.drawImage(v, 0, 0); const sample = sampleSkinToneFromCanvas(c); if (sample) samples.current.push(sample.tone); }
+          try { ctx.drawImage(v, 0, 0); const sample = sampleSkinToneFromCanvas(c); if (sample) samples.current.push(sample); }
           catch { /* An unusable frame must not become a default skin tone. */ }
         }
       }
       setRemaining(n => n === null ? null : n - 1);
-    }, 1000);
+    }, 600);
     return () => clearTimeout(timer);
   }, [remaining]);
   return <div className="screen screen-scrollable" id="screen-camera-scan" style={{ paddingTop: 100, gap: 20 }}>

@@ -3,11 +3,12 @@ FitFirst AI Inventory Service — FastAPI Server
 Exposes /scan endpoint for instant zero-shot visual tagging of garment photos.
 """
 
+import os
+import io
+from PIL import Image
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from PIL import Image
-import io
 
 from prompts import (
     CATEGORY_PROMPTS,
@@ -16,7 +17,7 @@ from prompts import (
     FIT_PROMPTS,
     GENDER_PROMPTS,
 )
-from classifier import predict_attribute, model_status
+from classifier import predict_attribute, classify_all_with_gemini, model_status
 
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024  # matches the Node proxy's multipart limit
 
@@ -58,6 +59,8 @@ async def health_check():
     return {
         "status": "ok",
         "service": "FitFirst AI Garment Scanner",
+        "gemini_enabled": status["gemini_enabled"],
+        "active_engine": status["active_engine"],
         "clip_loaded": status["clip_loaded"],
         "load_error": status["load_error"],
     }
@@ -80,7 +83,21 @@ async def scan_garment(file: UploadFile = File(...)):
     except Exception as err:
         raise HTTPException(status_code=400, detail=f"Invalid image file: {str(err)}")
 
-    # Classify each attribute
+    # Check if Gemini Vision API key is available
+    if os.getenv("GEMINI_API_KEY"):
+        try:
+            results = classify_all_with_gemini(image)
+            return ScanResponse(
+                category=AttributeResult(**results["category"]),
+                colorFamily=AttributeResult(**results["colorFamily"]),
+                pattern=AttributeResult(**results["pattern"]),
+                fitType=AttributeResult(**results["fitType"]),
+                gender=AttributeResult(**results["gender"]),
+            )
+        except Exception as err:
+            print(f"[AI Service] Gemini multi-attribute scan failed ({err}). Falling back to CLIP/heuristics.")
+
+    # Fallback to local CLIP / Visual Heuristics
     category = predict_attribute(image, CATEGORY_PROMPTS, "category")
     color_family = predict_attribute(image, COLOR_PROMPTS, "colorFamily")
     pattern = predict_attribute(image, PATTERN_PROMPTS, "pattern")

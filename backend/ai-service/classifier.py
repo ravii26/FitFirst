@@ -9,6 +9,15 @@ import math
 import statistics
 from typing import cast, Dict, List, Tuple, Any
 from PIL import Image
+import os
+from dotenv import load_dotenv
+
+# Load variables from backend/.env or local .env
+load_dotenv("../.env")
+
+openai_api_key = os.getenv("OPENAI_API_KEY")
+gemini_api_key = os.getenv("GEMINI_API_KEY")
+
 
 # Global model references
 _clip_model = None
@@ -294,10 +303,124 @@ def predict_attribute(image: Image.Image, prompt_dict: Dict[str, str], attribute
         "engine": engine,
     }
 
+
+def classify_all_with_gemini(image: Image.Image) -> Dict[str, Dict[str, Any]]:
+    """
+    Perform single-shot multi-attribute visual classification using Gemini Vision API.
+    Returns structured results for category, colorFamily, pattern, fitType, and gender.
+    """
+    from google import genai
+    from google.genai import types
+    import json
+    from prompts import (
+        CATEGORY_PROMPTS,
+        COLOR_PROMPTS,
+        PATTERN_PROMPTS,
+        FIT_PROMPTS,
+        GENDER_PROMPTS,
+    )
+
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        raise ValueError("GEMINI_API_KEY environment variable is not set")
+
+    client = genai.Client(api_key=api_key)
+
+    prompt = f"""
+You are an expert AI garment cataloger for a high-end apparel atelier.
+Analyze the provided garment photo and classify the following 5 attributes.
+
+You MUST choose EXACTLY ONE enum value from each allowed list:
+
+1. CATEGORY: {list(CATEGORY_PROMPTS.keys())}
+Descriptions:
+{json.dumps(CATEGORY_PROMPTS, indent=2)}
+
+2. COLOR_FAMILY: {list(COLOR_PROMPTS.keys())}
+Descriptions:
+{json.dumps(COLOR_PROMPTS, indent=2)}
+
+3. PATTERN: {list(PATTERN_PROMPTS.keys())}
+Descriptions:
+{json.dumps(PATTERN_PROMPTS, indent=2)}
+
+4. FIT_TYPE: {list(FIT_PROMPTS.keys())}
+Descriptions:
+{json.dumps(FIT_PROMPTS, indent=2)}
+
+5. GENDER: {list(GENDER_PROMPTS.keys())}
+Descriptions:
+{json.dumps(GENDER_PROMPTS, indent=2)}
+
+Return a valid JSON object with the following schema:
+{{
+  "category": {{"value": "<CATEGORY_ENUM>", "confidence": 0.95}},
+  "colorFamily": {{"value": "<COLOR_FAMILY_ENUM>", "confidence": 0.95}},
+  "pattern": {{"value": "<PATTERN_ENUM>", "confidence": 0.95}},
+  "fitType": {{"value": "<FIT_TYPE_ENUM>", "confidence": 0.95}},
+  "gender": {{"value": "<GENDER_ENUM>", "confidence": 0.95}}
+}}
+"""
+
+    buf = io.BytesIO()
+    image.save(buf, format="PNG")
+    image_part = types.Part.from_bytes(data=buf.getvalue(), mime_type="image/png")
+    prompt_part = types.Part.from_text(text=prompt)
+    contents = types.Content(parts=[image_part, prompt_part])
+
+    models_to_try = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]
+    last_err = None
+
+    for model_name in models_to_try:
+        try:
+            response = client.models.generate_content(
+                model=model_name,
+                contents=contents,
+                config=types.GenerateContentConfig(
+                    response_mime_type="application/json",
+                    temperature=0.1,
+                ),
+            )
+            if not response.text:
+                continue
+            raw = json.loads(response.text)
+
+            def format_res(key, prompt_map):
+                item = raw.get(key, {})
+                val = item.get("value", "")
+                conf = float(item.get("confidence", 0.95))
+                if val not in prompt_map:
+                    val = list(prompt_map.keys())[0]
+                scores = _make_scores(list(prompt_map.keys()), val, conf)
+                return {
+                    "value": val,
+                    "confidence": round(conf, 4),
+                    "all_scores": scores,
+                    "engine": f"gemini ({model_name})",
+                }
+
+            return {
+                "category": format_res("category", CATEGORY_PROMPTS),
+                "colorFamily": format_res("colorFamily", COLOR_PROMPTS),
+                "pattern": format_res("pattern", PATTERN_PROMPTS),
+                "fitType": format_res("fitType", FIT_PROMPTS),
+                "gender": format_res("gender", GENDER_PROMPTS),
+            }
+        except Exception as e:
+            last_err = e
+            continue
+
+    raise RuntimeError(f"Gemini API call failed across all candidate models: {last_err}")
+
+
 def model_status() -> Dict[str, Any]:
-    """Report whether the CLIP model is actually loaded, for health checks."""
+    """Report whether Gemini API key is configured or CLIP model is loaded."""
     init_clip_model()
+    gemini_key_present = bool(os.getenv("GEMINI_API_KEY"))
     return {
+        "gemini_enabled": gemini_key_present,
         "clip_loaded": _model_loaded,
         "load_error": _load_error,
+        "active_engine": "gemini" if gemini_key_present else ("clip" if _model_loaded else "heuristic"),
     }
+

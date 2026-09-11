@@ -52,19 +52,21 @@ export function classifySkinToneFromRGB(r: number, g: number, b: number): { tone
   // Compute ITA°
   const ita = (Math.atan2(L - 50, bStar) * 180) / Math.PI;
 
-  let tone: SkinToneBucket = "WHEATISH";
-  if (ita > 41) tone = "FAIR";
-  else if (ita > 28) tone = "WHEATISH";
-  else if (ita > 10) tone = "MEDIUM";
-  else tone = "DEEP";
-
+  const tone = classifySkinToneFromITA(ita);
   return { tone, ita: parseFloat(ita.toFixed(1)) };
 }
 
+export function classifySkinToneFromITA(ita: number): SkinToneBucket {
+  if (ita > 41) return "FAIR";
+  if (ita > 28) return "WHEATISH";
+  if (ita > 10) return "MEDIUM";
+  return "DEEP";
+}
+
 /**
- * Samples center ROI pixels from video canvas to estimate skin tone dynamically.
+ * Samples ROI pixels from video canvas to estimate skin tone dynamically.
  */
-export function sampleSkinToneFromCanvas(canvas: HTMLCanvasElement): { tone: SkinToneBucket; ita: number } | null {
+export function sampleSkinToneFromCanvas(canvas: HTMLCanvasElement): { tone: SkinToneBucket; ita: number; r: number; g: number; b: number } | null {
   const ctx = canvas.getContext("2d");
   if (!ctx) return null;
 
@@ -72,11 +74,11 @@ export function sampleSkinToneFromCanvas(canvas: HTMLCanvasElement): { tone: Ski
   const height = canvas.height;
   if (width < 10 || height < 10) return null;
 
-  // Sample center ROI (face/chest area: 40% to 60% width, 25% to 45% height)
-  const roiX = Math.floor(width * 0.4);
-  const roiY = Math.floor(height * 0.25);
-  const roiW = Math.floor(width * 0.2);
-  const roiH = Math.floor(height * 0.2);
+  // Sample center ROI (face/neck/chest area: 35% to 65% width, 20% to 50% height)
+  const roiX = Math.floor(width * 0.35);
+  const roiY = Math.floor(height * 0.20);
+  const roiW = Math.floor(width * 0.30);
+  const roiH = Math.floor(height * 0.30);
 
   const imgData = ctx.getImageData(roiX, roiY, roiW, roiH);
   const pixels = imgData.data;
@@ -88,8 +90,8 @@ export function sampleSkinToneFromCanvas(canvas: HTMLCanvasElement): { tone: Ski
     const g = pixels[i + 1];
     const b = pixels[i + 2];
 
-    // Basic skin color filter (avoid hair/shadows)
-    if (r > 50 && g > 35 && b > 20 && r > g && r > b && Math.abs(r - g) > 12) {
+    // Basic skin color filter (avoid hair/shadows/background)
+    if (r > 45 && g > 30 && b > 15 && r > g && r > b && Math.abs(r - g) > 8) {
       totalR += r;
       totalG += g;
       totalB += b;
@@ -97,11 +99,12 @@ export function sampleSkinToneFromCanvas(canvas: HTMLCanvasElement): { tone: Ski
     }
   }
 
-  if (count < Math.max(20, pixels.length / 16 * 0.15)) return null;
+  if (count < Math.max(15, (pixels.length / 16) * 0.10)) return null;
 
   const avgR = totalR / count;
   const avgG = totalG / count;
   const avgB = totalB / count;
 
-  return classifySkinToneFromRGB(avgR, avgG, avgB);
+  const res = classifySkinToneFromRGB(avgR, avgG, avgB);
+  return { ...res, r: avgR, g: avgG, b: avgB };
 }

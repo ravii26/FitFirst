@@ -1,9 +1,4 @@
 -- AlterTable
-ALTER TABLE "Product" ADD COLUMN     "aiConfidence" JSONB,
-ADD COLUMN     "aiEngine" TEXT,
-ADD COLUMN     "aiTagged" BOOLEAN NOT NULL DEFAULT false;
-
--- AlterTable
 ALTER TABLE "CustomerSession" ADD COLUMN     "recommendationSnapshot" JSONB,
 ADD COLUMN     "requestKey" TEXT;
 
