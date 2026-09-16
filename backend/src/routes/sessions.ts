@@ -21,9 +21,20 @@ export async function sessionsRoutes(app: FastifyInstance) {
     if (!result.success) {
       return reply.badRequest(result.error.message);
     }
-    const session = await prisma.customerSession.upsert({
-      where: { requestKey: result.data.requestKey }, update: {}, create: result.data,
-    });
+    // upsert is read-then-write, so two concurrent calls with the same requestKey
+    // can both attempt the insert. The loser hits the unique index; since requestKey
+    // is an idempotency key, that means the row we wanted already exists — read it.
+    let session;
+    try {
+      session = await prisma.customerSession.upsert({
+        where: { requestKey: result.data.requestKey }, update: {}, create: result.data,
+      });
+    } catch (err: any) {
+      if (err?.code !== "P2002") throw err;
+      session = await prisma.customerSession.findUniqueOrThrow({
+        where: { requestKey: result.data.requestKey },
+      });
+    }
     const fields = ["skinToneBucket", "bodyShapeBucket", "gender", "sizeInput", "preferenceTags"] as const;
     if (fields.some(field => JSON.stringify(session[field]) !== JSON.stringify(result.data[field]))) return reply.conflict("Start a new request after changing your answers");
     return reply.code(201).send({ id: session.id });
