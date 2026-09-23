@@ -1,0 +1,13 @@
+# FitFirst — working rules
+
+Canonical rules: AGENTS.md. Read docs/PROJECT_STATUS.md, docs/END_TO_END_CHECKLIST.md and docs/PROJECT_CONTEXT.md before working (or run `npm run brief`).
+
+Before changing code, state: current stage, the task ID, whether it is approved or blocked on a decision, the files, and the command that proves it works. Then wait.
+
+Ravindra (owner) decides; AI guides. No scope, architecture, dependency, provider, pricing, privacy or product decisions without an explicit yes. One approved task at a time. No claim without evidence, and never mark a checklist item complete yourself.
+
+Single-store pilot prototype. Known traps: stock is per product not per size; `daysInStock` never increments; the garment tagger silently falls back to guessing; `/uploads` is publicly readable; staff auth is one shared PIN; recommendation scores can exceed 1.0 and are not percentages; demo data is random.
+
+Customer-facing copy: no "fair/wheatish/dark" skin words, no "look fairer/slimmer", no privacy claims the code does not implement.
+
+End of session: run the handoff update in AGENTS.md section 5, then `npm run docs:check`.

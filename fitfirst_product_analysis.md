@@ -1,3 +1,5 @@
+> **Historical — superseded.** An August 2026 product assessment, kept for its reasoning. Its missing-feature list and completion estimate are stale — `SYSTEM_IMPROVEMENT_PLAN.md` says so explicitly. Do not plan from this file. Current: [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md), [docs/END_TO_END_CHECKLIST.md](docs/END_TO_END_CHECKLIST.md), [docs/MASTER_PLAN.md](docs/MASTER_PLAN.md).
+
 # FitFirst — Full Product Strategy, UX & Gap Analysis
 
 > *A senior product strategist's honest assessment of what was built, what works, what's missing, and what to do next.*

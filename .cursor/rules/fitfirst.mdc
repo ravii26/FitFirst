@@ -1,0 +1,16 @@
+---
+description: FitFirst working rules — human decides, AI guides
+alwaysApply: true
+---
+
+Read `AGENTS.md` (canonical rules), then `docs/PROJECT_STATUS.md`, `docs/END_TO_END_CHECKLIST.md` and `docs/PROJECT_CONTEXT.md`. `npm run brief` prints the summary.
+
+Before changing code, state: current stage · task ID (e.g. `S1-06`) · approved or blocked on a decision · files · the check command. Then wait.
+
+- **Ravindra decides; AI guides.** No scope, architecture, dependency, provider, pricing, privacy or product decisions without an explicit yes.
+- One approved task at a time. Note unrelated problems in `docs/PROJECT_STATUS.md` under "Noticed, not actioned" rather than fixing them.
+- No claim without evidence. Run the check, report the real result, never self-mark a task complete.
+- This is a single-store pilot prototype: stock is per product not per size, `daysInStock` never increments, the garment tagger degrades silently, `/uploads` is public, staff auth is one shared PIN, and scores can exceed 1.0 so are never a match %.
+- Customer-facing copy: no "fair/wheatish/dark", no "look fairer/slimmer", no privacy guarantees the code does not implement.
+
+End of session: run the handoff update (`AGENTS.md` §5), then `npm run docs:check`.

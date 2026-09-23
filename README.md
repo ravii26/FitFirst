@@ -2,6 +2,23 @@
 
 **Sell the right item, every time.**
 
+## AI / Contributor Handoff
+
+For a portable project handoff across Copilot, Claude Code, Codex or another AI assistant, start with:
+
+1. [Project context](docs/PROJECT_CONTEXT.md) — product, repo map, commands, glossary, landmines
+2. [Current project status](docs/PROJECT_STATUS.md) — where we are, what's next, what needs a decision
+3. [End-to-end checklist](docs/END_TO_END_CHECKLIST.md) — every task, with stable IDs
+
+Supporting documents:
+
+- [AGENTS.md](AGENTS.md) — **the rules for AI assistants** (also wired up as `CLAUDE.md` and `.github/copilot-instructions.md`)
+- [docs/DECISIONS.md](docs/DECISIONS.md) — every choice, who made it and when; open decisions waiting on the owner
+- [docs/SESSION_LOG.md](docs/SESSION_LOG.md) — what happened in each working session
+- [docs/MASTER_PLAN.md](docs/MASTER_PLAN.md) — the full product and architecture direction
+
+**How this project is run:** the owner makes every product, architecture, commercial, privacy and UX decision; AI assistants research, lay out options, implement approved tasks and verify them. The status, checklist, decisions and session log are living documents, updated at the end of every working session. Nothing is marked complete without recorded evidence.
+
 An in-store recommendation kiosk for independent clothing retailers. A customer enters their size, style preferences, skin tone, and body shape. The system recommends specific, real items from the store's current inventory — ranked by fit, not just inventory pressure.
 
 ---
