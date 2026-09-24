@@ -1,3 +1,6 @@
+> ⚠️ **SUPERSEDED DOCUMENT**
+
+
 > **Historical — superseded.** This describes the Phase 1 screens and API as of August 2026. Its theme, camera, authentication and phase labels no longer match the code. For current work use [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md), [docs/END_TO_END_CHECKLIST.md](docs/END_TO_END_CHECKLIST.md) and [docs/PROJECT_CONTEXT.md](docs/PROJECT_CONTEXT.md); for direction use [docs/MASTER_PLAN.md](docs/MASTER_PLAN.md). The screen-by-screen detail below is still useful as reference.
 
 # FitFirst — Complete Project & Page Reference
