@@ -49,7 +49,6 @@ Full list and trade-offs in [DECISIONS.md](DECISIONS.md).
 | Date | What |
 |---|---|
 | **2 Oct 2026** | `gemini-2.5-flash-image` shuts down — the try-on prototype stops working |
-| Any day | `gemini-2.5-flash` (the tagger's last working model) is restricted for new projects and reported returning 404s |
 | 8 Nov 2026 | Diwali — avoid go-live and cut-overs around it; the plan targets early December |
 | 13 May 2027 | India's DPDP obligations take full effect |
 
@@ -61,9 +60,9 @@ Full list and trade-offs in [DECISIONS.md](DECISIONS.md).
 - PostgreSQL integration checks pass in a disposable schema: repeat session requests, stable recommendation snapshots, duplicate sales, concurrent last-unit sales, rollback, invalid stock and distinct-session metrics.
 - An additive migration was applied after a local backup; existing products were retained.
 - Browser verification reached the kiosk's privacy, department, size and preference screens.
-- The AI service's Python tests pass (45, 25 Sep 2026), including 20 tagger tests against a mocked AICredits gateway: bad AI answers become "needs review", never a guessed value.
+- The AI service's Python tests pass (49, 25 Sep 2026), including tagger tests against a mocked AICredits gateway: bad AI answers become "needs review", never a guessed value.
 - The dashboard production build passes with the "needs review" change (25 Sep 2026).
-- The "AI off" banner was checked in Chromium against a throwaway local database (25 Sep 2026): it names the reason (no key, service down, or the AI call's error). The AI service now has 49 tests; the backend 46.
+- The "AI off" banner was checked in Chromium against a throwaway local database (25 Sep 2026): it names the reason (no key, service down, or the AI call's error). The backend has 46 tests.
 - Dashboard scans now actually reach the AI service: the scan proxy sent `[object FormData]` instead of the photo, and has been fixed (proven in a browser; a regression test fails on the old code).
 
 **Not verified:**
@@ -95,8 +94,6 @@ Real findings from code review that are **not** yet tasks. Raise them to the che
 | A kids' dhoti set in the sample CSV is filed under the `KIDS_KURTA` category | `bulk_import_sample.csv` |
 | `CATEGORY_PATTERN_AFFINITY` is written but never imported | `backend/src/scoring/tables.ts:138-173` |
 | A fresh checkout needs `npx prisma generate` before `npm test`, or 3 scoring tests fail with "Cannot convert undefined or null to object" | `backend/` |
-| `PROJECT_CONTEXT.md` landmines and `AGENTS.md` §7 still describe the tagger as Gemini-direct with dead models (fixed by S05-01) | `docs/PROJECT_CONTEXT.md`, `AGENTS.md` |
-| When the AI call fails, the tagger still falls back to CLIP/heuristics quietly (S05-03 covers this) | `backend/ai-service/main.py` |
 | Inventory low-stock and ageing highlights use a CSS variable that is not defined, so they never show colour | `dashboard/src/pages/Inventory.tsx` |
 
 ## Working here

@@ -74,7 +74,8 @@ npm run db:backup --workspace=backend             # ALWAYS before a migration
 ```
 
 - Demo data only in an empty non-production database: set `FITFIRST_DEMO_SEED=1`, then `npm run db:seed --workspace=backend`. In PowerShell: `$env:FITFIRST_DEMO_SEED='1'`.
-- The Python tagger starts separately: `backend/ai-service/start.bat` (port 8000).
+- The Python tagger starts separately: `backend/ai-service/start.bat` (port 8000). It needs `AICREDITS_API_KEY` in `backend/.env`; optional `AICREDITS_TAG_MODEL` and `AICREDITS_JSON_SCHEMA=0`. Tests: `python -m pytest -q` in `backend/ai-service`.
+- On a fresh checkout run `npx prisma generate` in `backend/` before `npm test`, or three scoring tests fail.
 - Staff PIN comes from `DASHBOARD_PIN` in `backend/.env`. **Never print `.env` values.**
 - Postgres is on host port **5434** (a local change); `.env.example` still says 5432.
 
@@ -86,8 +87,8 @@ Things that look finished but are not. Check before trusting them:
 |---|---|
 | Stock is one number per product, so a recommended size may be sold out | `backend/prisma/schema.prisma:105-107` |
 | `daysInStock` never increments — the promised cron job does not exist, so "aged stock" is currently fiction | `schema.prisma:108` |
-| The garment tagger degrades silently: two of its three Gemini models are shut down, then it falls back to CLIP, then to guessing category from the image's aspect ratio | `backend/ai-service/classifier.py:371` |
-| An invalid AI answer is silently replaced by the **first** enum value | `classifier.py:392-393` |
+| When the AI call fails or there is no key, the tagger returns CLIP/heuristic **guesses** (category from the image's aspect ratio). Since S05-03 this is flagged by `ai_status` and a dashboard "AI off" banner, but the guesses are still offered (D-16) | `backend/ai-service/main.py` |
+| The AICredits model ID (`google/gemini-2.5-flash-lite`) and its JSON-schema support are unverified live | `backend/ai-service/classifier.py` |
 | Try-on's default image model shuts down **2 Oct 2026** | `AI Creation/saree-studio/app.py:28` |
 | Uploaded images are publicly readable at `/uploads/...` | `backend/src/index.ts:58-61` |
 | Kiosk API routes have no auth and no rate limit | `backend/src/index.ts:69-71` |

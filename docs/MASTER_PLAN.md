@@ -108,6 +108,8 @@ This plan **builds on** `SYSTEM_IMPROVEMENT_PLAN.md` (SIP, the engineering plan 
 | 6 | Demo-embarrassing UI | Pitch credibility and colourism risk | <ul><li>Remove the shopper-visible "Staff Dashboard → localhost:5173" link (`Welcome.tsx:129-136`).</li><li>Fix the `&arr;` typo (`SizeEntry.tsx:192`).</li><li>Replace the skin-tone labels with **numbered swatches** (`AttributeEntry.tsx:8-13`).</li></ul> |
 | 7 | No CI | Stops regressions | GitHub Actions: build, vitest, pytest and a secret scanner |
 
+> **Update 25 Sep 2026:** item 1 was done differently from this table. Per DEC-16 the tagger now calls **AICredits** (one configurable model) instead of Gemini direct, so the Gemini model list is gone and the `openai` package is now used (see §10). Progress is tracked in the checklist (S05-01 … S05-03).
+
 Item 2 has a **hard deadline (2 Oct)**, item 1 can break any day, and item 3 involves possibly leaked keys. Even though you chose "plan only", I recommend approving Phase 0 before 2 Oct.
 
 ---
@@ -792,7 +794,7 @@ Try-on is the only cost that grows with usage, so it is capped by quota.
 | Remove | Why |
 |---|---|
 | CLIP + pixel-heuristic engines, `torch`/`transformers` (`backend/ai-service/classifier.py`, `requirements.txt`) | ~2 GB of dependencies for weak accuracy; the heuristics guess category from aspect ratio. Replace with a vision LLM + measured colour, with manual entry as the fallback. |
-| Dead Gemini model list; unused `openai` package and `OPENAI_API_KEY`; `test_ai_scan.py` (a manual script that never fails) | Dead or unused |
+| ~~Dead Gemini model list; unused `openai` package and `OPENAI_API_KEY`~~ (done 25 Sep 2026: model list removed; `openai` now calls AICredits);  `test_ai_scan.py` (a manual script that never fails) | Dead or unused |
 | `@mediapipe/pose`, `@tensorflow/*` in `kiosk/package.json` (never imported) | Replace with `@mediapipe/tasks-vision` |
 | `CATEGORY_PATTERN_AFFINITY` (`tables.ts:138-173`) | Dead code |
 | `FAIR/WHEATISH/MEDIUM/DEEP` enum and labels; the depth-only colour table | Depth groups + undertone + Lab harmony; colourism risk |

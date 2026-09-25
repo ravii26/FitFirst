@@ -146,7 +146,7 @@ Check `docs/PROJECT_CONTEXT.md` ("Landmines") for the full list with file refere
 
 - **Stock is per product, not per size.** A recommendation can name a size that is sold out.
 - **`daysInStock` never changes.** The schema comment promises a cron job that does not exist, so "aged stock" is currently fiction.
-- **The garment tagger degrades silently.** Two of its three Gemini models are already shut down; on failure it falls back to CLIP, then to guessing category from the image's aspect ratio. An invalid answer is silently replaced by the *first* enum value.
+- **The garment tagger's fallback is only a guess.** The garment tagger calls one AICredits model (`AICREDITS_TAG_MODEL`). If that call fails or there is no key, it still returns rough CLIP/heuristic guesses (whether to drop them is D-16), but it now says so: `/scan` and `/health` report `ai_status`, and the dashboard shows an "AI off" banner. An invalid AI answer becomes an empty "needs review" field, never a guessed value. A live AICredits call has not been verified yet.
 - **Uploads are publicly readable** at `/uploads/...`, and kiosk API routes have no auth or rate limit.
 - **Staff auth is one shared 4-digit PIN.** There are no user identities or roles.
 - **Scores can exceed 1.0** and are not probabilities. Never display them as a match percentage.

@@ -24,7 +24,7 @@ An in-store clothing recommendation system for independent Indian retailers: a c
 
 - Stock is per product, not per size, so a recommended size may be sold out.
 - `daysInStock` never increments; "aged stock" is not real yet.
-- The garment tagger silently falls back to CLIP and then to an aspect-ratio heuristic; invalid AI answers become the first enum value.
+- The garment tagger uses AICredits; when that fails it falls back to rough CLIP/heuristic guesses, flagged by `ai_status` and an "AI off" banner. Invalid AI answers become an empty "needs review" field.
 - `/uploads/...` is publicly readable; kiosk API routes have no auth or rate limit; staff auth is one shared PIN.
 - Recommendation scores can exceed 1.0 and must never be shown as a match percentage.
 - Demo and seed data are random; never present them as store evidence.

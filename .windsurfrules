@@ -6,7 +6,7 @@ Before changing code, state: current stage, the task ID, whether it is approved 
 
 Ravindra (owner) decides; AI guides. No scope, architecture, dependency, provider, pricing, privacy or product decisions without an explicit yes. One approved task at a time. No claim without evidence, and never mark a checklist item complete yourself.
 
-Single-store pilot prototype. Known traps: stock is per product not per size; `daysInStock` never increments; the garment tagger silently falls back to guessing; `/uploads` is publicly readable; staff auth is one shared PIN; recommendation scores can exceed 1.0 and are not percentages; demo data is random.
+Single-store pilot prototype. Known traps: stock is per product not per size; `daysInStock` never increments; when AI tagging fails the tagger falls back to guesses (flagged "AI off"); `/uploads` is publicly readable; staff auth is one shared PIN; recommendation scores can exceed 1.0 and are not percentages; demo data is random.
 
 Customer-facing copy: no "fair/wheatish/dark" skin words, no "look fairer/slimmer", no privacy claims the code does not implement.
 
