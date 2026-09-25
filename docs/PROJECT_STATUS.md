@@ -14,22 +14,22 @@
 ## Start here (the next three actions)
 
 1. **D-02 — today, owner only.** Rotate the three live API keys (Gemini, OpenRouter, AICredits) and set spend caps. The garment tagger now uses the AICredits key, so rotate that one before relying on it. No AI should touch these values.
-2. **S05-01 — owner check.** Put `AICREDITS_API_KEY` in `backend/.env`, start the AI service, scan one garment, and confirm `/scan` shows `aicredits (<model>)` and `/health` shows the model. The default model ID `google/gemini-2.5-flash-lite` is unconfirmed on AICredits; set `AICREDITS_TAG_MODEL` if it differs.
-3. **S05-02 … S05-09.** Continue the urgent fixes before **2 Oct**; next is S05-02 (invalid answers become "needs review" instead of the first enum value).
+2. **S05-01 / S05-02 — owner check.** Put `AICREDITS_API_KEY` in `backend/.env`, start the AI service, scan one garment from the dashboard, and confirm `/scan` shows `aicredits (<model>)` and `/health` shows the model. The default model ID `google/gemini-2.5-flash-lite` is unconfirmed on AICredits; set `AICREDITS_TAG_MODEL` if it differs. If the call fails with a `response_format` error, set `AICREDITS_JSON_SCHEMA=0`.
+3. **S05-03 … S05-09.** Continue the urgent fixes before **2 Oct**; next is S05-03 (make AI failure loud: `/health` and an "AI off" banner instead of silent heuristics).
 
 ## Progress at a glance
 
 | Stage | Done | Partial | Open | Total | State |
 |---|---|---|---|---|---|
 | 0 — Direction and safety | 3 | 0 | 7 | 10 | Waiting on owner input |
-| 0.5 — Urgent technical fixes | 0 | 1 | 8 | 9 | **Deadline 2 Oct** — approved (D-01); S05-01 implemented |
+| 0.5 — Urgent technical fixes | 0 | 2 | 7 | 9 | **Deadline 2 Oct** — approved (D-01); S05-01 and S05-02 implemented |
 | 1 — Stabilise the pilot | 0 | 5 | 8 | 13 | Automated checks pass; browser checks not recorded |
 | 2 — Single-store operations | 0 | 0 | 31 | 31 | Not started; 4 decisions first |
 | 3 — Customer and staff experience | 0 | 0 | 12 | 12 | Planned |
 | 4 — Measurement and deployment | 0 | 0 | 11 | 11 | Planned |
 | 5 — Recommendation evidence and AI | 0 | 0 | 12 | 12 | Planned |
 | 6 — Multi-store and commercial | 0 | 0 | 12 | 12 | Planned |
-| **Total** | **3** | **6** | **101** | **110** | |
+| **Total** | **3** | **7** | **100** | **110** | |
 
 Update these counts whenever you tick an item in [END_TO_END_CHECKLIST.md](END_TO_END_CHECKLIST.md).
 
@@ -61,11 +61,13 @@ Full list and trade-offs in [DECISIONS.md](DECISIONS.md).
 - PostgreSQL integration checks pass in a disposable schema: repeat session requests, stable recommendation snapshots, duplicate sales, concurrent last-unit sales, rollback, invalid stock and distinct-session metrics.
 - An additive migration was applied after a local backup; existing products were retained.
 - Browser verification reached the kiosk's privacy, department, size and preference screens.
-- The AI service's Python tests pass (33, 25 Sep 2026), including 8 new tagger tests against a mocked AICredits gateway.
+- The AI service's Python tests pass (45, 25 Sep 2026), including 20 tagger tests against a mocked AICredits gateway: bad AI answers become "needs review", never a guessed value.
+- The dashboard production build passes with the "needs review" change (25 Sep 2026).
 
 **Not verified:**
 - The full browser journey through recommendations, handoff, dashboard lookup and sale.
-- A live AICredits tagging call: the model ID, image input and JSON replies through the gateway are untested.
+- A live AICredits tagging call: the model ID, image input, the JSON response schema and replies through the gateway are untested.
+- The dashboard's "needs review" display and required fields, in a browser.
 - Camera accuracy under real store lighting.
 - Real pilot data quality and the live-store workflow.
 - Production deployment, restore, monitoring, privacy/legal review, device testing.

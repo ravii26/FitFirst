@@ -60,8 +60,9 @@ def test_scan_accepts_real_image_and_returns_all_attributes(monkeypatch):
     body = res.json()
     for attr in ("category", "colorFamily", "pattern", "fitType", "gender"):
         assert attr in body
-        assert set(body[attr].keys()) == {"value", "confidence", "all_scores", "engine"}
+        assert set(body[attr].keys()) == {"value", "confidence", "all_scores", "engine", "needs_review"}
         assert 0.0 <= body[attr]["confidence"] <= 1.0
+        assert body[attr]["needs_review"] is False
 
 
 def test_scan_rejects_oversized_upload(monkeypatch):

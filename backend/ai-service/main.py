@@ -45,6 +45,8 @@ class AttributeResult(BaseModel):
     confidence: float
     all_scores: dict[str, float]
     engine: str
+    # True when the AI answer was missing or not an allowed value; value is then "".
+    needs_review: bool = False
 
 class ScanResponse(BaseModel):
     category: AttributeResult

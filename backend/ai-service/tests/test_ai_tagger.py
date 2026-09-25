@@ -115,3 +115,77 @@ def test_model_status_reports_provider_and_model(fake_client, monkeypatch):
     assert status["ai_provider"] == "aicredits"
     assert status["tag_model"] == "openai/gpt-4.1-nano"
     assert status["active_engine"] == "aicredits"
+
+
+# --- S05-02: response schema and "needs review" instead of a guessed enum ---
+
+def test_request_sends_enum_schema_by_default(fake_client):
+    classify_all_with_ai(image())
+    fmt = fake_client.calls[0]["response_format"]
+    assert fmt["type"] == "json_schema"
+    schema = fmt["json_schema"]["schema"]
+    assert set(schema["required"]) == {"category", "colorFamily", "pattern", "fitType", "gender"}
+    assert "SAREE" in schema["properties"]["category"]["properties"]["value"]["enum"]
+
+
+def test_schema_can_be_switched_off(fake_client, monkeypatch):
+    monkeypatch.setenv("AICREDITS_JSON_SCHEMA", "0")
+    classify_all_with_ai(image())
+    assert "response_format" not in fake_client.calls[0]
+
+
+def test_valid_reply_is_not_flagged(fake_client):
+    result = classify_all_with_ai(image())
+    for attr in result.values():
+        assert attr["needs_review"] is False
+    assert result["category"]["value"] == "SAREE"
+
+
+def test_invalid_value_becomes_empty_and_needs_review(fake_client):
+    bad = dict(VALID_REPLY, category={"value": "SPACESUIT", "confidence": 0.99})
+    fake_client.reply_text = json.dumps(bad)
+    result = classify_all_with_ai(image())
+    cat = result["category"]
+    assert cat["value"] == ""
+    assert cat["needs_review"] is True
+    assert cat["confidence"] == 0.0
+    assert set(cat["all_scores"].values()) == {0.0}
+    # The other attributes are unaffected.
+    assert result["gender"] == {**result["gender"], "value": "WOMEN", "needs_review": False}
+
+
+@pytest.mark.parametrize(
+    "item",
+    [
+        None,                                      # attribute missing
+        "SAREE",                                   # not an object
+        {"confidence": 0.9},                       # value missing
+        {"value": None, "confidence": 0.9},        # value not a string
+        {"value": "SAREE"},                        # confidence missing
+        {"value": "SAREE", "confidence": "high"},  # confidence not a number
+    ],
+)
+def test_malformed_attribute_needs_review(fake_client, item):
+    bad = dict(VALID_REPLY)
+    if item is None:
+        del bad["category"]
+    else:
+        bad["category"] = item
+    fake_client.reply_text = json.dumps(bad)
+    cat = classify_all_with_ai(image())["category"]
+    assert cat["value"] == ""
+    assert cat["needs_review"] is True
+
+
+def test_confidence_is_clamped_to_unit_range(fake_client):
+    bad = dict(VALID_REPLY, pattern={"value": "SOLID", "confidence": 7})
+    fake_client.reply_text = json.dumps(bad)
+    pat = classify_all_with_ai(image())["pattern"]
+    assert pat["confidence"] == 1.0
+    assert pat["needs_review"] is False
+
+
+def test_reply_that_is_not_an_object_flags_every_attribute(fake_client):
+    fake_client.reply_text = json.dumps(["SAREE"])
+    result = classify_all_with_ai(image())
+    assert all(attr["needs_review"] and attr["value"] == "" for attr in result.values())

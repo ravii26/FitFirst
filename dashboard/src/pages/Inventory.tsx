@@ -91,6 +91,15 @@ interface Product {
   aiConfidence?: Record<string, number> | null;
 }
 
+// Attributes the AI tagger fills in, in the order the chips show them.
+const AI_ATTRIBUTES = [
+  { key: "category", label: "Category" },
+  { key: "colorFamily", label: "Color" },
+  { key: "pattern", label: "Pattern" },
+  { key: "fitType", label: "Fit" },
+  { key: "gender", label: "Gender" },
+] as const;
+
 export default function Inventory() {
   const [pageError, setPageError] = useState("");
   const [creating, setCreating] = useState(false);
@@ -115,12 +124,15 @@ export default function Inventory() {
   const [aiConfidence, setAiConfidence] = useState<Record<string, number> | null>(null);
   const [aiEngine, setAiEngine] = useState<string | null>(null);
   const [scanMsg, setScanMsg] = useState<{ type: "success" | "error" | "warning"; text: string } | null>(null);
+  // Attributes the AI could not tag with an allowed value; staff must choose them.
+  const [aiNeedsReview, setAiNeedsReview] = useState<string[]>([]);
 
   const handleAIScanFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setScanningAI(true);
     setAiConfidence(null);
+    setAiNeedsReview([]);
     setAiEngine(null);
     setScanMsg(null);
     try {
@@ -161,7 +173,15 @@ export default function Inventory() {
         });
         setAiEngine(p.category.engine ?? null);
 
-        if (p.category.engine === "heuristic") {
+        const flagged = AI_ATTRIBUTES.filter((a) => p[a.key]?.needs_review);
+        setAiNeedsReview(flagged.map((a) => a.key));
+
+        if (flagged.length > 0) {
+          setScanMsg({
+            type: "warning",
+            text: `The AI could not tag ${flagged.map((a) => a.label.toLowerCase()).join(", ")}. Please choose ${flagged.length === 1 ? "it" : "them"} before saving.`,
+          });
+        } else if (p.category.engine === "heuristic") {
           setScanMsg({
             type: "warning",
             text: "Tagged using the fallback visual heuristic (CLIP model not loaded on the AI service) — please double-check these fields.",
@@ -387,6 +407,7 @@ export default function Inventory() {
 
       setShowAddModal(false);
       setAiConfidence(null);
+    setAiNeedsReview([]);
       setAiEngine(null);
       setScanMsg(null);
       loadProducts();
@@ -721,11 +742,13 @@ export default function Inventory() {
 
               {aiConfidence && (
                 <div style={{ fontSize: 11, color: "var(--success)", display: "flex", gap: 10, flexWrap: "wrap", marginTop: 10, paddingTop: 8, borderTop: "1px dashed var(--line-strong)" }}>
-                  <span>✓ Category ({(aiConfidence.category * 100).toFixed(0)}%)</span>
-                  <span>✓ Color ({(aiConfidence.colorFamily * 100).toFixed(0)}%)</span>
-                  <span>✓ Pattern ({(aiConfidence.pattern * 100).toFixed(0)}%)</span>
-                  <span>✓ Fit ({(aiConfidence.fitType * 100).toFixed(0)}%)</span>
-                  <span>✓ Gender ({(aiConfidence.gender * 100).toFixed(0)}%)</span>
+                  {AI_ATTRIBUTES.map((a) =>
+                    aiNeedsReview.includes(a.key) ? (
+                      <span key={a.key} style={{ color: "var(--accent-light)" }}>⚠ {a.label}: needs review</span>
+                    ) : (
+                      <span key={a.key}>✓ {a.label} ({(aiConfidence[a.key] * 100).toFixed(0)}%)</span>
+                    )
+                  )}
                 </div>
               )}
 
@@ -764,18 +787,22 @@ export default function Inventory() {
                 <div className="form-group">
                   <label>Category</label>
                   <select
+                    required
                     value={newProduct.category}
                     onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
                   >
+                    {newProduct.category === "" && <option value="" disabled>Needs review: choose</option>}
                     {CATEGORIES.map((c) => <option key={c} value={c}>{categoryLabel(c)}</option>)}
                   </select>
                 </div>
                 <div className="form-group">
                   <label>Department / Gender</label>
                   <select
+                    required
                     value={newProduct.gender}
                     onChange={(e) => setNewProduct({ ...newProduct, gender: e.target.value })}
                   >
+                    {newProduct.gender === "" && <option value="" disabled>Needs review: choose</option>}
                     <option value="WOMEN">Women</option>
                     <option value="MEN">Men</option>
                     <option value="KIDS">Kids</option>
@@ -785,27 +812,33 @@ export default function Inventory() {
                 <div className="form-group">
                   <label>Color Family</label>
                   <select
+                    required
                     value={newProduct.colorFamily}
                     onChange={(e) => setNewProduct({ ...newProduct, colorFamily: e.target.value })}
                   >
+                    {newProduct.colorFamily === "" && <option value="" disabled>Needs review: choose</option>}
                     {COLOR_FAMILIES.map((c) => <option key={c} value={c}>{COLOR_FAMILY_LABELS[c] ?? c}</option>)}
                   </select>
                 </div>
                 <div className="form-group">
                   <label>Fit Type</label>
                   <select
+                    required
                     value={newProduct.fitType}
                     onChange={(e) => setNewProduct({ ...newProduct, fitType: e.target.value })}
                   >
+                    {newProduct.fitType === "" && <option value="" disabled>Needs review: choose</option>}
                     {FIT_TYPES.map((f) => <option key={f} value={f}>{FIT_TYPE_LABELS[f] ?? f}</option>)}
                   </select>
                 </div>
                 <div className="form-group">
                   <label>Pattern / Work</label>
                   <select
+                    required
                     value={newProduct.pattern}
                     onChange={(e) => setNewProduct({ ...newProduct, pattern: e.target.value })}
                   >
+                    {newProduct.pattern === "" && <option value="" disabled>Needs review: choose</option>}
                     {PATTERNS.map((p) => <option key={p} value={p}>{PATTERN_LABELS[p] ?? p}</option>)}
                   </select>
                 </div>

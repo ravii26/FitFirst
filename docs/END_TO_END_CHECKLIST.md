@@ -18,14 +18,14 @@
 | Stage | Done | Partial | Open | Total |
 |---|---|---|---|---|
 | 0 — Direction and safety | 3 | 0 | 7 | 10 |
-| 0.5 — Urgent technical fixes | 0 | 1 | 8 | 9 |
+| 0.5 — Urgent technical fixes | 0 | 2 | 7 | 9 |
 | 1 — Stabilise the pilot | 0 | 5 | 8 | 13 |
 | 2 — Single-store operations | 0 | 0 | 31 | 31 |
 | 3 — Customer and staff experience | 0 | 0 | 12 | 12 |
 | 4 — Measurement and deployment | 0 | 0 | 11 | 11 |
 | 5 — Recommendation evidence and AI | 0 | 0 | 12 | 12 |
 | 6 — Multi-store and commercial | 0 | 0 | 12 | 12 |
-| **Total** | **3** | **6** | **101** | **110** |
+| **Total** | **3** | **7** | **100** | **110** |
 
 Keep this table and the one in `PROJECT_STATUS.md` in step.
 
@@ -72,7 +72,7 @@ This confirms the plan covers the whole product, while keeping *planned* separat
 **D-01 approved 25 Sep 2026. Deadline 2 October 2026** — the try-on image model shuts down that day, and the tagger's last working model could stop any time.
 
 - [~] **S05-01** Read the tagger's model from config and remove the dead models. Per D-18 the tagger now calls **AICredits** (`AICREDITS_API_KEY`, `AICREDITS_TAG_MODEL`, default `google/gemini-2.5-flash-lite`, alternatives commented in code) instead of Gemini direct; one model, no silent chain. — `backend/ai-service/classifier.py`, `main.py`; *check:* `/scan` reports the engine actually used. *Evidence (25 Sep 2026):* `python -m pytest -q` in `backend/ai-service` → 33 passed (8 new tests with a mocked gateway: default model, env override, base URL, engine reports the gateway's model, single call on failure). **Not verified:** a live AICredits call — the model ID and gateway behaviour are unconfirmed (aicredits.in was unreachable from the session).
-- [ ] **S05-02** Use a response schema; an invalid answer becomes empty and "needs review" instead of the first enum value. — `classifier.py:388-394`; *check:* a unit test feeding a bad payload
+- [~] **S05-02** Use a response schema; an invalid answer becomes empty and "needs review" instead of the first enum value. — `classifier.py`, `main.py`, `dashboard/src/pages/Inventory.tsx`; *check:* a unit test feeding a bad payload. *Evidence (25 Sep 2026):* the request sends a strict JSON schema with every attribute's enums (`AICREDITS_JSON_SCHEMA=0` turns it off); a missing, out-of-list or malformed value comes back as `value: ""`, `needs_review: true`; the dashboard shows "⚠ … needs review", explains which fields to choose, and its selects are `required`, so the form cannot be saved until staff choose. `python -m pytest -q` in `backend/ai-service` → 45 passed (12 new); `npm run build --workspace=dashboard` passes. **Not verified:** whether AICredits accepts the schema (no live call), and the dashboard change in a browser.
 - [ ] **S05-03** Make AI failure loud: `/health` reports the real engine, and the dashboard shows an "AI off" banner instead of silently using heuristics. — `backend/ai-service/main.py`, `dashboard/src/pages/Inventory.tsx`
 - [ ] **S05-04** Fix `load_dotenv("../.env")`, which depends on the working directory. — `backend/ai-service/classifier.py:16`
 - [ ] **S05-05** Point saree-studio's default image model at `google/gemini-3.1-flash-image` in code, README and `.env.example`. — `AI Creation/saree-studio/app.py:28`

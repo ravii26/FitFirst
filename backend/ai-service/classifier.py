@@ -394,9 +394,16 @@ Return a valid JSON object with the following schema:
     data_url = "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode("ascii")
 
     try:
+        extra: Dict[str, Any] = {}
+        if os.getenv("AICREDITS_JSON_SCHEMA", "1") != "0":
+            # Ask the gateway to enforce the enums. If a model or the gateway
+            # rejects this, set AICREDITS_JSON_SCHEMA=0; replies are still
+            # validated by _format_ai_attribute either way.
+            extra["response_format"] = _tag_response_schema()
         response = client.chat.completions.create(
             model=model_name,
             temperature=0.1,
+            **extra,
             messages=[
                 {
                     "role": "user",
@@ -421,26 +428,89 @@ Return a valid JSON object with the following schema:
     # Report the model the gateway says actually answered, not just the one requested.
     engine = f"aicredits ({response.model or model_name})"
 
-    def format_res(key, prompt_map):
-        item = raw.get(key, {})
-        val = item.get("value", "")
-        conf = float(item.get("confidence", 0.95))
-        if val not in prompt_map:
-            val = list(prompt_map.keys())[0]
-        scores = _make_scores(list(prompt_map.keys()), val, conf)
-        return {
-            "value": val,
-            "confidence": round(conf, 4),
-            "all_scores": scores,
-            "engine": engine,
-        }
+    return {
+        key: _format_ai_attribute(raw, key, prompt_map, engine)
+        for key, prompt_map in _ai_attribute_maps().items()
+    }
+
+
+def _ai_attribute_maps() -> Dict[str, Dict[str, str]]:
+    """The five tagged attributes and their allowed enum values, in reply order."""
+    from prompts import (
+        CATEGORY_PROMPTS,
+        COLOR_PROMPTS,
+        PATTERN_PROMPTS,
+        FIT_PROMPTS,
+        GENDER_PROMPTS,
+    )
 
     return {
-        "category": format_res("category", CATEGORY_PROMPTS),
-        "colorFamily": format_res("colorFamily", COLOR_PROMPTS),
-        "pattern": format_res("pattern", PATTERN_PROMPTS),
-        "fitType": format_res("fitType", FIT_PROMPTS),
-        "gender": format_res("gender", GENDER_PROMPTS),
+        "category": CATEGORY_PROMPTS,
+        "colorFamily": COLOR_PROMPTS,
+        "pattern": PATTERN_PROMPTS,
+        "fitType": FIT_PROMPTS,
+        "gender": GENDER_PROMPTS,
+    }
+
+
+def _tag_response_schema() -> Dict[str, Any]:
+    """JSON schema for the tagger reply: each attribute's value must be one of its enums."""
+    properties = {
+        key: {
+            "type": "object",
+            "properties": {
+                "value": {"type": "string", "enum": list(prompt_map.keys())},
+                "confidence": {"type": "number"},
+            },
+            "required": ["value", "confidence"],
+            "additionalProperties": False,
+        }
+        for key, prompt_map in _ai_attribute_maps().items()
+    }
+    return {
+        "type": "json_schema",
+        "json_schema": {
+            "name": "garment_tags",
+            "strict": True,
+            "schema": {
+                "type": "object",
+                "properties": properties,
+                "required": list(properties.keys()),
+                "additionalProperties": False,
+            },
+        },
+    }
+
+
+def _format_ai_attribute(raw: Any, key: str, prompt_map: Dict[str, str], engine: str) -> Dict[str, Any]:
+    """
+    Turn one attribute of the model's reply into an AttributeResult dict.
+    A missing or out-of-list value becomes an empty value with needs_review=True,
+    so staff must choose it; it is never replaced with a guessed enum.
+    """
+    item = raw.get(key) if isinstance(raw, dict) else None
+    val = item.get("value") if isinstance(item, dict) else None
+    try:
+        conf = float(item.get("confidence")) if isinstance(item, dict) else None
+    except (TypeError, ValueError):
+        conf = None
+
+    if not isinstance(val, str) or val not in prompt_map or conf is None or math.isnan(conf):
+        return {
+            "value": "",
+            "confidence": 0.0,
+            "all_scores": {k: 0.0 for k in prompt_map},
+            "engine": engine,
+            "needs_review": True,
+        }
+
+    conf = min(max(conf, 0.0), 1.0)
+    return {
+        "value": val,
+        "confidence": round(conf, 4),
+        "all_scores": _make_scores(list(prompt_map.keys()), val, conf),
+        "engine": engine,
+        "needs_review": False,
     }
 
 
