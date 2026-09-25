@@ -26,6 +26,8 @@ def test_health_reports_clip_status():
     assert body["status"] == "ok"
     assert "clip_loaded" in body
     assert "load_error" in body
+    assert body["ai_provider"] == "aicredits"
+    assert "tag_model" in body
 
 
 def test_scan_rejects_non_image_content_type():
@@ -47,7 +49,9 @@ def test_scan_rejects_bytes_that_are_not_a_real_image():
     assert res.status_code == 400
 
 
-def test_scan_accepts_real_image_and_returns_all_attributes():
+def test_scan_accepts_real_image_and_returns_all_attributes(monkeypatch):
+    # Never make a real, paid AI call from the test suite.
+    monkeypatch.delenv("AICREDITS_API_KEY", raising=False)
     res = client.post(
         "/scan",
         files={"file": ("garment.jpg", make_jpeg_bytes(), "image/jpeg")},

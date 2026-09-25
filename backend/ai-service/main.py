@@ -17,7 +17,7 @@ from prompts import (
     FIT_PROMPTS,
     GENDER_PROMPTS,
 )
-from classifier import predict_attribute, classify_all_with_gemini, model_status
+from classifier import predict_attribute, classify_all_with_ai, model_status
 
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024  # matches the Node proxy's multipart limit
 
@@ -59,7 +59,9 @@ async def health_check():
     return {
         "status": "ok",
         "service": "FitFirst AI Garment Scanner",
-        "gemini_enabled": status["gemini_enabled"],
+        "ai_enabled": status["ai_enabled"],
+        "ai_provider": status["ai_provider"],
+        "tag_model": status["tag_model"],
         "active_engine": status["active_engine"],
         "clip_loaded": status["clip_loaded"],
         "load_error": status["load_error"],
@@ -83,10 +85,10 @@ async def scan_garment(file: UploadFile = File(...)):
     except Exception as err:
         raise HTTPException(status_code=400, detail=f"Invalid image file: {str(err)}")
 
-    # Check if Gemini Vision API key is available
-    if os.getenv("GEMINI_API_KEY"):
+    # Use the AI tagger (via AICredits) when its key is configured
+    if os.getenv("AICREDITS_API_KEY"):
         try:
-            results = classify_all_with_gemini(image)
+            results = classify_all_with_ai(image)
             return ScanResponse(
                 category=AttributeResult(**results["category"]),
                 colorFamily=AttributeResult(**results["colorFamily"]),
@@ -95,7 +97,7 @@ async def scan_garment(file: UploadFile = File(...)):
                 gender=AttributeResult(**results["gender"]),
             )
         except Exception as err:
-            print(f"[AI Service] Gemini multi-attribute scan failed ({err}). Falling back to CLIP/heuristics.")
+            print(f"[AI Service] AI multi-attribute scan failed ({err}). Falling back to CLIP/heuristics.")
 
     # Fallback to local CLIP / Visual Heuristics
     category = predict_attribute(image, CATEGORY_PROMPTS, "category")

@@ -22,8 +22,7 @@
 
 | ID | Question | Blocks | Urgency | AI recommendation |
 |---|---|---|---|---|
-| **D-01** | Go-ahead for the urgent technical fixes (model config, repo hygiene, CI)? | `S0.5-*` | **By 2 Oct 2026** | Yes — do it now |
-| **D-02** | Rotate the three live API keys in `AI Creation/saree-studio/.env`? | `S0.5-05` | **Now** | Yes — rotate today (owner action, not AI) |
+| **D-02** | Rotate the three live API keys in `AI Creation/saree-studio/.env`? | `S05-05`; also the tagger now uses the AICredits key (DEC-16) | **Now** | Yes — rotate today (owner action, not AI) |
 | **D-03** | Accept Stage 1, or raise a defect list? | Stage 2 start | After `S1-*` runs | Decide only after the browser checks are recorded |
 | **D-04** | Which pilot shop, and what scope (departments, catalogue size, staff champion)? | Most of Stage 2+ | High — the pitch meeting | Start with aged stock plus key categories, 200–400 pieces |
 | **D-05** | Pilot POS path: A (sync with their software) or B (FitFirst Billing)? | Stage 6 POS tasks, pilot design | High — needs the discovery meeting | Decide from their answers; default to A with Excel sync |
@@ -38,11 +37,11 @@
 | **D-14** | Pilot languages: English only, or English + Hindi + Gujarati? | Stage 3 copy | Before Stage 3 | All three for a Gujarat pilot; it affects every screen's copy |
 | **D-15** | Commercial plans and prices to test in pitches | Pitch material | Before pitching | Test the three tiers in `MASTER_PLAN.md` §8 as hypotheses, not promises |
 | **D-16** | Keep or drop the CLIP/torch fallback in the garment tagger? | `S5-*`, deployment size | With Stage 5 | Drop it; ~2 GB of dependencies for weak accuracy |
-*(D-17 was decided on 24 Sep 2026 — see DEC-12 below.)*
+*(D-17 was decided on 24 Sep 2026 — see DEC-12 below. D-01 and D-18 were decided on 25 Sep 2026 — see DEC-15 and DEC-16.)*
 
 ### Detail on the near-term ones
 
-**D-01 — Urgent technical fixes.** The try-on prototype's default image model shuts down **2 Oct 2026**, and of the three models the garment tagger tries, two are already shut down. When the AI fails, tagging silently drops to CLIP and then to guessing from image shape, and the dashboard still looks normal. The fix is small: model names in config, loud failures, repo hygiene, CI. *Reversible: easily.* *Blocked until decided:* all of `S0.5`.
+**D-01 — Urgent technical fixes. DECIDED 25 Sep 2026 (DEC-15).** The try-on prototype's default image model shuts down **2 Oct 2026**, and of the three models the garment tagger tries, two are already shut down. When the AI fails, tagging silently drops to CLIP and then to guessing from image shape, and the dashboard still looks normal. The fix is small: model names in config, loud failures, repo hygiene, CI. *Reversible: easily.* *Blocked until decided:* all of `S0.5`.
 
 **D-02 — Key rotation.** `AI Creation/saree-studio/.env` holds three live keys (Gemini, OpenRouter, AICredits). The folder arrived as a zip from another machine, and the `.env` was inside it, so the keys may exist elsewhere. Rotate them in each provider console and set spend caps. **Ravindra does this; no AI should touch the values.** *One-way door if a key is already being abused.*
 
@@ -72,6 +71,8 @@
 | DEC-12 | 24 Sep 2026 | The handoff must work **both** in Claude Code and in whatever AI tool a collaborator uses. Implemented as: an instructions file per tool (all pointing at `AGENTS.md`), `npm run brief` at the start, `npm run docs:check` at the end, a `/handoff` command, and a Claude Code session-start hook. No blocking hook. | Ravindra works here; a friend works in another AI. Vendor-specific automation alone would leave one of them out, so the enforcement is plain Node scripts any tool or CI can run. | DECIDED (answers D-17) |
 | DEC-13 | 24 Sep 2026 | `PROJECT_OVERVIEW.md` and `fitfirst_product_analysis.md` keep a "Historical — superseded" banner instead of being deleted or moved | Their detail and reasoning are still useful, but no AI should plan from them | DECIDED |
 | DEC-14 | 24 Sep 2026 | Documentation changes stay **uncommitted** for now; Ravindra reviews and commits them | The owner wants to read the docs before they enter history | DECIDED |
+| DEC-15 | 25 Sep 2026 | Stage 0.5 urgent fixes approved; work starts with S05-01 | The try-on image model shuts down 2 Oct and the tagger's models are dead or failing | DECIDED (answers D-01) |
+| DEC-16 | 25 Sep 2026 | The garment tagger calls AI through **AICredits** (OpenAI-compatible gateway, `AICREDITS_API_KEY`) instead of Gemini direct. Use a low-cost vision model; the model is switchable by `AICREDITS_TAG_MODEL` or by the commented alternatives in `classifier.py` | Ravindra mainly uses the AICredits key for AI work; one key and one bill. Accepted cost: garment photos now pass through a reseller, and response-schema support depends on the gateway (affects S05-02) | DECIDED (answers D-18, option B) |
 
 ---
 

@@ -15,8 +15,21 @@ from dotenv import load_dotenv
 # Load variables from backend/.env or local .env
 load_dotenv("../.env")
 
-openai_api_key = os.getenv("OPENAI_API_KEY")
-gemini_api_key = os.getenv("GEMINI_API_KEY")
+# Garment tagging goes through AICredits, an OpenAI-compatible gateway (D-18).
+AICREDITS_BASE_URL = "https://api.aicredits.in/v1"
+
+# Tagging model. Set AICREDITS_TAG_MODEL in backend/.env to switch without a
+# code change, or swap the uncommented line below. All options are low-cost
+# and accept images; check the ID and price on aicredits.in before switching.
+DEFAULT_TAG_MODEL = "google/gemini-2.5-flash-lite"
+# DEFAULT_TAG_MODEL = "openai/gpt-4o-mini"
+# DEFAULT_TAG_MODEL = "openai/gpt-4.1-nano"
+# DEFAULT_TAG_MODEL = "google/gemini-2.5-flash"
+
+
+def get_tag_model() -> str:
+    """The tagging model in use: AICREDITS_TAG_MODEL if set, else the default."""
+    return os.getenv("AICREDITS_TAG_MODEL") or DEFAULT_TAG_MODEL
 
 
 # Global model references
@@ -304,13 +317,26 @@ def predict_attribute(image: Image.Image, prompt_dict: Dict[str, str], attribute
     }
 
 
-def classify_all_with_gemini(image: Image.Image) -> Dict[str, Dict[str, Any]]:
+def _parse_json_reply(text: str) -> Dict[str, Any]:
+    """Parse the model's JSON reply, tolerating a ```json code fence around it."""
+    import json
+
+    cleaned = text.strip()
+    if cleaned.startswith("```"):
+        cleaned = cleaned.split("\n", 1)[1] if "\n" in cleaned else ""
+        cleaned = cleaned.rsplit("```", 1)[0]
+    return json.loads(cleaned)
+
+
+def classify_all_with_ai(image: Image.Image) -> Dict[str, Dict[str, Any]]:
     """
-    Perform single-shot multi-attribute visual classification using Gemini Vision API.
+    Perform single-shot multi-attribute visual classification through AICredits.
     Returns structured results for category, colorFamily, pattern, fitType, and gender.
+    Uses exactly one model (get_tag_model()); a failure raises instead of
+    quietly trying other models.
     """
-    from google import genai
-    from google.genai import types
+    from openai import OpenAI
+    import base64
     import json
     from prompts import (
         CATEGORY_PROMPTS,
@@ -320,11 +346,12 @@ def classify_all_with_gemini(image: Image.Image) -> Dict[str, Dict[str, Any]]:
         GENDER_PROMPTS,
     )
 
-    api_key = os.getenv("GEMINI_API_KEY")
+    api_key = os.getenv("AICREDITS_API_KEY")
     if not api_key:
-        raise ValueError("GEMINI_API_KEY environment variable is not set")
+        raise ValueError("AICREDITS_API_KEY environment variable is not set")
 
-    client = genai.Client(api_key=api_key)
+    model_name = get_tag_model()
+    client = OpenAI(api_key=api_key, base_url=AICREDITS_BASE_URL, timeout=30.0, max_retries=1)
 
     prompt = f"""
 You are an expert AI garment cataloger for a high-end apparel atelier.
@@ -364,63 +391,69 @@ Return a valid JSON object with the following schema:
 
     buf = io.BytesIO()
     image.save(buf, format="PNG")
-    image_part = types.Part.from_bytes(data=buf.getvalue(), mime_type="image/png")
-    prompt_part = types.Part.from_text(text=prompt)
-    contents = types.Content(parts=[image_part, prompt_part])
+    data_url = "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode("ascii")
 
-    models_to_try = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]
-    last_err = None
-
-    for model_name in models_to_try:
-        try:
-            response = client.models.generate_content(
-                model=model_name,
-                contents=contents,
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json",
-                    temperature=0.1,
-                ),
-            )
-            if not response.text:
-                continue
-            raw = json.loads(response.text)
-
-            def format_res(key, prompt_map):
-                item = raw.get(key, {})
-                val = item.get("value", "")
-                conf = float(item.get("confidence", 0.95))
-                if val not in prompt_map:
-                    val = list(prompt_map.keys())[0]
-                scores = _make_scores(list(prompt_map.keys()), val, conf)
-                return {
-                    "value": val,
-                    "confidence": round(conf, 4),
-                    "all_scores": scores,
-                    "engine": f"gemini ({model_name})",
+    try:
+        response = client.chat.completions.create(
+            model=model_name,
+            temperature=0.1,
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "image_url", "image_url": {"url": data_url}},
+                        {"type": "text", "text": prompt},
+                    ],
                 }
+            ],
+        )
+    except Exception as e:
+        raise RuntimeError(f"AICredits call failed for model {model_name}: {e}") from e
 
-            return {
-                "category": format_res("category", CATEGORY_PROMPTS),
-                "colorFamily": format_res("colorFamily", COLOR_PROMPTS),
-                "pattern": format_res("pattern", PATTERN_PROMPTS),
-                "fitType": format_res("fitType", FIT_PROMPTS),
-                "gender": format_res("gender", GENDER_PROMPTS),
-            }
-        except Exception as e:
-            last_err = e
-            continue
+    text = response.choices[0].message.content if response.choices else None
+    if not text:
+        raise RuntimeError(f"AICredits returned an empty reply for model {model_name}")
+    try:
+        raw = _parse_json_reply(text)
+    except json.JSONDecodeError as e:
+        raise RuntimeError(f"AICredits reply from model {model_name} was not valid JSON: {e}") from e
 
-    raise RuntimeError(f"Gemini API call failed across all candidate models: {last_err}")
+    # Report the model the gateway says actually answered, not just the one requested.
+    engine = f"aicredits ({response.model or model_name})"
+
+    def format_res(key, prompt_map):
+        item = raw.get(key, {})
+        val = item.get("value", "")
+        conf = float(item.get("confidence", 0.95))
+        if val not in prompt_map:
+            val = list(prompt_map.keys())[0]
+        scores = _make_scores(list(prompt_map.keys()), val, conf)
+        return {
+            "value": val,
+            "confidence": round(conf, 4),
+            "all_scores": scores,
+            "engine": engine,
+        }
+
+    return {
+        "category": format_res("category", CATEGORY_PROMPTS),
+        "colorFamily": format_res("colorFamily", COLOR_PROMPTS),
+        "pattern": format_res("pattern", PATTERN_PROMPTS),
+        "fitType": format_res("fitType", FIT_PROMPTS),
+        "gender": format_res("gender", GENDER_PROMPTS),
+    }
 
 
 def model_status() -> Dict[str, Any]:
-    """Report whether Gemini API key is configured or CLIP model is loaded."""
+    """Report whether the AICredits key is configured, which model tags, and CLIP state."""
     init_clip_model()
-    gemini_key_present = bool(os.getenv("GEMINI_API_KEY"))
+    ai_key_present = bool(os.getenv("AICREDITS_API_KEY"))
     return {
-        "gemini_enabled": gemini_key_present,
+        "ai_enabled": ai_key_present,
+        "ai_provider": "aicredits",
+        "tag_model": get_tag_model(),
         "clip_loaded": _model_loaded,
         "load_error": _load_error,
-        "active_engine": "gemini" if gemini_key_present else ("clip" if _model_loaded else "heuristic"),
+        "active_engine": "aicredits" if ai_key_present else ("clip" if _model_loaded else "heuristic"),
     }
 

@@ -4,32 +4,32 @@
 
 ## Right now
 
-- **Last updated:** 24 September 2026
-- **Stage:** Stage 1 (stabilise the pilot) — implemented, **not yet accepted**
-- **Focus:** record the Stage 1 browser checks, and clear the urgent model/key fixes
+- **Last updated:** 25 September 2026
+- **Stage:** Stage 0.5 (urgent fixes, approved 25 Sep) in progress; Stage 1 implemented, **not yet accepted**
+- **Focus:** finish the Stage 0.5 fixes before 2 Oct, then record the Stage 1 browser checks
 - **Maturity:** single-store pilot prototype
 - **Branch:** `feature/stage-1-pilot-stabilization` (verify with `git status` before relying on it)
-- **Blocked on owner decision:** yes — D-01, D-02, D-03
+- **Blocked on owner decision:** yes — D-02, D-03
 
 ## Start here (the next three actions)
 
-1. **D-02 — today, owner only.** Rotate the three live API keys in `AI Creation/saree-studio/.env` (Gemini, OpenRouter, AICredits) and set spend caps. No AI should touch these values.
-2. **D-01 — by 2 Oct.** Approve Stage 0.5, the urgent fixes. The try-on prototype's image model shuts down **2 October 2026**, and two of the garment tagger's three models are already shut down, so tagging silently drops to a guess-from-image-shape fallback.
-3. **S1-06 … S1-12.** Run and record the Stage 1 browser checks on dedicated test stock, especially recommendations → handoff → dashboard → sale.
+1. **D-02 — today, owner only.** Rotate the three live API keys (Gemini, OpenRouter, AICredits) and set spend caps. The garment tagger now uses the AICredits key, so rotate that one before relying on it. No AI should touch these values.
+2. **S05-01 — owner check.** Put `AICREDITS_API_KEY` in `backend/.env`, start the AI service, scan one garment, and confirm `/scan` shows `aicredits (<model>)` and `/health` shows the model. The default model ID `google/gemini-2.5-flash-lite` is unconfirmed on AICredits; set `AICREDITS_TAG_MODEL` if it differs.
+3. **S05-02 … S05-09.** Continue the urgent fixes before **2 Oct**; next is S05-02 (invalid answers become "needs review" instead of the first enum value).
 
 ## Progress at a glance
 
 | Stage | Done | Partial | Open | Total | State |
 |---|---|---|---|---|---|
 | 0 — Direction and safety | 3 | 0 | 7 | 10 | Waiting on owner input |
-| 0.5 — Urgent technical fixes | 0 | 0 | 9 | 9 | **Deadline 2 Oct** — needs D-01 |
+| 0.5 — Urgent technical fixes | 0 | 1 | 8 | 9 | **Deadline 2 Oct** — approved (D-01); S05-01 implemented |
 | 1 — Stabilise the pilot | 0 | 5 | 8 | 13 | Automated checks pass; browser checks not recorded |
 | 2 — Single-store operations | 0 | 0 | 31 | 31 | Not started; 4 decisions first |
 | 3 — Customer and staff experience | 0 | 0 | 12 | 12 | Planned |
 | 4 — Measurement and deployment | 0 | 0 | 11 | 11 | Planned |
 | 5 — Recommendation evidence and AI | 0 | 0 | 12 | 12 | Planned |
 | 6 — Multi-store and commercial | 0 | 0 | 12 | 12 | Planned |
-| **Total** | **3** | **5** | **102** | **110** | |
+| **Total** | **3** | **6** | **101** | **110** | |
 
 Update these counts whenever you tick an item in [END_TO_END_CHECKLIST.md](END_TO_END_CHECKLIST.md).
 
@@ -40,7 +40,6 @@ Full list and trade-offs in [DECISIONS.md](DECISIONS.md).
 | ID | Question | Urgency |
 |---|---|---|
 | D-02 | Rotate the three exposed API keys | **Today** |
-| D-01 | Go-ahead for the urgent technical fixes | **By 2 Oct** |
 | D-03 | Accept Stage 1, or raise a defect list? | After the browser checks |
 | D-04 / D-05 | Pilot shop and scope; POS path A or B | Before the pitch meeting |
 | D-06 / D-07 | v2 migration strategy; how stock is split into sizes | Before Stage 2 coding |
@@ -62,9 +61,11 @@ Full list and trade-offs in [DECISIONS.md](DECISIONS.md).
 - PostgreSQL integration checks pass in a disposable schema: repeat session requests, stable recommendation snapshots, duplicate sales, concurrent last-unit sales, rollback, invalid stock and distinct-session metrics.
 - An additive migration was applied after a local backup; existing products were retained.
 - Browser verification reached the kiosk's privacy, department, size and preference screens.
+- The AI service's Python tests pass (33, 25 Sep 2026), including 8 new tagger tests against a mocked AICredits gateway.
 
 **Not verified:**
 - The full browser journey through recommendations, handoff, dashboard lookup and sale.
+- A live AICredits tagging call: the model ID, image input and JSON replies through the gateway are untested.
 - Camera accuracy under real store lighting.
 - Real pilot data quality and the live-store workflow.
 - Production deployment, restore, monitoring, privacy/legal review, device testing.
@@ -89,7 +90,8 @@ Real findings from code review that are **not** yet tasks. Raise them to the che
 | The kiosk's progress dots show 5 steps while the screens say "Step 01 / 04" | `kiosk/src/screens/*` |
 | A kids' dhoti set in the sample CSV is filed under the `KIDS_KURTA` category | `bulk_import_sample.csv` |
 | `CATEGORY_PATTERN_AFFINITY` is written but never imported | `backend/src/scoring/tables.ts:138-173` |
-| The `openai` package and `OPENAI_API_KEY` are read but unused in the AI service | `backend/ai-service/` |
+| `PROJECT_CONTEXT.md` landmines and `AGENTS.md` §7 still describe the tagger as Gemini-direct with dead models (fixed by S05-01) | `docs/PROJECT_CONTEXT.md`, `AGENTS.md` |
+| When the AI call fails, the tagger still falls back to CLIP/heuristics quietly (S05-03 covers this) | `backend/ai-service/main.py` |
 | Inventory low-stock and ageing highlights use a CSS variable that is not defined, so they never show colour | `dashboard/src/pages/Inventory.tsx` |
 
 ## Working here
