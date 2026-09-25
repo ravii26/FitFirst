@@ -73,6 +73,7 @@
 | DEC-14 | 24 Sep 2026 | Documentation changes stay **uncommitted** for now; Ravindra reviews and commits them | The owner wants to read the docs before they enter history | DECIDED |
 | DEC-15 | 25 Sep 2026 | Stage 0.5 urgent fixes approved; work starts with S05-01 | The try-on image model shuts down 2 Oct and the tagger's models are dead or failing | DECIDED (answers D-01) |
 | DEC-16 | 25 Sep 2026 | The garment tagger calls AI through **AICredits** (OpenAI-compatible gateway, `AICREDITS_API_KEY`) instead of Gemini direct. Use a low-cost vision model; the model is switchable by `AICREDITS_TAG_MODEL` or by the commented alternatives in `classifier.py` | Ravindra mainly uses the AICredits key for AI work; one key and one bill. Accepted cost: garment photos now pass through a reseller, and response-schema support depends on the gateway (affects S05-02) | DECIDED (answers D-18, option B) |
+| DEC-17 | 25 Sep 2026 | Fix the scan proxy bug found during S05-03: the backend now sends the encoded multipart bytes to the AI service (`backend/src/routes/scanGarment.ts`), with a regression test | Without it no dashboard scan ever reached the AI tagger, so S05-01 … S05-03 could not work or be checked live | DECIDED |
 
 ---
 

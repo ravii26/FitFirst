@@ -14,22 +14,22 @@
 ## Start here (the next three actions)
 
 1. **D-02 — today, owner only.** Rotate the three live API keys (Gemini, OpenRouter, AICredits) and set spend caps. The garment tagger now uses the AICredits key, so rotate that one before relying on it. No AI should touch these values.
-2. **S05-01 / S05-02 — owner check.** Put `AICREDITS_API_KEY` in `backend/.env`, start the AI service, scan one garment from the dashboard, and confirm `/scan` shows `aicredits (<model>)` and `/health` shows the model. The default model ID `google/gemini-2.5-flash-lite` is unconfirmed on AICredits; set `AICREDITS_TAG_MODEL` if it differs. If the call fails with a `response_format` error, set `AICREDITS_JSON_SCHEMA=0`.
-3. **S05-03 … S05-09.** Continue the urgent fixes before **2 Oct**; next is S05-03 (make AI failure loud: `/health` and an "AI off" banner instead of silent heuristics).
+2. **S05-01 … S05-03 owner check** (the scan-proxy bug that blocked every dashboard scan was fixed 25 Sep, DEC-17): Put `AICREDITS_API_KEY` in `backend/.env`, start the AI service, scan one garment from the dashboard, and confirm `/scan` shows `aicredits (<model>)` and `/health` shows the model. The default model ID `google/gemini-2.5-flash-lite` is unconfirmed on AICredits; set `AICREDITS_TAG_MODEL` if it differs. If the call fails with a `response_format` error, set `AICREDITS_JSON_SCHEMA=0`.
+3. **S05-04 … S05-09.** Continue the urgent fixes before **2 Oct**; next is S05-04 (`load_dotenv("../.env")` depends on the working directory).
 
 ## Progress at a glance
 
 | Stage | Done | Partial | Open | Total | State |
 |---|---|---|---|---|---|
 | 0 — Direction and safety | 3 | 0 | 7 | 10 | Waiting on owner input |
-| 0.5 — Urgent technical fixes | 0 | 2 | 7 | 9 | **Deadline 2 Oct** — approved (D-01); S05-01 and S05-02 implemented |
+| 0.5 — Urgent technical fixes | 0 | 3 | 6 | 9 | **Deadline 2 Oct** — approved (D-01); S05-01 … S05-03 implemented |
 | 1 — Stabilise the pilot | 0 | 5 | 8 | 13 | Automated checks pass; browser checks not recorded |
 | 2 — Single-store operations | 0 | 0 | 31 | 31 | Not started; 4 decisions first |
 | 3 — Customer and staff experience | 0 | 0 | 12 | 12 | Planned |
 | 4 — Measurement and deployment | 0 | 0 | 11 | 11 | Planned |
 | 5 — Recommendation evidence and AI | 0 | 0 | 12 | 12 | Planned |
 | 6 — Multi-store and commercial | 0 | 0 | 12 | 12 | Planned |
-| **Total** | **3** | **7** | **100** | **110** | |
+| **Total** | **3** | **8** | **99** | **110** | |
 
 Update these counts whenever you tick an item in [END_TO_END_CHECKLIST.md](END_TO_END_CHECKLIST.md).
 
@@ -63,6 +63,8 @@ Full list and trade-offs in [DECISIONS.md](DECISIONS.md).
 - Browser verification reached the kiosk's privacy, department, size and preference screens.
 - The AI service's Python tests pass (45, 25 Sep 2026), including 20 tagger tests against a mocked AICredits gateway: bad AI answers become "needs review", never a guessed value.
 - The dashboard production build passes with the "needs review" change (25 Sep 2026).
+- The "AI off" banner was checked in Chromium against a throwaway local database (25 Sep 2026): it names the reason (no key, service down, or the AI call's error). The AI service now has 49 tests; the backend 46.
+- Dashboard scans now actually reach the AI service: the scan proxy sent `[object FormData]` instead of the photo, and has been fixed (proven in a browser; a regression test fails on the old code).
 
 **Not verified:**
 - The full browser journey through recommendations, handoff, dashboard lookup and sale.
@@ -92,6 +94,7 @@ Real findings from code review that are **not** yet tasks. Raise them to the che
 | The kiosk's progress dots show 5 steps while the screens say "Step 01 / 04" | `kiosk/src/screens/*` |
 | A kids' dhoti set in the sample CSV is filed under the `KIDS_KURTA` category | `bulk_import_sample.csv` |
 | `CATEGORY_PATTERN_AFFINITY` is written but never imported | `backend/src/scoring/tables.ts:138-173` |
+| A fresh checkout needs `npx prisma generate` before `npm test`, or 3 scoring tests fail with "Cannot convert undefined or null to object" | `backend/` |
 | `PROJECT_CONTEXT.md` landmines and `AGENTS.md` §7 still describe the tagger as Gemini-direct with dead models (fixed by S05-01) | `docs/PROJECT_CONTEXT.md`, `AGENTS.md` |
 | When the AI call fails, the tagger still falls back to CLIP/heuristics quietly (S05-03 covers this) | `backend/ai-service/main.py` |
 | Inventory low-stock and ageing highlights use a CSS variable that is not defined, so they never show colour | `dashboard/src/pages/Inventory.tsx` |

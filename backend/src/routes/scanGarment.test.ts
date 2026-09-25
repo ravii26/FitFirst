@@ -60,6 +60,23 @@ describe("POST /api/scan-garment", () => {
     expect(body.predictions).toEqual(fakePredictions);
   });
 
+  it("sends the real multipart bytes to the AI service, not \"[object FormData]\"", async () => {
+    (global.fetch as any).mockResolvedValue({ ok: true, json: async () => ({}) });
+
+    const app = await buildApp();
+    const req = multipartRequest(REAL_JPEG_BYTES, "garment.jpg", "image/jpeg");
+    await app.inject({ method: "POST", url: "/api/scan-garment", ...req });
+
+    const [, init] = (global.fetch as any).mock.calls[0];
+    expect(Buffer.isBuffer(init.body)).toBe(true);
+    const sent: Buffer = init.body;
+    expect(sent.toString("latin1")).not.toContain("[object FormData]");
+    expect(sent.includes(REAL_JPEG_BYTES)).toBe(true);
+    const boundary = /boundary=(.+)$/.exec(init.headers["content-type"])?.[1];
+    expect(boundary).toBeTruthy();
+    expect(sent.toString("latin1")).toContain(`--${boundary}`);
+  });
+
   it("returns a 200 with aiServiceAvailable:false and a visible error when the AI service is unreachable", async () => {
     (global.fetch as any).mockRejectedValue(new Error("connect ECONNREFUSED"));
 
@@ -83,6 +100,56 @@ describe("POST /api/scan-garment", () => {
     const res = await app.inject({ method: "POST", url: "/api/scan-garment", ...req });
 
     expect(res.statusCode).toBe(200);
+    expect(res.json().aiServiceAvailable).toBe(false);
+  });
+});
+
+describe("GET /api/scan-garment/health", () => {
+  const originalFetch = global.fetch;
+
+  beforeEach(() => {
+    global.fetch = vi.fn();
+  });
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+  });
+
+  it("passes the AI service's real status through", async () => {
+    (global.fetch as any).mockResolvedValue({
+      ok: true,
+      json: async () => ({ status: "ok", ai_status: "failed", active_engine: "heuristic", last_ai_error: "401" }),
+    });
+
+    const app = await buildApp();
+    const res = await app.inject({ method: "GET", url: "/api/scan-garment/health" });
+
+    expect(res.statusCode).toBe(200);
+    const body = res.json();
+    expect(body.aiServiceAvailable).toBe(true);
+    expect(body.ai_status).toBe("failed");
+    expect(body.active_engine).toBe("heuristic");
+    expect((global.fetch as any).mock.calls[0][0]).toMatch(/\/health$/);
+  });
+
+  it("reports aiServiceAvailable:false when the AI service is unreachable", async () => {
+    (global.fetch as any).mockRejectedValue(new Error("connect ECONNREFUSED"));
+
+    const app = await buildApp();
+    const res = await app.inject({ method: "GET", url: "/api/scan-garment/health" });
+
+    expect(res.statusCode).toBe(200);
+    const body = res.json();
+    expect(body.aiServiceAvailable).toBe(false);
+    expect(body.error).toBeTruthy();
+  });
+
+  it("reports aiServiceAvailable:false on a non-OK status", async () => {
+    (global.fetch as any).mockResolvedValue({ ok: false, status: 503 });
+
+    const app = await buildApp();
+    const res = await app.inject({ method: "GET", url: "/api/scan-garment/health" });
+
     expect(res.json().aiServiceAvailable).toBe(false);
   });
 });

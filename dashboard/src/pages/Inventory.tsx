@@ -100,6 +100,13 @@ const AI_ATTRIBUTES = [
   { key: "gender", label: "Gender" },
 ] as const;
 
+// Staff-facing reason AI tagging is off, from the AI service's ai_status; null when it works.
+function aiOffReasonFrom(aiStatus: string | undefined, aiError: string | null | undefined): string | null {
+  if (aiStatus === "off") return "No AI key is configured (AICREDITS_API_KEY).";
+  if (aiStatus === "failed") return `The last AI call failed${aiError ? `: ${aiError}` : "."}`;
+  return null;
+}
+
 export default function Inventory() {
   const [pageError, setPageError] = useState("");
   const [creating, setCreating] = useState(false);
@@ -126,6 +133,8 @@ export default function Inventory() {
   const [scanMsg, setScanMsg] = useState<{ type: "success" | "error" | "warning"; text: string } | null>(null);
   // Attributes the AI could not tag with an allowed value; staff must choose them.
   const [aiNeedsReview, setAiNeedsReview] = useState<string[]>([]);
+  // Why AI tagging is not working right now, or null when it is (or not yet known).
+  const [aiOffReason, setAiOffReason] = useState<string | null>(null);
 
   const handleAIScanFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -149,6 +158,7 @@ export default function Inventory() {
       const scanData = await scanRes.json();
 
       if (scanData.aiServiceAvailable === false) {
+        setAiOffReason("The AI tagging service is not running.");
         setScanMsg({
           type: "error",
           text: scanData.error ?? "AI scanner unavailable. Please select attributes manually.",
@@ -173,6 +183,8 @@ export default function Inventory() {
         });
         setAiEngine(p.category.engine ?? null);
 
+        setAiOffReason(aiOffReasonFrom(p.ai_status, p.ai_error));
+
         const flagged = AI_ATTRIBUTES.filter((a) => p[a.key]?.needs_review);
         setAiNeedsReview(flagged.map((a) => a.key));
 
@@ -181,10 +193,10 @@ export default function Inventory() {
             type: "warning",
             text: `The AI could not tag ${flagged.map((a) => a.label.toLowerCase()).join(", ")}. Please choose ${flagged.length === 1 ? "it" : "them"} before saving.`,
           });
-        } else if (p.category.engine === "heuristic") {
+        } else if (p.ai_status !== "ok") {
           setScanMsg({
             type: "warning",
-            text: "Tagged using the fallback visual heuristic (CLIP model not loaded on the AI service) — please double-check these fields.",
+            text: "These tags are a rough guess from the photo, not from the AI. Check every field before saving.",
           });
         }
       }
@@ -305,6 +317,25 @@ export default function Inventory() {
 
   useEffect(() => { loadProducts(); }, [filterGender, filterCategory]);
 
+  useEffect(() => {
+    if (!showAddModal) return;
+    let cancelled = false;
+    apiFetch(`${API}/scan-garment/health`)
+      .then((res) => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
+      .then((health) => {
+        if (cancelled) return;
+        setAiOffReason(
+          health.aiServiceAvailable === false
+            ? "The AI tagging service is not running."
+            : aiOffReasonFrom(health.ai_status, health.last_ai_error)
+        );
+      })
+      .catch(() => {
+        if (!cancelled) setAiOffReason("Could not check the AI tagging service.");
+      });
+    return () => { cancelled = true; };
+  }, [showAddModal]);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     loadProducts();
@@ -407,7 +438,7 @@ export default function Inventory() {
 
       setShowAddModal(false);
       setAiConfidence(null);
-    setAiNeedsReview([]);
+      setAiNeedsReview([]);
       setAiEngine(null);
       setScanMsg(null);
       loadProducts();
@@ -739,6 +770,15 @@ export default function Inventory() {
                   />
                 </label>
               </div>
+
+              {aiOffReason && (
+                <div role="alert" style={{
+                  fontSize: 12, marginTop: 10, padding: "8px 10px", borderRadius: "var(--radius-md)",
+                  border: "1px solid var(--danger)", color: "var(--danger)",
+                }}>
+                  <strong>AI off.</strong> {aiOffReason} Scans will only guess from the photo, so check every field.
+                </div>
+              )}
 
               {aiConfidence && (
                 <div style={{ fontSize: 11, color: "var(--success)", display: "flex", gap: 10, flexWrap: "wrap", marginTop: 10, paddingTop: 8, borderTop: "1px dashed var(--line-strong)" }}>
