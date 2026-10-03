@@ -19,13 +19,14 @@
 |---|---|---|---|---|
 | 0 — Direction and safety | 3 | 0 | 7 | 10 |
 | 0.5 — Urgent technical fixes | 0 | 3 | 6 | 9 |
-| 1 — Stabilise the pilot | 0 | 5 | 8 | 13 |
+| 1 — Stabilise the pilot | 0 | 11 | 2 | 13 |
 | 2 — Single-store operations | 0 | 0 | 31 | 31 |
 | 3 — Customer and staff experience | 0 | 0 | 12 | 12 |
 | 4 — Measurement and deployment | 0 | 0 | 11 | 11 |
 | 5 — Recommendation evidence and AI | 0 | 0 | 12 | 12 |
 | 6 — Multi-store and commercial | 0 | 0 | 12 | 12 |
-| **Total** | **3** | **8** | **99** | **110** |
+| 7 — Engineering foundations (parallel) | 0 | 1 | 5 | 6 |
+| **Total** | **3** | **15** | **98** | **116** |
 
 Keep this table and the one in `PROJECT_STATUS.md` in step.
 
@@ -71,7 +72,7 @@ This confirms the plan covers the whole product, while keeping *planned* separat
 
 **D-01 approved 25 Sep 2026. Deadline 2 October 2026** — the try-on image model shuts down that day, and the tagger's last working model could stop any time.
 
-- [~] **S05-01** Read the tagger's model from config and remove the dead models. Per D-18 the tagger now calls **AICredits** (`AICREDITS_API_KEY`, `AICREDITS_TAG_MODEL`, default `google/gemini-2.5-flash-lite`, alternatives commented in code) instead of Gemini direct; one model, no silent chain. — `backend/ai-service/classifier.py`, `main.py`; *check:* `/scan` reports the engine actually used. *Evidence (25 Sep 2026):* `python -m pytest -q` in `backend/ai-service` → 33 passed (8 new tests with a mocked gateway: default model, env override, base URL, engine reports the gateway's model, single call on failure). **Not verified:** a live AICredits call — the model ID and gateway behaviour are unconfirmed (aicredits.in was unreachable from the session).
+- [~] **S05-01** Read the tagger's model from config and remove the dead models. Per D-18 the tagger now calls **AICredits** (`AICREDITS_API_KEY`, `AICREDITS_TAG_MODEL`, default `google/gemini-2.5-flash-lite`, alternatives commented in code) instead of Gemini direct; one model, no silent chain. — `backend/ai-service/classifier.py`, `main.py`; *check:* `/scan` reports the engine actually used. *Evidence (25 Sep 2026):* `python -m pytest -q` in `backend/ai-service` → 33 passed (8 new tests with a mocked gateway: default model, env override, base URL, engine reports the gateway's model, single call on failure). **Not verified:** a live AICredits call — the model ID and gateway behaviour are unconfirmed (aicredits.in was unreachable from the session). *Live check (25 Sep 2026):* a direct `POST /scan` to the AI service with `AICREDITS_TAG_MODEL=gpt-4o` returned `ai_status: ok`, engine `aicredits (gpt-4o-2024-08-06)`, in ~5 s; `/health` then showed `ai_status: ok` and the model. Not yet run from the dashboard scan button, and no real garment photo was available (the only upload was a logo, which was confidently tagged ACCESSORIES 0.95 without "needs review").
 - [~] **S05-02** Use a response schema; an invalid answer becomes empty and "needs review" instead of the first enum value. — `classifier.py`, `main.py`, `dashboard/src/pages/Inventory.tsx`; *check:* a unit test feeding a bad payload. *Evidence (25 Sep 2026):* the request sends a strict JSON schema with every attribute's enums (`AICREDITS_JSON_SCHEMA=0` turns it off); a missing, out-of-list or malformed value comes back as `value: ""`, `needs_review: true`; the dashboard shows "⚠ … needs review", explains which fields to choose, and its selects are `required`, so the form cannot be saved until staff choose. `python -m pytest -q` in `backend/ai-service` → 45 passed (12 new); `npm run build --workspace=dashboard` passes. **Not verified:** whether AICredits accepts the schema (no live call), and the dashboard change in a browser.
 - [~] **S05-03** Make AI failure loud: `/health` reports the real engine, and the dashboard shows an "AI off" banner instead of silently using heuristics. — `backend/ai-service/main.py`, `backend/src/routes/scanGarment.ts`, `dashboard/src/pages/Inventory.tsx`. *Evidence (25 Sep 2026):* `/scan` returns `ai_status` (`ok`/`off`/`failed`) and a key-redacted `ai_error`; `/health` reports `ai_status` (adds `not_tried`), the engine the last scan really used, `last_ai_error` and `last_scan_at`; new `GET /api/scan-garment/health` (staff-only) passes it through; the Add-piece modal checks it on open and after each scan and shows a red "AI off" banner with the reason; guessed tags say "rough guess, not from the AI". The fallback guesses themselves are kept (dropping them is D-16). `python -m pytest -q` → 49 passed; `npx vitest run` → 45 passed (after `npx prisma generate`); backend `tsc` and dashboard build pass. **Browser-checked** in Chromium against a throwaway local Postgres, AI service and backend: banner shows "No AI key is configured" on open, and "The last AI call failed: … Connection error" after a scan with a fake key; no banner before the first scan when a key is set. The after-scan checks ran with the scan-proxy fix, which Ravindra approved and which is now in the code (DEC-17; `npx vitest run` → 46 passed, and the new regression test fails on the old line).
 - [ ] **S05-04** Fix `load_dotenv("../.env")`, which depends on the working directory. — `backend/ai-service/classifier.py:16`
@@ -83,20 +84,20 @@ This confirms the plan covers the whole product, while keeping *planned* separat
 
 ## Stage 1 — Stabilise the current pilot
 
-Automated checks pass; the browser walkthrough stopped at the preferences screen. *How for all of Stage 1:* start the services, use `http://127.0.0.1:5174` (kiosk) and `http://127.0.0.1:5173` (dashboard), on **dedicated test stock**, and record each result in `STAGE_1_TEST_GUIDE.md` or a linked test log.
+Automated checks pass; browser checks were recorded 25 Sep 2026 in `STAGE_1_TEST_GUIDE.md` (camera S1-08 not run). *How for all of Stage 1:* start the services, use `http://localhost:5174` (kiosk) and `http://localhost:5173` (dashboard), on **dedicated test stock**, and record each result in `STAGE_1_TEST_GUIDE.md` or a linked test log.
 
-- [~] **S1-01** Backend unit tests pass. — 42 tests
+- [~] **S1-01** Backend unit tests pass. — 42 tests (9 Sep); 46 after S05-03 (25 Sep 2026)
 - [~] **S1-02** Backend, dashboard and kiosk builds pass.
 - [~] **S1-03** Disposable-schema PostgreSQL integration checks pass. — `npm run test:integration --workspace=backend`
 - [~] **S1-04** Migration backup and additive migration exercised locally. — `npm run db:backup --workspace=backend`
 - [~] **S1-05** Browser walkthrough reaches privacy, department, size and preferences.
-- [ ] **S1-06** Staff login, refresh, lock and wrong-PIN checks.
-- [ ] **S1-07** The complete customer path through recommendations and handoff.
+- [~] **S1-06** Staff login, refresh, lock and wrong-PIN checks. *Evidence (25 Sep 2026):* wrong PIN, refresh and Lock pass — see the browser test log in `STAGE_1_TEST_GUIDE.md`.
+- [~] **S1-07** The complete customer path through recommendations and handoff. *Evidence (25 Sep 2026):* full path to handoff code and dashboard lookup passes; Edit preferences left a duplicate session (issue 1); fixed the same day by updating the session in place (`PUT /api/sessions/:id/answers`), re-tested in the browser and covered by `npm run test:integration` — `STAGE_1_TEST_GUIDE.md`.
 - [ ] **S1-08** Camera success, denied permission, poor light and manual fallback.
-- [ ] **S1-09** Idle warning, keep-shopping and full reset.
-- [ ] **S1-10** Recommended sale, other-item sale and repeated-submit checks.
-- [ ] **S1-11** Inventory image, invalid stock, CSV validation and analytics checks.
-- [ ] **S1-12** Record expected result, actual result, screenshots/issues, tester and date for each check.
+- [~] **S1-09** Idle warning, keep-shopping and full reset. *Evidence (25 Sep 2026):* warning, Keep shopping, 120 s reset and Start over pass — `STAGE_1_TEST_GUIDE.md`.
+- [~] **S1-10** Recommended sale, other-item sale and repeated-submit checks. *Evidence (25 Sep 2026):* recommended sale, other-item sale and double-click save pass on demo data — `STAGE_1_TEST_GUIDE.md`.
+- [~] **S1-11** Inventory image, invalid stock, CSV validation and analytics checks. *Evidence (25 Sep 2026):* invalid stock (UI and API), CSV validation and analytics pass; no demo product has an image — `STAGE_1_TEST_GUIDE.md`.
+- [~] **S1-12** Record expected result, actual result, screenshots/issues, tester and date for each check. *Evidence (25 Sep 2026):* the browser test log in `STAGE_1_TEST_GUIDE.md` records check, expected, actual, result, tester, date and five issues. **Missing:** screenshots, and S1-08 (camera).
 - [ ] **S1-13 (owner)** Accept Stage 1, or produce a prioritised defect list. — D-03
 
 ## Stage 2 — Single-store operations
@@ -205,6 +206,19 @@ Automated checks pass; the browser walkthrough stopped at the preferences screen
 - [ ] **S6-10** Add WhatsApp or saved profiles only with explicit consent and retention decisions.
 - [ ] **S6-11** Validate support, pricing, onboarding and hardware runbooks with real shops. — D-15
 - [ ] **S6-12 (owner)** Approve commercial launch readiness.
+
+---
+
+## Stage 7 — Engineering foundations (parallel track)
+
+**Approved 3 Oct 2026 as DEC-19 (option B).** Structure and coding standards are in [ENGINEERING_STANDARDS.md](ENGINEERING_STANDARDS.md). This track changes structure only, never behaviour. **Only S7-01 may start before D-03.** S7-02 … S7-06 touch files that carry uncommitted edits, so they also wait until that work is committed.
+
+- [~] **S7-01** Tooling baseline (option A, 3 Oct 2026): root ESLint (typescript-eslint, react-hooks), Prettier, `.editorconfig`, `lint`/`format` scripts and a CI workflow. No application logic changed. — *evidence (3 Oct 2026):* `npm run lint` → 0 errors, 73 warnings; `npm run build` passes; `npm test` → 46 passed; `npm run docs:check` passes. **Not done / not verified:** the CI workflow has never run on GitHub; `format:check` is **not** in CI because 59 files are unformatted and ~20 carry uncommitted edits, so the one-time `npm run format` waits until that work is committed; `no-useless-catch` is a warning (5 sites in `products.ts`, `purchaseEvents.ts`) until S7-03; 73 existing warnings (`any`, unused vars, hook dependencies) are untouched.
+- [?] **S7-02** Shared types package (`packages/types`) for API request/response shapes and enums; first audit and count how many shapes are duplicated today. — D-03; *check:* three builds pass
+- [?] **S7-03** Backend layering: route → service → repository, one route file per sub-task, starting with `sessions.ts` then `products.ts`. — D-03; *check:* `npm test` and `npm run test:integration --workspace=backend` unchanged
+- [?] **S7-04** Backend cross-cutting: shared validation, one error shape, structured logging and a validated config module. — D-03; *check:* same, plus a test per piece
+- [?] **S7-05** Shared UI package (`packages/ui`): audit dashboard and kiosk for real duplication first, then extract only what both use. — D-03; *check:* both frontend builds pass
+- [?] **S7-06** Frontend feature folders for the dashboard pages and kiosk screens; tidy `lib/api.ts` into the single typed client. — D-03; *check:* both builds pass, kiosk path to handoff re-checked in a browser
 
 ---
 

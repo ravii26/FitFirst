@@ -14,6 +14,7 @@
 2. Read `docs/END_TO_END_CHECKLIST.md` — the task list, with IDs and gates.
 3. Read `docs/PROJECT_CONTEXT.md` — the product, repo map, commands, glossary and landmines.
 4. Open `docs/DECISIONS.md` if the task touches anything marked `[?]` or "decision".
+   Also open `docs/ENGINEERING_STANDARDS.md` before writing or moving code: it defines the layout, layer rules and conventions.
 5. Then state back, in under 10 lines:
    - current stage
    - the task you intend to work on, **by ID** (e.g. `S1-06`)

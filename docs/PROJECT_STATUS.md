@@ -4,9 +4,9 @@
 
 ## Right now
 
-- **Last updated:** 25 September 2026
+- **Last updated:** 3 October 2026
 - **Stage:** Stage 0.5 (urgent fixes, approved 25 Sep) in progress; Stage 1 implemented, **not yet accepted**
-- **Focus:** finish the Stage 0.5 fixes before 2 Oct, then record the Stage 1 browser checks
+- **Focus:** finish the Stage 0.5 fixes before 2 Oct, then Ravindra's Stage 1 decision (D-03); the Stage 1 browser checks are recorded except the camera check (S1-08)
 - **Maturity:** single-store pilot prototype
 - **Branch:** `feature/stage-1-pilot-stabilization` (verify with `git status` before relying on it)
 - **Blocked on owner decision:** yes — D-02, D-03
@@ -15,7 +15,7 @@
 
 1. **D-02 — today, owner only.** Rotate the three live API keys (Gemini, OpenRouter, AICredits) and set spend caps. The garment tagger now uses the AICredits key, so rotate that one before relying on it. No AI should touch these values.
 2. **S05-01 … S05-03 owner check** (the scan-proxy bug that blocked every dashboard scan was fixed 25 Sep, DEC-17): Put `AICREDITS_API_KEY` in `backend/.env`, start the AI service, scan one garment from the dashboard, and confirm `/scan` shows `aicredits (<model>)` and `/health` shows the model. The default model ID `google/gemini-2.5-flash-lite` is unconfirmed on AICredits; set `AICREDITS_TAG_MODEL` if it differs. If the call fails with a `response_format` error, set `AICREDITS_JSON_SCHEMA=0`.
-3. **S05-04 … S05-09.** Continue the urgent fixes before **2 Oct**; next is S05-04 (`load_dotenv("../.env")` depends on the working directory).
+3. **S05-04 … S05-09.** Continue the urgent fixes before **2 Oct**; next is S05-04 (`load_dotenv("../.env")` depends on the working directory). In parallel, Ravindra can run the camera check (S1-08) and then decide D-03 from the browser test log in `STAGE_1_TEST_GUIDE.md`.
 
 ## Progress at a glance
 
@@ -23,13 +23,14 @@
 |---|---|---|---|---|---|
 | 0 — Direction and safety | 3 | 0 | 7 | 10 | Waiting on owner input |
 | 0.5 — Urgent technical fixes | 0 | 3 | 6 | 9 | **Deadline 2 Oct** — approved (D-01); S05-01 … S05-03 implemented |
-| 1 — Stabilise the pilot | 0 | 5 | 8 | 13 | Automated checks pass; browser checks not recorded |
+| 1 — Stabilise the pilot | 0 | 11 | 2 | 13 | Browser checks recorded 25 Sep (camera S1-08 left); awaiting D-03 |
 | 2 — Single-store operations | 0 | 0 | 31 | 31 | Not started; 4 decisions first |
 | 3 — Customer and staff experience | 0 | 0 | 12 | 12 | Planned |
 | 4 — Measurement and deployment | 0 | 0 | 11 | 11 | Planned |
 | 5 — Recommendation evidence and AI | 0 | 0 | 12 | 12 | Planned |
 | 6 — Multi-store and commercial | 0 | 0 | 12 | 12 | Planned |
-| **Total** | **3** | **8** | **99** | **110** | |
+| 7 — Engineering foundations (parallel) | 0 | 1 | 5 | 6 | S7-01 implemented, not accepted (CI never run on GitHub); S7-02 … S7-06 wait for D-03 |
+| **Total** | **3** | **15** | **98** | **116** | |
 
 Update these counts whenever you tick an item in [END_TO_END_CHECKLIST.md](END_TO_END_CHECKLIST.md).
 
@@ -55,18 +56,19 @@ Full list and trade-offs in [DECISIONS.md](DECISIONS.md).
 ## Verified facts
 
 **Confirmed by running something:**
-- 42 backend unit tests pass.
 - Backend, dashboard and kiosk production builds pass.
+- Root lint (ESLint) runs clean of errors (73 warnings) and the backend's 46 tests pass after the S7-01 tooling change (3 Oct 2026). The GitHub CI workflow has not run yet.
 - PostgreSQL integration checks pass in a disposable schema: repeat session requests, stable recommendation snapshots, duplicate sales, concurrent last-unit sales, rollback, invalid stock and distinct-session metrics.
 - An additive migration was applied after a local backup; existing products were retained.
-- Browser verification reached the kiosk's privacy, department, size and preference screens.
+- Stage 1 browser checks (25 Sep 2026, Chromium, demo data): staff PIN/refresh/lock, full customer path to handoff and dashboard lookup, idle warning and reset, recommended and other-item sales with double-click, invalid stock, CSV validation and analytics all pass. Five issues found and fixed the same day, including Edit preferences now updating the same session (DEC-18). Log in `STAGE_1_TEST_GUIDE.md`.
 - The AI service's Python tests pass (49, 25 Sep 2026), including tagger tests against a mocked AICredits gateway: bad AI answers become "needs review", never a guessed value.
 - The dashboard production build passes with the "needs review" change (25 Sep 2026).
 - The "AI off" banner was checked in Chromium against a throwaway local database (25 Sep 2026): it names the reason (no key, service down, or the AI call's error). The backend has 46 tests.
 - Dashboard scans now actually reach the AI service: the scan proxy sent `[object FormData]` instead of the photo, and has been fixed (proven in a browser; a regression test fails on the old code).
 
 **Not verified:**
-- The full browser journey through recommendations, handoff, dashboard lookup and sale.
+- The camera flow (S1-08): needs a real camera and store lighting.
+- Screenshots for the Stage 1 checks (S1-12).
 - A live AICredits tagging call: the model ID, image input, the JSON response schema and replies through the gateway are untested.
 - The dashboard's "needs review" display and required fields, in a browser.
 - Camera accuracy under real store lighting.
@@ -111,3 +113,4 @@ Real findings from code review that are **not** yet tasks. Raise them to the che
 - **How we got here:** [SESSION_LOG.md](SESSION_LOG.md)
 - **Why and how, in depth:** [MASTER_PLAN.md](MASTER_PLAN.md)
 - **How to work here:** [AGENTS.md](../AGENTS.md)
+- **How code is structured:** [ENGINEERING_STANDARDS.md](ENGINEERING_STANDARDS.md)

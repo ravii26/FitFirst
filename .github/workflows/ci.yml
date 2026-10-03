@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: '**/package.json'
+      # package-lock.json is git-ignored in this repo, so `npm ci` is not available.
+      - run: npm install
+      - run: npx prisma generate
+        working-directory: backend
+      - run: npm run build
+      - run: npm test
+      - run: npm run lint
+      - run: npm run docs:check -- --strict

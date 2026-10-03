@@ -28,7 +28,7 @@ A **single-store pilot prototype**. Not production, not multi-tenant, not a POS.
 - Staff dashboard: inventory, sessions, purchase logging, baseline data, analytics.
 - Deterministic recommendation scoring with stock, department, size and active-product gates.
 - PostgreSQL persistence through Prisma; server-side staff authentication; image signature validation.
-- Stage 1 automated verification, and a browser walkthrough that stopped partway.
+- Stage 1 automated verification, and browser checks recorded 25 Sep 2026 (camera check not run).
 
 **What does not exist yet:**
 - Per-size stock (stock is one number per product), real stock ageing, or variants.
@@ -91,11 +91,10 @@ Things that look finished but are not. Check before trusting them:
 | The AICredits model ID (`google/gemini-2.5-flash-lite`) and its JSON-schema support are unverified live | `backend/ai-service/classifier.py` |
 | Try-on's default image model shuts down **2 Oct 2026** | `AI Creation/saree-studio/app.py:28` |
 | Uploaded images are publicly readable at `/uploads/...` | `backend/src/index.ts:58-61` |
-| Kiosk API routes have no auth and no rate limit | `backend/src/index.ts:69-71` |
+| Kiosk API routes have no auth and no rate limit; `PUT /api/sessions/:id/answers` (DEC-18) is guarded only by the kiosk's per-session request key | `backend/src/index.ts:69-71` |
 | Staff auth is one shared 4-digit PIN; there are no user identities or roles | `backend/src/authGuard.ts` |
 | Scores can exceed 1.0 and are not probabilities — never show a match % | `backend/src/scoring/engine.ts:123-125` |
 | The 0.55 quality gate almost never fires (table minimums are 0.60 and 0.50), so nearly everything in-size passes | `backend/src/scoring/tables.ts:190` |
-| "Edit preferences" creates a **second** session that sits as "Pending" in the dashboard | `kiosk/src/App.tsx:96-100` |
 | "No purchase" reasons are saved only in that browser's localStorage | `dashboard/src/pages/Sessions.tsx` |
 | The pilot verdict is hard-coded to INSUFFICIENT_DATA and lift is always null | `backend/src/routes/analytics.ts:34,52` |
 | Demo baseline rows are random numbers — never present them as store evidence | `backend/prisma/seed.ts` |

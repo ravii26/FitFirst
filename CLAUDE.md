@@ -9,6 +9,7 @@
 3. `docs/PROJECT_CONTEXT.md` — product, repo map, commands, landmines
 4. `AGENTS.md` — how to work here
 5. `docs/DECISIONS.md` — only when the task touches a decision
+6. `docs/ENGINEERING_STANDARDS.md` — before writing or moving code
 
 Then report: stage · task ID you will work on · approved or needs a decision · files · validation command. Wait for confirmation before changing code.
 

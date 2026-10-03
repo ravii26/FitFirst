@@ -1,0 +1,10 @@
+node_modules
+dist
+build
+backend/uploads
+backend/prisma/migrations
+AI Creation
+package-lock.json
+*.md
+.venv
+__pycache__
