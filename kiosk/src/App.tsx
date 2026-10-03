@@ -33,6 +33,8 @@ export interface KioskSession {
   skinToneBucket: "FAIR" | "WHEATISH" | "MEDIUM" | "DEEP" | null;
   bodyShapeBucket: "RECTANGLE" | "TRIANGLE" | "INVERTED_T" | "HOURGLASS" | null;
   sessionId: string | null;
+  // Set by "Edit preferences": the saved session must be updated before recommendations reload.
+  answersChanged: boolean;
 }
 
 const EMPTY_SESSION: KioskSession = {
@@ -43,6 +45,7 @@ const EMPTY_SESSION: KioskSession = {
   skinToneBucket: null,
   bodyShapeBucket: null,
   sessionId: null,
+  answersChanged: false,
 };
 
 // Idle timeout — reset to welcome after 90s of inactivity on HANDOFF
@@ -94,7 +97,7 @@ export default function App() {
     return () => { clearInterval(timer); window.removeEventListener("pointerdown", activity); window.removeEventListener("keydown", activity); window.removeEventListener("scroll", activity, true); };
   }, [screen, reset, continueSession]);
   const editPreferences = () => {
-    setSession(prev => ({ ...prev, sessionId: null, requestKey: crypto.randomUUID() }));
+    setSession(prev => ({ ...prev, answersChanged: true }));
     setHistory(["WELCOME", "PRIVACY", "GENDER", "SIZE"]);
     setScreen("PREFS");
   };
@@ -195,6 +198,7 @@ export default function App() {
         <Recommendations
           session={session}
           onSessionCreated={(id) => updateSession({ sessionId: id })}
+          onAnswersSaved={() => updateSession({ answersChanged: false })}
           onDone={() => go("HANDOFF")}
           onReset={reset}
           onEdit={editPreferences}

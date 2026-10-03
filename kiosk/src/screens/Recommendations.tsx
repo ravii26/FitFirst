@@ -35,12 +35,14 @@ function imageFor(rec: RecommendedProduct) {
 export default function Recommendations({
   session,
   onSessionCreated,
+  onAnswersSaved,
   onDone,
   onReset,
   onEdit,
 }: {
   session: KioskSession;
   onSessionCreated: (id: string) => void;
+  onAnswersSaved: () => void;
   onDone: () => void;
   onReset: () => void;
   onEdit: () => void;
@@ -87,6 +89,21 @@ export default function Recommendations({
           sessionId = s.id;
           if (!active) return;
           onSessionCreated(s.id);
+        } else if (session.answersChanged) {
+          const res = await fetch(`${API}/sessions/${sessionId}/answers`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json", "x-kiosk-key": session.requestKey },
+            body: JSON.stringify({
+              skinToneBucket: session.skinToneBucket || "WHEATISH",
+              bodyShapeBucket: session.bodyShapeBucket || "HOURGLASS",
+              gender: session.gender || "WOMEN",
+              sizeInput: session.sizeInput || "M",
+              preferenceTags: session.preferenceTags,
+            }),
+          });
+          if (!res.ok) throw new Error(res.status === 409 ? "A purchase is already recorded for this visit. Please start again." : "Failed to update your answers");
+          if (!active) return;
+          onAnswersSaved();
         }
 
         const recRes = await fetch(`${API}/sessions/${sessionId}/recommendations`, { headers: { "x-kiosk-key": session.requestKey } });

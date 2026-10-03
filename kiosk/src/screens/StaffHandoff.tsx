@@ -27,8 +27,10 @@ export default function StaffHandoff({
   const pct = (remaining / autoResetSecs) * 100;
 
   return (
-    <div className="screen" id="screen-handoff" style={{ position: "relative" }}>
-      <div style={{ textAlign: "center", marginBottom: 36 }}>
+    // paddingTop clears the fixed 72px header; "safe center" stops tall content
+    // from being centred up underneath it on short screens.
+    <div className="screen" id="screen-handoff" style={{ position: "relative", paddingTop: 96, justifyContent: "safe center", overflowY: "auto" }}>
+      <div style={{ textAlign: "center", marginBottom: 24 }}>
         <div style={{
           display: "inline-flex",
           alignItems: "center",
@@ -65,7 +67,7 @@ export default function StaffHandoff({
         </p>
       </div>
 
-      <div style={{ marginTop: 40, display: "flex", gap: 16 }}>
+      <div style={{ marginTop: 28, display: "flex", gap: 16 }}>
         <button
           id="handoff-reset-btn"
           className="btn-kiosk btn-ghost"
@@ -75,7 +77,7 @@ export default function StaffHandoff({
         </button>
       </div>
 
-      <p style={{ marginTop: 28, fontSize: 13, color: "var(--stone-dim)" }}>
+      <p style={{ marginTop: 20, fontSize: 13, color: "var(--stone-dim)" }}>
         Session auto-resets in {remaining}s
       </p>
 

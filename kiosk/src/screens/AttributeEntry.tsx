@@ -101,6 +101,7 @@ export default function AttributeEntry({
             <button
               className="btn-kiosk btn-secondary"
               onClick={onStartCamera}
+              aria-label="Estimate skin tone with the camera"
               style={{
                 fontSize: 13,
                 padding: "0 20px",
@@ -136,6 +137,8 @@ export default function AttributeEntry({
                   <button
                     key={t.value}
                     id={`skin-${t.value.toLowerCase()}`}
+                    aria-label={`Skin tone: ${t.label}`}
+                    aria-pressed={isSelected}
                     onClick={() => setSkin(t.value)}
                     style={{
                       background: isSelected ? "var(--ink-3)" : "transparent",
@@ -190,6 +193,8 @@ export default function AttributeEntry({
                   <button
                     key={b.value}
                     id={`shape-${b.value.toLowerCase().replace(/_/g, "-")}`}
+                    aria-label={`Body shape: ${b.label}`}
+                    aria-pressed={isSelected}
                     onClick={() => setBody(b.value)}
                     style={{
                       background: isSelected ? "var(--ink-3)" : "transparent",

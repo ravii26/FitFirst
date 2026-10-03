@@ -59,6 +59,8 @@ export default function GenderSelect({
               <button
                 key={o.value}
                 id={`gender-${o.value.toLowerCase()}`}
+                aria-label={o.title}
+                aria-pressed={isSelected}
                 onClick={() => onSelect(o.value)}
                 style={{
                   background: isSelected ? "var(--ink-3)" : "var(--ink-2)",

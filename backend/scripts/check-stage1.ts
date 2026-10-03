@@ -42,12 +42,27 @@ async function main() {
     await db.product.update({ where: { id: p.id }, data: { name: "Changed name" } });
     const refresh = await app.inject({ url: `/sessions/${sessionId}/recommendations`, headers: { "x-kiosk-key": input.requestKey } });
     assert.deepEqual(refresh.json(), recs[0].json(), "Recommendation snapshots must survive catalogue changes");
+    // Edit preferences updates the same session instead of creating a second one.
+    const { requestKey: _key, ...answers } = input;
+    const edited = { ...answers, preferenceTags: ["KURTA", "SOLID"] };
+    const answersUrl = `/sessions/${sessionId}/answers`;
+    assert.equal((await app.inject({ method: "PUT", url: answersUrl, payload: edited })).statusCode, 401);
+    assert.equal((await app.inject({ method: "PUT", url: answersUrl, payload: edited, headers: { "x-kiosk-key": input.requestKey } })).statusCode, 200);
+    assert.equal(await db.customerSession.count(), 1, "Editing answers must not create another session");
+    assert.equal(await db.recommendation.count(), 0, "Editing answers must clear the old recommendations");
+    const recalculated = (await app.inject({ url: `/sessions/${sessionId}/recommendations`, headers: { "x-kiosk-key": input.requestKey } })).json();
+    assert.equal(recalculated.recommendations[0].product.name, "Changed name", "Recommendations must be recalculated after an edit");
+    assert.deepEqual((await db.customerSession.findUniqueOrThrow({ where: { id: sessionId } })).preferenceTags, edited.preferenceTags);
+    assert.equal((await app.inject({ method: "PUT", url: answersUrl, payload: edited, headers: { "x-kiosk-key": input.requestKey } })).statusCode, 200);
+    assert.deepEqual((await app.inject({ url: `/sessions/${sessionId}/recommendations`, headers: { "x-kiosk-key": input.requestKey } })).json(), recalculated, "A repeated edit with the same answers must keep the snapshot");
+    assert.equal(await db.recommendation.count(), 1);
     const sale = { requestKey: randomUUID(), sessionId, productId: p.id, amount: 100, wasRecommended: false };
     const repeated = await Promise.all([1, 2].map(() => app.inject({ method: "POST", url: "/purchase-events", payload: sale })));
     assert.deepEqual(repeated.map(r => r.statusCode).sort(), [200, 201]);
     assert.equal(await db.purchaseEvent.count(), 1); assert.equal((await db.product.findUniqueOrThrow({ where: { id: p.id } })).stockQty, 1);
     assert.equal(repeated[0].json().wasRecommended, true, "Attribution must be calculated by the server");
     assert.equal((await app.inject({ method: "POST", url: "/purchase-events", payload: { ...sale, amount: 999 } })).statusCode, 409);
+    assert.equal((await app.inject({ method: "PUT", url: answersUrl, payload: answers, headers: { "x-kiosk-key": input.requestKey } })).statusCode, 409, "Answers must not change after a purchase");
     const competing = await Promise.all([1, 2].map(() => app.inject({ method: "POST", url: "/purchase-events", payload: { ...sale, requestKey: randomUUID() } })));
     assert.deepEqual(competing.map(r => r.statusCode).sort(), [201, 409]);
     assert.equal((await db.product.findUniqueOrThrow({ where: { id: p.id } })).stockQty, 0); assert.equal(await db.purchaseEvent.count(), 2);
@@ -61,7 +76,7 @@ async function main() {
     const summary = (await app.inject({ url: "/analytics/summary" })).json();
     assert.equal(summary.sessions.withPurchase, 1); assert.equal(summary.conversions.recommendedPurchaseRate, 1);
     assert.equal(summary.basketValue.kioskPeriod, 200); assert.equal(summary.basketValue.liftPct, null); assert.equal(summary.pilotVerdict, "INSUFFICIENT_DATA");
-    console.log("Stage 1 PostgreSQL integration checks passed: migrations, session retry, snapshot consistency, access control, purchase retry, last-unit concurrency, rollback, stock validation and metrics.");
+    console.log("Stage 1 PostgreSQL integration checks passed: migrations, session retry, snapshot consistency, answer edits, access control, purchase retry, last-unit concurrency, rollback, stock validation and metrics.");
   } finally {
     await app.close(); await db.$disconnect();
     await admin.$executeRawUnsafe(`DROP SCHEMA IF EXISTS "${schema}" CASCADE`); await admin.$disconnect();

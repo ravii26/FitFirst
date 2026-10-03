@@ -18,6 +18,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["--prefix", "backend", "run", "dev"],
       "port": 3000
+    },
+    {
+      "name": "ai-service",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "backend\\ai-service\\start.bat"],
+      "port": 8000
     }
   ]
 }

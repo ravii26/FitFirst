@@ -118,6 +118,7 @@ export default function Inventory() {
   const [editingStock, setEditingStock] = useState<string | null>(null);
   const [stockValue, setStockValue] = useState<number>(0);
   const [savingStock, setSavingStock] = useState(false);
+  const [stockError, setStockError] = useState("");
   const [successId, setSuccessId] = useState<string | null>(null);
 
   // Photo modal state
@@ -344,6 +345,7 @@ export default function Inventory() {
   const startEditStock = (p: Product) => {
     setEditingStock(p.id);
     setStockValue(p.stockQty);
+    setStockError("");
   };
 
   const openPhotoModal = (p: Product) => {
@@ -352,12 +354,12 @@ export default function Inventory() {
   };
 
   const saveStock = async (id: string) => {
-    if (!Number.isInteger(stockValue) || stockValue < 0) { setPageError("Enter a whole stock quantity of zero or more."); return; }
-    setSavingStock(true); setPageError("");
+    if (!Number.isInteger(stockValue) || stockValue < 0) { setStockError("Enter a whole number, 0 or more."); return; }
+    setSavingStock(true); setStockError("");
     try {
       await apiFetch(`${API}/products/${id}/stock`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ stockQty: stockValue }) });
       setEditingStock(null); setSuccessId(id); setTimeout(() => setSuccessId(null), 2000); await loadProducts();
-    } catch (e) { setPageError(e instanceof Error ? e.message : "Could not save stock"); }
+    } catch (e) { setStockError(e instanceof Error ? e.message : "Could not save stock"); }
     finally { setSavingStock(false); }
   };
   const deactivate = async (id: string) => {
@@ -577,16 +579,23 @@ export default function Inventory() {
                   <td style={{ fontWeight: 600, color: "var(--accent)" }}>{"₹" + p.price.toLocaleString("en-IN")}</td>
                   <td>
                     {editingStock === p.id ? (
-                      <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
-                        <input
-                          type="number"
-                          min="0"
-                          value={stockValue}
-                          onChange={(e) => setStockValue(parseInt(e.target.value))}
-                          style={{ width: 60, padding: "4px 8px", fontSize: 13 }}
-                        />
-                        <button className="btn btn-primary btn-sm" onClick={() => saveStock(p.id)} disabled={savingStock}>Save</button>
-                        <button className="btn btn-secondary btn-sm" onClick={() => setEditingStock(null)}>Cancel</button>
+                      <div>
+                        <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                          <input
+                            type="number"
+                            min="0"
+                            step="1"
+                            aria-label={`Stock for ${p.name}`}
+                            aria-invalid={stockError ? true : undefined}
+                            aria-describedby={stockError ? `stock-error-${p.id}` : undefined}
+                            value={Number.isNaN(stockValue) ? "" : stockValue}
+                            onChange={(e) => { setStockValue(e.target.value === "" ? NaN : Number(e.target.value)); setStockError(""); }}
+                            style={{ width: 60, padding: "4px 8px", fontSize: 13 }}
+                          />
+                          <button className="btn btn-primary btn-sm" onClick={() => saveStock(p.id)} disabled={savingStock}>Save</button>
+                          <button className="btn btn-secondary btn-sm" onClick={() => { setEditingStock(null); setStockError(""); }}>Cancel</button>
+                        </div>
+                        {stockError && <div id={`stock-error-${p.id}`} role="alert" style={{ color: "var(--danger)", fontSize: 12, marginTop: 4, maxWidth: 220 }}>{stockError}</div>}
                       </div>
                     ) : (
                       <span
