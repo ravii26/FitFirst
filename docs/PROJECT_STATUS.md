@@ -114,3 +114,4 @@ Real findings from code review that are **not** yet tasks. Raise them to the che
 - **Why and how, in depth:** [MASTER_PLAN.md](MASTER_PLAN.md)
 - **How to work here:** [AGENTS.md](../AGENTS.md)
 - **How code is structured:** [ENGINEERING_STANDARDS.md](ENGINEERING_STANDARDS.md)
+- **How to learn the project (founder reading and running path):** [FOUNDER_GUIDE.md](FOUNDER_GUIDE.md)
