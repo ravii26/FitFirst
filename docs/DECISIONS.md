@@ -22,7 +22,6 @@
 
 | ID | Question | Blocks | Urgency | AI recommendation |
 |---|---|---|---|---|
-| **D-02** | Rotate the three live API keys in `AI Creation/saree-studio/.env`? | `S05-05`; also the tagger now uses the AICredits key (DEC-16) | **Now** | Yes — rotate today (owner action, not AI) |
 | **D-03** | Accept Stage 1, or raise a defect list? | Stage 2 start | After `S1-*` runs | Decide only after the browser checks are recorded |
 | **D-04** | Which pilot shop, and what scope (departments, catalogue size, staff champion)? | Most of Stage 2+ | High — the pitch meeting | Start with aged stock plus key categories, 200–400 pieces |
 | **D-05** | Pilot POS path: A (sync with their software) or B (FitFirst Billing)? | Stage 6 POS tasks, pilot design | High — needs the discovery meeting | Decide from their answers; default to A with Excel sync |
@@ -37,13 +36,13 @@
 | **D-14** | Pilot languages: English only, or English + Hindi + Gujarati? | Stage 3 copy | Before Stage 3 | All three for a Gujarat pilot; it affects every screen's copy |
 | **D-15** | Commercial plans and prices to test in pitches | Pitch material | Before pitching | Test the three tiers in `MASTER_PLAN.md` §8 as hypotheses, not promises |
 | **D-16** | Keep or drop the CLIP/torch fallback in the garment tagger? | `S5-*`, deployment size | With Stage 5 | Drop it; ~2 GB of dependencies for weak accuracy |
-*(D-17 was decided on 24 Sep 2026 — see DEC-12 below. D-01 and D-18 were decided on 25 Sep 2026 — see DEC-15 and DEC-16.)*
+*(D-17 was decided on 24 Sep 2026 — see DEC-12 below. D-01 and D-18 were decided on 25 Sep 2026 — see DEC-15 and DEC-16. D-02 was done by 22 Oct 2026 — see DEC-21.)*
 
 ### Detail on the near-term ones
 
 **D-01 — Urgent technical fixes. DECIDED 25 Sep 2026 (DEC-15).** The try-on prototype's default image model shuts down **2 Oct 2026**, and of the three models the garment tagger tries, two are already shut down. When the AI fails, tagging silently drops to CLIP and then to guessing from image shape, and the dashboard still looks normal. The fix is small: model names in config, loud failures, repo hygiene, CI. *Reversible: easily.* *Blocked until decided:* all of `S0.5`.
 
-**D-02 — Key rotation.** `AI Creation/saree-studio/.env` holds three live keys (Gemini, OpenRouter, AICredits). The folder arrived as a zip from another machine, and the `.env` was inside it, so the keys may exist elsewhere. Rotate them in each provider console and set spend caps. **Ravindra does this; no AI should touch the values.** *One-way door if a key is already being abused.*
+**D-02 — Key rotation. DONE (DEC-21), reported 22 Oct 2026.** `AI Creation/saree-studio/.env` holds three live keys (Gemini, OpenRouter, AICredits). The folder arrived as a zip from another machine, and the `.env` was inside it, so the keys may exist elsewhere. Rotate them in each provider console and set spend caps. **Ravindra does this; no AI should touch the values.** *One-way door if a key is already being abused.*
 
 **D-04 / D-05 — Pilot shop and POS path.** These two come out of the same conversation with your contact. Take the discovery checklist in `MASTER_PLAN.md` §7.2. The answers decide whether Stage 6's POS work is Excel sync (path A) or our own billing module (path B), which is weeks of difference.
 
@@ -76,6 +75,7 @@
 | DEC-18 | 25 Sep 2026 | "Edit preferences" on the kiosk updates the **same** session in place (same handoff code) via a kiosk-only `PUT /api/sessions/:id/answers`, which clears the stored recommendations so they are recalculated and refuses (409) once a purchase is recorded | Browser test found a second pending session per edit, so one shopper counted as two consultations and lowered conversion. Ravindra chose "update in place" during the 25 Sep test (recorded in `STAGE_1_TEST_GUIDE.md` issue 1) and confirmed recording it on 27 Sep | DECIDED |
 | DEC-17 | 25 Sep 2026 | Fix the scan proxy bug found during S05-03: the backend now sends the encoded multipart bytes to the AI service (`backend/src/routes/scanGarment.ts`), with a regression test | Without it no dashboard scan ever reached the AI tagger, so S05-01 … S05-03 could not work or be checked live | DECIDED |
 | DEC-19 | 3 Oct 2026 | Adopt `docs/ENGINEERING_STANDARDS.md` as the structure and coding standard (option B): target layout plus a migration track, **Stage 7** in the checklist. Sequenced **after D-03**; only **S7-01** (tooling and CI, no logic changes) may start now. Each Stage 7 task that adds a dependency or package gets its own `DECISION NEEDED` first | The repo is a flat pilot prototype with no shared layers, packages or lint config; a team needs one structure. Restructuring while Stage 1 is unaccepted would blur old defects with new ones, and several target files carry uncommitted edits | DECIDED |
+| DEC-21 | 22 Oct 2026 | All three provider keys (Gemini, OpenRouter, AICredits) rotated in their consoles and spend caps set — done by Ravindra between 3 and 22 Oct, reported on 22 Oct | The keys travelled inside a zip from another machine and may have been shared; the garment tagger relies on the AICredits key | DECIDED (closes D-02) |
 | DEC-20 | 3 Oct 2026 | S7-01 tooling is **option A**: ESLint (flat config, typescript-eslint, react-hooks) + Prettier + a GitHub Actions workflow. Prettier is configured but **not run repo-wide**, and `format:check` stays out of CI until Ravindra's uncommitted edits are committed | The mainstream, best-known setup; lets the import-direction rules in the standards doc be enforced later. A repo-wide reformat now would rewrite about 20 files holding uncommitted work | DECIDED |
 
 ---

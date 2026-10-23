@@ -17,7 +17,7 @@
 
 | Stage | Done | Partial | Open | Total |
 |---|---|---|---|---|
-| 0 — Direction and safety | 3 | 0 | 7 | 10 |
+| 0 — Direction and safety | 3 | 1 | 6 | 10 |
 | 0.5 — Urgent technical fixes | 0 | 3 | 6 | 9 |
 | 1 — Stabilise the pilot | 0 | 11 | 2 | 13 |
 | 2 — Single-store operations | 0 | 0 | 31 | 31 |
@@ -26,7 +26,7 @@
 | 5 — Recommendation evidence and AI | 0 | 0 | 12 | 12 |
 | 6 — Multi-store and commercial | 0 | 0 | 12 | 12 |
 | 7 — Engineering foundations (parallel) | 0 | 1 | 5 | 6 |
-| **Total** | **3** | **15** | **98** | **116** |
+| **Total** | **3** | **16** | **97** | **116** |
 
 Keep this table and the one in `PROJECT_STATUS.md` in step.
 
@@ -60,7 +60,7 @@ This confirms the plan covers the whole product, while keeping *planned* separat
 - [x] **S0-01** Product goal, target shops and owner value proposition documented. — *evidence:* `MASTER_PLAN.md` §1, §3
 - [x] **S0-02** Human decision gates and the AI working agreement documented. — *evidence:* `AGENTS.md`, `DECISIONS.md`
 - [x] **S0-03** Portable AI handoff set in place, so any assistant in any tool can pick the project up. — *evidence (24 Sep 2026):* the five living docs; an instructions file per tool (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.github/copilot-instructions.md`, `.cursor/rules/fitfirst.mdc`, `.windsurfrules`, `.clinerules`); `npm run brief`; `npm run docs:check` (passes clean, and fails on drift); `/handoff` command and Copilot prompt; Claude Code session-start hook
-- [ ] **S0-04 (owner)** Rotate the three live provider keys and set spend caps. — D-02; keys are in `AI Creation/saree-studio/.env` (Gemini, OpenRouter, AICredits). *No AI touches these values.*
+- [~] **S0-04 (owner)** Rotate the three live provider keys and set spend caps. — D-02; keys are in `AI Creation/saree-studio/.env` (Gemini, OpenRouter, AICredits). *No AI touches these values.* *Evidence (22 Oct 2026):* Ravindra reported all three keys rotated and spend caps set (DEC-21). Not checked by AI, by design; Ravindra promotes to `[x]`.
 - [ ] **S0-05 (owner)** Confirm the pilot shop: departments, catalogue size, staff champion, space. — D-04
 - [ ] **S0-06 (owner)** Confirm the pilot's POS situation and choose path A (sync) or path B (FitFirst Billing). — D-05; *how:* the discovery checklist in `MASTER_PLAN.md` §7.2
 - [ ] **S0-07 (owner)** Confirm pilot dates, baseline source, holdout method and kill threshold. — D-08
