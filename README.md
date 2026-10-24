@@ -53,7 +53,7 @@ npm install
 cp .env.example backend/.env
 ```
 
-Edit `backend/.env` — set `DATABASE_URL` if not using Docker defaults.
+Edit `backend/.env`: choose your own four-digit `DASHBOARD_PIN` (staff login is refused until it is set), and change `DATABASE_URL` only if you are not using the Docker Postgres. Docker publishes Postgres on host port **5434**, which is what `.env.example` uses.
 
 ### 3. Start Postgres
 
@@ -84,6 +84,10 @@ Opens:
 - Backend API: http://localhost:3000
 - Staff Dashboard: http://localhost:5173 (use the PIN configured in backend/.env)
 - Customer Kiosk: http://localhost:5174
+
+### 6. Optional: start the garment tagger
+
+The dashboard's "scan garment" button needs the Python AI service on port 8000. Put `AICREDITS_API_KEY` in `backend/.env`, then run `backend/ai-service/start.bat` (Windows). Without it, the dashboard shows an "AI off" banner and the rest of the app still works.
 
 ---
 
@@ -175,11 +179,16 @@ cd backend && npm test
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `DATABASE_URL` | `postgresql://fitfirst:fitfirst_dev@localhost:5432/fitfirst` | Postgres connection |
+| `DATABASE_URL` | `postgresql://fitfirst:fitfirst_dev@localhost:5434/fitfirst` (in `.env.example`) | Postgres connection; 5434 is the host port in `docker-compose.yml` |
 | `PORT` | `3000` | Backend API port |
 | `KIOSK_URL` | `http://localhost:5174` | CORS whitelist |
 | `DASHBOARD_URL` | `http://localhost:5173` | CORS whitelist |
-| `DASHBOARD_PIN` | `1234` | Staff dashboard PIN |
+| `DASHBOARD_PIN` | none (must be set) | Four-digit staff dashboard PIN; staff login is refused until it is set |
+| `AI_SERVICE_URL` | `http://localhost:8000` | Where the backend finds the garment tagger |
+| `AICREDITS_API_KEY` | none | Garment tagger's AI key (read by `backend/ai-service`); without it, the tagger runs with AI off |
+| `AICREDITS_TAG_MODEL` | `google/gemini-2.5-flash-lite` | Optional tagging model override |
+| `AICREDITS_JSON_SCHEMA` | `1` | Optional; set to `0` if the gateway rejects the JSON response schema |
+| `FITFIRST_DEMO_SEED` | unset | Set to `1` to allow the demo seed (empty, non-production databases only) |
 
 ---
 

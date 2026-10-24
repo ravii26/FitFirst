@@ -77,7 +77,7 @@ npm run db:backup --workspace=backend             # ALWAYS before a migration
 - The Python tagger starts separately: `backend/ai-service/start.bat` (port 8000). It needs `AICREDITS_API_KEY` in `backend/.env`; optional `AICREDITS_TAG_MODEL` and `AICREDITS_JSON_SCHEMA=0`. Tests: `python -m pytest -q` in `backend/ai-service`.
 - On a fresh checkout run `npx prisma generate` in `backend/` before `npm test`, or three scoring tests fail.
 - Staff PIN comes from `DASHBOARD_PIN` in `backend/.env`. **Never print `.env` values.**
-- Postgres is on host port **5434** (a local change); `.env.example` still says 5432.
+- Postgres is on host port **5434** (`docker-compose.yml`); `.env.example` and the README match since S05-07.
 
 ## Landmines
 
