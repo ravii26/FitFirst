@@ -189,7 +189,7 @@ export default function SizeEntry({
               cursor: selectedSizes.length === 0 ? "not-allowed" : "pointer"
             }}
           >
-            Continue to Preferences &arr;
+            Continue to Preferences &rarr;
           </button>
         </div>
       </div>

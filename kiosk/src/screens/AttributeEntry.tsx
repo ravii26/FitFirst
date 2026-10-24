@@ -6,10 +6,11 @@ type SkinTone = "FAIR" | "WHEATISH" | "MEDIUM" | "DEEP";
 type BodyShape = "RECTANGLE" | "TRIANGLE" | "INVERTED_T" | "HOURGLASS";
 
 const SKIN_TONES: { value: SkinTone; label: string; sub: string; color: string }[] = [
-  { value: "FAIR", label: "Fair / Porcelain", sub: "Pairs with Emerald, Deep Ruby & Cobalt", color: "#F7E6D0" },
-  { value: "WHEATISH", label: "Wheatish / Golden", sub: "Pairs with Warm Gold, Mustard, Maroon & Teal", color: "#D49C65" },
-  { value: "MEDIUM", label: "Medium / Olive", sub: "Pairs with Champagne, Coral, Beige & Navy", color: "#9E6B43" },
-  { value: "DEEP", label: "Deep / Ebony", sub: "Pairs with Ivory, Rich Ochre, Crimson & Fuchsia", color: "#543422" },
+  // Shopper-facing labels are neutral numbers (DEC-24); the internal codes stay unchanged.
+  { value: "FAIR", label: "Tone 1", sub: "Pairs with Emerald, Deep Ruby & Cobalt", color: "#F7E6D0" },
+  { value: "WHEATISH", label: "Tone 2", sub: "Pairs with Warm Gold, Mustard, Maroon & Teal", color: "#D49C65" },
+  { value: "MEDIUM", label: "Tone 3", sub: "Pairs with Champagne, Coral, Beige & Navy", color: "#9E6B43" },
+  { value: "DEEP", label: "Tone 4", sub: "Pairs with Ivory, Rich Ochre, Crimson & Fuchsia", color: "#543422" },
 ];
 
 const BODY_SHAPES: { value: BodyShape; label: string; sub: string; icon: JSX.Element }[] = [
@@ -126,8 +127,11 @@ export default function AttributeEntry({
             borderRadius: "var(--radius-lg)",
             padding: "24px 20px",
           }}>
-            <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--brass)", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 16 }}>
-              1. Complexion Undertone
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--brass)", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 6 }}>
+              1. Skin tone
+            </div>
+            <div style={{ fontSize: 12, color: "var(--stone-dim)", marginBottom: 16 }}>
+              Swatches go from lightest (1) to deepest (4)
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
@@ -240,7 +244,7 @@ export default function AttributeEntry({
             {canContinue ? (
               <span style={{ color: "var(--brass-bright)" }}>&check; Profile calibrated &mdash; ready to match floor inventory</span>
             ) : (
-              <span>Select both a complexion tone and silhouette to calculate matches</span>
+              <span>Select both a skin tone and silhouette to calculate matches</span>
             )}
           </div>
 

@@ -31,10 +31,11 @@ function shortCode(sessionId: string): string {
 
 function formatTone(tone: string): string {
   const map: Record<string, string> = {
-    FAIR: "Fair / Porcelain",
-    WHEATISH: "Wheatish / Golden",
-    MEDIUM: "Medium / Olive",
-    DEEP: "Deep / Ebony",
+    // Same neutral labels the kiosk shows (DEC-24).
+    FAIR: "Tone 1",
+    WHEATISH: "Tone 2",
+    MEDIUM: "Tone 3",
+    DEEP: "Tone 4",
   };
   return map[tone] || tone.replace(/_/g, " ");
 }

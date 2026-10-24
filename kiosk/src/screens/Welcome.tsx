@@ -126,14 +126,6 @@ export default function Welcome({ onStart }: { onStart: () => void }) {
         paddingTop: 16,
       }}>
         <span>Optional camera estimate &bull; Camera images stay on this device</span>
-        <a
-          href="http://localhost:5173"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: "var(--brass-bright)", textDecoration: "none", fontWeight: 600 }}
-        >
-          Staff Dashboard &rarr;
-        </a>
       </div>
     </div>
   );

@@ -98,7 +98,7 @@ Things that look finished but are not. Check before trusting them:
 | "No purchase" reasons are saved only in that browser's localStorage | `dashboard/src/pages/Sessions.tsx` |
 | The pilot verdict is hard-coded to INSUFFICIENT_DATA and lift is always null | `backend/src/routes/analytics.ts:34,52` |
 | Demo baseline rows are random numbers — never present them as store evidence | `backend/prisma/seed.ts` |
-| Skin-tone labels still say "Fair / Porcelain", "Wheatish / Golden", "Deep / Ebony" | `kiosk/src/screens/AttributeEntry.tsx:8-13` |
+| Skin-tone labels on screen are neutral "Tone 1–4" (DEC-24), but the stored codes are still `FAIR` / `WHEATISH` / `MEDIUM` / `DEEP`; never show those codes to a shopper | `kiosk/src/screens/AttributeEntry.tsx:8-14`, `dashboard/src/pages/Sessions.tsx:33-38` |
 | `@mediapipe/pose` and TensorFlow.js are dependencies but never imported | `kiosk/package.json` |
 
 ## Glossary
