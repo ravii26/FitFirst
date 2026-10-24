@@ -10,10 +10,13 @@ import statistics
 from typing import cast, Dict, List, Tuple, Any
 from PIL import Image
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
-# Load variables from backend/.env or local .env
-load_dotenv("../.env")
+# Load variables from backend/.env, found from this file's location so it
+# works whatever directory the service is started from (S05-04).
+ENV_PATH = Path(__file__).resolve().parent.parent / ".env"
+load_dotenv(ENV_PATH)
 
 # Garment tagging goes through AICredits, an OpenAI-compatible gateway (D-18).
 AICREDITS_BASE_URL = "https://api.aicredits.in/v1"

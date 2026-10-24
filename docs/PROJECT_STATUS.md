@@ -4,9 +4,9 @@
 
 ## Right now
 
-- **Last updated:** 22 October 2026
+- **Last updated:** 24 October 2026
 - **Stage:** Stage 0.5 (urgent fixes, approved 25 Sep) in progress and **past its 2 Oct deadline**; Stage 1 implemented, **not yet accepted**
-- **Focus:** finish Stage 0.5 (S05-01 … S05-03 owner check, then S05-04 … S05-09), then the camera check (S1-08) and Ravindra's Stage 1 decision (D-03). No code or checks have moved since 3 Oct; the only change is that the API keys were rotated (DEC-21)
+- **Focus:** finish Stage 0.5 (S05-01 … S05-03 owner check, then S05-05 … S05-09), then the camera check (S1-08) and Ravindra's Stage 1 decision (D-03). S05-04 (`.env` path) was implemented 24 Oct and awaits acceptance; the API keys were rotated (DEC-21)
 - **Maturity:** single-store pilot prototype
 - **Branch:** `feature/stage-1-pilot-stabilization` (verify with `git status` before relying on it)
 - **Blocked on owner decision:** yes — D-03 (Stage 1 acceptance); D-04 / D-05 (pilot shop, POS path) before any pitch
@@ -15,7 +15,7 @@
 ## Start here (the next three actions)
 
 1. **S05-01 … S05-03 owner check** (the scan-proxy bug that blocked every dashboard scan was fixed 25 Sep, DEC-17): put the **newly rotated** `AICREDITS_API_KEY` in `backend/.env`, start the AI service, scan one real garment from the dashboard, and confirm `/scan` shows `aicredits (<model>)` and `/health` shows the model. The default model ID `google/gemini-2.5-flash-lite` is unconfirmed on AICredits; set `AICREDITS_TAG_MODEL` if it differs. If the call fails with a `response_format` error, set `AICREDITS_JSON_SCHEMA=0`.
-2. **S05-04 … S05-09.** The 2 Oct deadline has passed; next is S05-04 (`load_dotenv("../.env")` depends on the working directory). **S05-05:** the try-on prototype's default image model (`gemini-2.5-flash-image`) was due to shut down on 2 Oct and the default was not changed, so assume try-on is broken for anyone using the code defaults (not re-checked).
+2. **S05-05 … S05-09.** The 2 Oct deadline has passed. S05-04 (the tagger now finds `backend/.env` from any working directory) is implemented and awaits your acceptance. Next is **S05-05:** the try-on prototype's default image model (`gemini-2.5-flash-image`) was due to shut down on 2 Oct and the default was not changed, so assume try-on is broken for anyone using the code defaults (not re-checked).
 3. **S1-08 camera check, then D-03.** Ravindra runs the camera check, then accepts Stage 1 or raises a defect list from the browser test log in `STAGE_1_TEST_GUIDE.md`. In parallel, the pilot-shop conversation (D-04 / D-05) is the main business step; `docs/TEAM_GUIDE.md` lists the questions for team discussion.
 
 ## Progress at a glance
@@ -23,7 +23,7 @@
 | Stage | Done | Partial | Open | Total | State |
 |---|---|---|---|---|---|
 | 0 — Direction and safety | 3 | 1 | 6 | 10 | Keys rotated (S0-04, awaiting tick); rest waiting on owner input |
-| 0.5 — Urgent technical fixes | 0 | 3 | 6 | 9 | **Past the 2 Oct deadline** — approved (D-01); S05-01 … S05-03 implemented, owner check not run |
+| 0.5 — Urgent technical fixes | 0 | 4 | 5 | 9 | **Past the 2 Oct deadline** — approved (D-01); S05-01 … S05-04 implemented, owner check of S05-01 … S05-03 not run |
 | 1 — Stabilise the pilot | 0 | 11 | 2 | 13 | Browser checks recorded 25 Sep (camera S1-08 left); awaiting D-03 |
 | 2 — Single-store operations | 0 | 0 | 31 | 31 | Not started; 4 decisions first |
 | 3 — Customer and staff experience | 0 | 0 | 12 | 12 | Planned |
@@ -31,7 +31,7 @@
 | 5 — Recommendation evidence and AI | 0 | 0 | 12 | 12 | Planned |
 | 6 — Multi-store and commercial | 0 | 0 | 12 | 12 | Planned |
 | 7 — Engineering foundations (parallel) | 0 | 1 | 5 | 6 | S7-01 implemented, not accepted (CI never run on GitHub); S7-02 … S7-06 wait for D-03 |
-| **Total** | **3** | **16** | **97** | **116** | |
+| **Total** | **3** | **17** | **96** | **116** | |
 
 Update these counts whenever you tick an item in [END_TO_END_CHECKLIST.md](END_TO_END_CHECKLIST.md).
 
@@ -66,6 +66,7 @@ Full list and trade-offs in [DECISIONS.md](DECISIONS.md).
 - The "AI off" banner was checked in Chromium against a throwaway local database (25 Sep 2026): it names the reason (no key, service down, or the AI call's error). The backend has 46 tests.
 - Dashboard scans now actually reach the AI service: the scan proxy sent `[object FormData]` instead of the photo, and has been fixed (proven in a browser; a regression test fails on the old code).
 
+- The tagger loads `backend/.env` whatever directory it is started from (S05-04, 24 Oct 2026): AI service Python tests → 50 passed, including a regression test that ignores a stray `../.env`.
 - The three provider keys (Gemini, OpenRouter, AICredits) were rotated and spend caps set (DEC-21; reported by Ravindra, 22 Oct 2026; not checked by AI, by design).
 
 **Not verified:**
