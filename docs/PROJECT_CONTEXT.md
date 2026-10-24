@@ -89,7 +89,7 @@ Things that look finished but are not. Check before trusting them:
 | `daysInStock` never increments — the promised cron job does not exist, so "aged stock" is currently fiction | `schema.prisma:108` |
 | When the AI call fails or there is no key, the tagger returns CLIP/heuristic **guesses** (category from the image's aspect ratio). Since S05-03 this is flagged by `ai_status` and a dashboard "AI off" banner, but the guesses are still offered (D-16) | `backend/ai-service/main.py` |
 | The AICredits model ID (`google/gemini-2.5-flash-lite`) and its JSON-schema support are unverified live | `backend/ai-service/classifier.py` |
-| Try-on's default image model shuts down **2 Oct 2026** | `AI Creation/saree-studio/app.py:28` |
+| Try-on's default image model was moved to `google/gemini-3.1-flash-image` (S05-05) after the old one's 2 Oct 2026 shutdown; a live call with it is not verified | `AI Creation/saree-studio/app.py:28` |
 | Uploaded images are publicly readable at `/uploads/...` | `backend/src/index.ts:58-61` |
 | Kiosk API routes have no auth and no rate limit; `PUT /api/sessions/:id/answers` (DEC-18) is guarded only by the kiosk's per-session request key | `backend/src/index.ts:69-71` |
 | Staff auth is one shared 4-digit PIN; there are no user identities or roles | `backend/src/authGuard.ts` |
