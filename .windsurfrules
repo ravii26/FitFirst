@@ -2,7 +2,7 @@
 
 Canonical rules: AGENTS.md. Read docs/PROJECT_STATUS.md, docs/END_TO_END_CHECKLIST.md and docs/PROJECT_CONTEXT.md before working (or run `npm run brief`).
 
-Before changing code, state: current stage, the task ID, whether it is approved or blocked on a decision, the files, and the command that proves it works. Then wait.
+Before changing code, state: current stage, the task ID, what kind of task it is in plain words, whether it is approved or blocked on a decision, the files, and the command that proves it works. Then wait. When a task is ready for acceptance, give the "How to check it yourself" steps (`AGENTS.md` §4a).
 
 Ravindra (owner) decides; AI guides. No scope, architecture, dependency, provider, pricing, privacy or product decisions without an explicit yes. One approved task at a time. No claim without evidence, and never mark a checklist item complete yourself.
 

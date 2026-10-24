@@ -14,7 +14,9 @@ Run the handoff update for this session, exactly as defined in `AGENTS.md` §5.
 
 3. Run `npm run docs:check` and fix anything it reports.
 
-4. Finish with the 3-line handoff:
+4. If a task is waiting for Ravindra's acceptance (`[~]`), first give the "How to check it yourself" section from `AGENTS.md` §4a, and make sure its checklist item has a *How to check:* note.
+
+5. Finish with the 3-line handoff:
    - **Changed:** …
    - **Next:** task ID and what it needs
    - **Needs Ravindra:** the decision IDs waiting, or "nothing"

@@ -11,7 +11,7 @@
 5. `docs/DECISIONS.md` — only when the task touches a decision
 6. `docs/ENGINEERING_STANDARDS.md` — before writing or moving code
 
-Then report: stage · task ID you will work on · approved or needs a decision · files · validation command. Wait for confirmation before changing code.
+Then report: stage · task ID you will work on · what kind of task it is, in plain words · approved or needs a decision · files · validation command. Wait for confirmation before changing code. When a task is ready for acceptance, give the "How to check it yourself" steps (`AGENTS.md` §4a).
 
 ## The one rule that matters
 

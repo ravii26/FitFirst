@@ -15,9 +15,10 @@
 3. Read `docs/PROJECT_CONTEXT.md` — the product, repo map, commands, glossary and landmines.
 4. Open `docs/DECISIONS.md` if the task touches anything marked `[?]` or "decision".
    Also open `docs/ENGINEERING_STANDARDS.md` before writing or moving code: it defines the layout, layer rules and conventions.
-5. Then state back, in under 10 lines:
+5. Then state back, in under 15 lines:
    - current stage
    - the task you intend to work on, **by ID** (e.g. `S1-06`)
+   - **what kind of task it is, in plain words** (see §4a): bug fix, config change, new feature, clean-up, docs only…; what problem it solves; what will change and what will not
    - whether it is approved or needs a decision
    - the files you expect to touch
    - the command that will prove it works
@@ -73,6 +74,24 @@ Then wait. Record the answer in `docs/DECISIONS.md` with the date. Never write "
 - Demo and seed data are **not** evidence of anything about a real store. Label synthetic numbers as synthetic, every time.
 - If you could not verify something, write "not verified" rather than implying it works.
 
+### 4a. Explain the task, then show Ravindra how to check it
+
+Ravindra accepts work himself, so he must understand it and be able to check it without the AI's help.
+
+**When proposing a task**, before any code, explain in plain words:
+- **Kind of change:** bug fix · config change · new feature · clean-up · docs only · test only
+- **The problem:** what goes wrong today, and who notices
+- **What will change, and what will not** (e.g. "no database change, nothing the shopper sees")
+
+**When a task is ready for acceptance (`[~]`)**, give a "How to check it yourself" section with:
+1. **What changed:** the files and the key lines, in plain words, plus the command to see the diff (e.g. `git show <commit> -- <file>`)
+2. **Automated check:** the exact command, where to run it, and the expected result (e.g. `50 passed`)
+3. **Real-world check:** the steps to see the behaviour yourself, ideally before vs after, with the expected result of each step. Commands must be copy-pasteable and must never print secrets
+4. **Not verified:** what you could not check, and why
+5. **How to accept:** say "accept <task ID>"; the AI then marks it `[x]` with the date
+
+**Record the check steps in the checklist item** as a *How to check:* note next to the evidence, so any AI in any later session can walk Ravindra through it.
+
 ---
 
 ## 5. End of every session — the handoff update (this is what keeps the docs alive)
@@ -88,7 +107,7 @@ Then wait. Record the answer in `docs/DECISIONS.md` with the date. Never write "
 
 Then run **`npm run docs:check`**, which verifies that the progress counts match the actual checkboxes, that task IDs are unique, that links resolve, and that the status and session log are not stale. Fix whatever it reports.
 
-Finally, end your reply with a **3-line handoff**: what changed, what is next (task ID), what needs Ravindra's decision.
+Finally, end your reply with a **3-line handoff**: what changed, what is next (task ID), what needs Ravindra's decision. If a task is waiting for acceptance, put the "How to check it yourself" section (§4a) before the handoff.
 
 Shortcuts: `/handoff` in Claude Code, `/handoff` prompt file in Copilot, or just ask any other assistant for "the handoff update".
 

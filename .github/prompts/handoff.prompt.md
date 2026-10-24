@@ -12,6 +12,7 @@ Run the handoff update for this session, as defined in `AGENTS.md` §5.
    - `docs/DECISIONS.md` — any decision the owner made (date, choice, reasoning, what it unblocks), and any new open decision.
    - `docs/SESSION_LOG.md` — one new row at the top: date · what changed · files · validation · next.
 3. Run `npm run docs:check` and fix what it reports.
-4. End with: **Changed** / **Next** (task ID) / **Needs Ravindra** (decision IDs or "nothing").
+4. If a task is waiting for the owner's acceptance (`[~]`), first give the "How to check it yourself" section from `AGENTS.md` §4a, and make sure its checklist item has a *How to check:* note.
+5. End with: **Changed** / **Next** (task ID) / **Needs Ravindra** (decision IDs or "nothing").
 
 Never invent evidence, never mark unverified work complete, and never record a decision the owner did not make.

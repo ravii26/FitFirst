@@ -168,7 +168,7 @@ PROJECT_STATUS.md and END_TO_END_CHECKLIST.md (and AGENTS.md if attached).
 
 Before doing anything, reply with:
 1. the current stage and focus
-2. the next approved task, by ID
+2. the next approved task, by ID, and what kind of task it is in plain words
 3. whether it is approved or blocked on a decision
 4. the files you expect to touch
 5. the command that will prove it works
@@ -176,5 +176,7 @@ Before doing anything, reply with:
 Rules: I make every product, architecture, commercial, privacy and UX decision.
 You research, lay out options with trade-offs, recommend one, and wait for my answer.
 Work only the approved task. Never mark anything complete without running the check.
-At the end of the session, give me the doc updates described in AGENTS.md section 5.
+When a task is ready for me to accept, give me "How to check it yourself" steps
+(AGENTS.md section 4a). At the end of the session, give me the doc updates
+described in AGENTS.md section 5.
 ```

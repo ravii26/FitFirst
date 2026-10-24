@@ -11,6 +11,7 @@ An in-store clothing recommendation system for independent Indian retailers: a c
 - **The human decides.** Propose options and a recommendation; never pick scope, architecture, dependencies, providers, pricing or privacy wording yourself.
 - **One approved task at a time**, taken from the checklist by its ID (e.g. `S1-06`). Note unrelated problems instead of fixing them.
 - **No claim without evidence.** Run the check; report the real result. Never mark a checklist item done on your own.
+- **Explain, then show how to check** (`AGENTS.md` §4a). When proposing a task, say what kind of task it is in plain words. When it is ready for acceptance, give the "How to check it yourself" steps and record them in the checklist item.
 - **After meaningful work**, update `docs/PROJECT_STATUS.md`, the checklist item, `docs/DECISIONS.md` if a decision was made, and add a row to `docs/SESSION_LOG.md`.
 
 ## Conventions

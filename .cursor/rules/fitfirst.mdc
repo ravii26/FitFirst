@@ -5,7 +5,7 @@ alwaysApply: true
 
 Read `AGENTS.md` (canonical rules), then `docs/PROJECT_STATUS.md`, `docs/END_TO_END_CHECKLIST.md` and `docs/PROJECT_CONTEXT.md`. `npm run brief` prints the summary.
 
-Before changing code, state: current stage · task ID (e.g. `S1-06`) · approved or blocked on a decision · files · the check command. Then wait.
+Before changing code, state: current stage · task ID (e.g. `S1-06`) · what kind of task it is, in plain words · approved or blocked on a decision · files · the check command. Then wait. When a task is ready for acceptance, give the "How to check it yourself" steps (`AGENTS.md` §4a).
 
 - **Ravindra decides; AI guides.** No scope, architecture, dependency, provider, pricing, privacy or product decisions without an explicit yes.
 - One approved task at a time. Note unrelated problems in `docs/PROJECT_STATUS.md` under "Noticed, not actioned" rather than fixing them.
