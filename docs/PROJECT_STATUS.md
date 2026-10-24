@@ -6,7 +6,7 @@
 
 - **Last updated:** 24 October 2026
 - **Stage:** Stage 0.5 (urgent fixes, approved 25 Sep) in progress and **past its 2 Oct deadline**; Stage 1 implemented, **not yet accepted**
-- **Focus:** finish Stage 0.5 (S05-01 … S05-03 owner check, then S05-06 … S05-09), then the camera check (S1-08) and Ravindra's Stage 1 decision (D-03). S05-04 (`.env` path) was implemented and accepted 24 Oct; S05-05 (try-on default model) implemented 24 Oct, awaiting acceptance; the API keys were rotated (DEC-21)
+- **Focus:** finish Stage 0.5 (S05-01 … S05-03 owner check, then S05-06 … S05-09), then the camera check (S1-08) and Ravindra's Stage 1 decision (D-03). S05-04 (`.env` path) was implemented and accepted 24 Oct; S05-05 (try-on default model) implemented and accepted 24 Oct; the API keys were rotated (DEC-21)
 - **Maturity:** single-store pilot prototype
 - **Branch:** `feature/stage-1-pilot-stabilization` (verify with `git status` before relying on it)
 - **Blocked on owner decision:** yes — D-03 (Stage 1 acceptance); D-04 / D-05 (pilot shop, POS path) before any pitch
@@ -15,7 +15,7 @@
 ## Start here (the next three actions)
 
 1. **S05-01 … S05-03 owner check** (the scan-proxy bug that blocked every dashboard scan was fixed 25 Sep, DEC-17): put the **newly rotated** `AICREDITS_API_KEY` in `backend/.env`, start the AI service, scan one real garment from the dashboard, and confirm `/scan` shows `aicredits (<model>)` and `/health` shows the model. The default model ID `google/gemini-2.5-flash-lite` is unconfirmed on AICredits; set `AICREDITS_TAG_MODEL` if it differs. If the call fails with a `response_format` error, set `AICREDITS_JSON_SCHEMA=0`.
-2. **S05-05 acceptance, then S05-06 … S05-09.** The 2 Oct deadline has passed. S05-04 is accepted. S05-05 is implemented: the try-on prototype now defaults to `google/gemini-3.1-flash-image` (13 tests pass; no live call made). Next is **S05-06** (repo hygiene).
+2. **S05-06 … S05-09.** The 2 Oct deadline has passed. S05-04 and S05-05 are accepted (the try-on prototype now defaults to `google/gemini-3.1-flash-image`; no live call made). Next is **S05-06** (repo hygiene).
 3. **S1-08 camera check, then D-03.** Ravindra runs the camera check, then accepts Stage 1 or raises a defect list from the browser test log in `STAGE_1_TEST_GUIDE.md`. In parallel, the pilot-shop conversation (D-04 / D-05) is the main business step; `docs/TEAM_GUIDE.md` lists the questions for team discussion.
 
 ## Progress at a glance
@@ -23,7 +23,7 @@
 | Stage | Done | Partial | Open | Total | State |
 |---|---|---|---|---|---|
 | 0 — Direction and safety | 3 | 1 | 6 | 10 | Keys rotated (S0-04, awaiting tick); rest waiting on owner input |
-| 0.5 — Urgent technical fixes | 1 | 4 | 4 | 9 | **Past the 2 Oct deadline** — approved (D-01); S05-04 accepted; S05-05 implemented; S05-01 … S05-03 implemented, owner check not run |
+| 0.5 — Urgent technical fixes | 2 | 3 | 4 | 9 | **Past the 2 Oct deadline** — approved (D-01); S05-04 and S05-05 accepted; S05-01 … S05-03 implemented, owner check not run |
 | 1 — Stabilise the pilot | 0 | 11 | 2 | 13 | Browser checks recorded 25 Sep (camera S1-08 left); awaiting D-03 |
 | 2 — Single-store operations | 0 | 0 | 31 | 31 | Not started; 4 decisions first |
 | 3 — Customer and staff experience | 0 | 0 | 12 | 12 | Planned |
@@ -31,7 +31,7 @@
 | 5 — Recommendation evidence and AI | 0 | 0 | 12 | 12 | Planned |
 | 6 — Multi-store and commercial | 0 | 0 | 12 | 12 | Planned |
 | 7 — Engineering foundations (parallel) | 0 | 1 | 5 | 6 | S7-01 implemented, not accepted (CI never run on GitHub); S7-02 … S7-06 wait for D-03 |
-| **Total** | **4** | **17** | **95** | **116** | |
+| **Total** | **5** | **16** | **95** | **116** | |
 
 Update these counts whenever you tick an item in [END_TO_END_CHECKLIST.md](END_TO_END_CHECKLIST.md).
 
