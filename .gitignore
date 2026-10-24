@@ -1,7 +1,6 @@
 # Dependencies
 node_modules/
 .pnpm-store/
-package-lock.json
 
 # Environment variables
 .env
@@ -21,6 +20,9 @@ out/
 # Prisma
 
 !backend/prisma/schema.prisma
+
+# Uploaded garment photos (runtime data; the backend recreates the folder)
+backend/uploads/
 
 # Logs & Temp
 *.log
