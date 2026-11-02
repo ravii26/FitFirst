@@ -280,7 +280,7 @@ export default function Inventory() {
         setBulkErrors([]);
       }, 2000);
     } catch (err: any) {
-      if (err instanceof ApiError && Array.isArray(err.details.errors)) setBulkErrors(err.details.errors);
+      if (err instanceof ApiError && Array.isArray(err.details)) setBulkErrors(err.details as string[]);
       setBulkMsg({ type: "error", text: err.message || "Bulk import failed" });
     } finally {
       setBulkImporting(false);

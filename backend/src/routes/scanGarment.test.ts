@@ -4,10 +4,12 @@ import sensible from "@fastify/sensible";
 import multipart from "@fastify/multipart";
 import FormData from "form-data";
 import { scanGarmentRoutes } from "./scanGarment";
+import { registerErrorHandling } from "../lib/errors";
 
 async function buildApp() {
   const app = Fastify();
   await app.register(sensible);
+  registerErrorHandling(app);
   await app.register(multipart);
   await app.register(scanGarmentRoutes, { prefix: "/api" });
   return app;

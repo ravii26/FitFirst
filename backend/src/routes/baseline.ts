@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { PrismaClient } from "@prisma/client";
+import { fromZodError } from "../lib/errors";
 
 const BaselineSchema = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
@@ -17,7 +18,7 @@ export async function baselineRoutes(app: FastifyInstance) {
   // POST /api/baseline — log a daily sales entry (staff manual entry)
   app.post("/baseline", async (request, reply) => {
     const result = BaselineSchema.safeParse(request.body);
-    if (!result.success) return reply.badRequest(result.error.message);
+    if (!result.success) throw fromZodError(result.error);
 
     const { date, totalTransactions, totalRevenue, avgUnitsPerCustomer, isKioskActive, notes } =
       result.data;

@@ -2,6 +2,7 @@ import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
+import { AppError, ErrorCode } from "./lib/errors";
 
 const COOKIE = "fitfirst_staff";
 const SESSION_SECONDS = 8 * 60 * 60;
@@ -29,7 +30,10 @@ export async function authRoutes(app: FastifyInstance) {
     const now = Date.now();
     for (const [ip, value] of attempts) if (value.expires <= now) attempts.delete(ip);
     const limit = attempts.get(request.ip) ?? { count: 0, expires: now + 15 * 60_000 };
-    if (limit.count >= 5 || (!attempts.has(request.ip) && attempts.size >= 10000)) return reply.header("Retry-After", Math.max(1, Math.ceil((limit.expires - now) / 1000))).code(429).send({ message: "Too many attempts. Try again in 15 minutes." });
+    if (limit.count >= 5 || (!attempts.has(request.ip) && attempts.size >= 10000)) {
+      reply.header("Retry-After", Math.max(1, Math.ceil((limit.expires - now) / 1000)));
+      throw new AppError(ErrorCode.RATE_LIMITED, "Too many attempts. Try again in 15 minutes.");
+    }
     limit.count++;
     attempts.set(request.ip, limit);
     const input = z.object({ pin: z.string().regex(/^\d{4}$/) }).safeParse(request.body);

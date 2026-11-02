@@ -2,6 +2,7 @@ import { normalizeSize } from "../scoring/sizes";
 import { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { PrismaClient, Category, Gender, ColorFamily, Pattern, FitType } from "@prisma/client";
+import { badRequest, fromZodError } from "../lib/errors";
 
 const ProductCreateSchema = z.object({
   sku: z.string().min(1),
@@ -57,24 +58,20 @@ export async function productsRoutes(app: FastifyInstance) {
   // POST /api/products — create new product
   app.post("/products", async (request, reply) => {
     const result = ProductCreateSchema.safeParse(request.body);
-    if (!result.success) return reply.badRequest(result.error.message);
+    if (!result.success) throw fromZodError(result.error);
     const product = await prisma.product.create({ data: result.data as any });
     return reply.code(201).send(product);
   });
 
   // PUT /api/products/:id — update product details
-  app.put<{ Params: { id: string } }>("/products/:id", async (request, reply) => {
+  app.put<{ Params: { id: string } }>("/products/:id", async (request) => {
     const result = ProductUpdateSchema.safeParse(request.body);
-    if (!result.success) return reply.badRequest(result.error.message);
-    try {
-      const product = await prisma.product.update({
-        where: { id: request.params.id },
-        data: result.data as any,
-      });
-      return product;
-    } catch (error) {
-      throw error;
-    }
+    if (!result.success) throw fromZodError(result.error);
+    // A missing id surfaces as Prisma P2025, which the error handler maps to NOT_FOUND.
+    return prisma.product.update({
+      where: { id: request.params.id },
+      data: result.data as any,
+    });
   });
 
   // PATCH /api/products/:id/image — update product image URL
@@ -260,11 +257,7 @@ export async function productsRoutes(app: FastifyInstance) {
     }
 
     if (errors.length > 0) {
-      return reply.code(400).send({
-        success: false,
-        message: "CSV validation failed",
-        errors: errors.slice(0, 100),
-      });
+      throw badRequest("CSV validation failed", errors.slice(0, 100));
     }
 
     let createdCount = 0;

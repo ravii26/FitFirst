@@ -4,6 +4,7 @@ import sensible from "@fastify/sensible";
 import multipart from "@fastify/multipart";
 import FormData from "form-data";
 import { uploadRoutes } from "./upload";
+import { registerErrorHandling } from "../lib/errors";
 
 vi.mock("fs/promises", () => ({
   default: { writeFile: vi.fn().mockResolvedValue(undefined) },
@@ -12,6 +13,7 @@ vi.mock("fs/promises", () => ({
 async function buildApp() {
   const app = Fastify();
   await app.register(sensible);
+  registerErrorHandling(app);
   await app.register(multipart);
   await app.register(uploadRoutes, { prefix: "/api" });
   return app;

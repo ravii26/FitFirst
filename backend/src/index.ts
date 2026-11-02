@@ -18,6 +18,7 @@ import { baselineRoutes } from "./routes/baseline";
 import { uploadRoutes } from "./routes/upload";
 import { scanGarmentRoutes } from "./routes/scanGarment";
 import { requireStaffSession, authRoutes } from "./authGuard";
+import { registerErrorHandling } from "./lib/errors";
 
 dotenv.config();
 
@@ -43,13 +44,7 @@ async function main() {
   });
 
   await app.register(sensible);
-  app.setErrorHandler((error: any, request, reply) => {
-    if (error.code === "P2002") return reply.code(409).send({ message: "This record already exists. Please check the SKU or request." });
-    if (error.code === "P2025") return reply.code(404).send({ message: "Record not found" });
-    if (error.code === "P2003") return reply.code(400).send({ message: "Related record not found" });
-    request.log.error(error);
-    return reply.code(error.statusCode ?? 500).send({ message: error.statusCode && error.statusCode < 500 ? error.message : "Unable to complete the request. Please try again." });
-  });
+  registerErrorHandling(app);
 
   await app.register(multipart, {
     limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit

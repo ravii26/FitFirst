@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { PrismaClient, Prisma } from "@prisma/client";
 import { requireStaffSession } from "../authGuard";
+import { fromZodError } from "../lib/errors";
 
 export const SessionSchema = z.object({
   requestKey: z.string().uuid(),
@@ -21,7 +22,7 @@ export async function sessionsRoutes(app: FastifyInstance) {
   app.post("/sessions", async (request, reply) => {
     const result = SessionSchema.safeParse(request.body);
     if (!result.success) {
-      return reply.badRequest(result.error.message);
+      throw fromZodError(result.error);
     }
     // upsert is read-then-write, so two concurrent calls with the same requestKey
     // can both attempt the insert. The loser hits the unique index; since requestKey
@@ -46,7 +47,7 @@ export async function sessionsRoutes(app: FastifyInstance) {
   // so the next fetch recalculates them, instead of leaving a stale second session.
   app.put<{ Params: { id: string } }>("/sessions/:id/answers", async (request, reply) => {
     const result = SessionSchema.omit({ requestKey: true }).safeParse(request.body);
-    if (!result.success) return reply.badRequest(result.error.message);
+    if (!result.success) throw fromZodError(result.error);
     const authorized = await prisma.customerSession.findUnique({ where: { id: request.params.id } });
     if (!authorized) return reply.notFound("Session not found");
     if (!authorized.requestKey || request.headers["x-kiosk-key"] !== authorized.requestKey) return reply.unauthorized("This kiosk session is unavailable. Please start again.");

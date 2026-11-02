@@ -2,6 +2,7 @@ import { describe, it, expect, afterEach } from "vitest";
 import Fastify from "fastify";
 import sensible from "@fastify/sensible";
 import { authRoutes, requireStaffSession, hashToken } from "./authGuard";
+import { registerErrorHandling } from "./lib/errors";
 const original = process.env.DASHBOARD_PIN;
 const apps: ReturnType<typeof Fastify>[] = [];
 afterEach(async () => { if (original === undefined) delete process.env.DASHBOARD_PIN; else process.env.DASHBOARD_PIN = original; await Promise.all(apps.splice(0).map(app => app.close())); });
@@ -10,6 +11,7 @@ async function buildApp() {
   const sessions = new Map<string, { tokenHash: string; expiresAt: Date }>();
   const app = Fastify(); apps.push(app);
   await app.register(sensible);
+  registerErrorHandling(app);
   app.decorate("prisma", { staffSession: {
     findUnique: async ({ where }: any) => sessions.get(where.tokenHash),
     create: async ({ data }: any) => { sessions.set(data.tokenHash, data); return data; },
