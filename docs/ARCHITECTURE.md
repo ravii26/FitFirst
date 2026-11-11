@@ -4,7 +4,7 @@
 >
 > Related: [ENGINEERING_STANDARDS.md](ENGINEERING_STANDARDS.md) is the target structure and coding rules. [MASTER_PLAN.md](MASTER_PLAN.md) is where the product is going. [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) has the repo map, commands and landmines. [AGENTS.md](../AGENTS.md) is how work is approved here.
 >
-> **Status:** written 25 October 2026, at the start of the Stage 7 architecture track (S7-02 … S7-06, unblocked by Ravindra on 25 October). Sections marked **Gap** are known problems with a task ID, not accidents.
+> **Status:** written 25 October 2026 for the Stage 7 architecture track; facts re-checked against the code on 11 November 2026. This file originally said S7-02 … S7-06 were unblocked by Ravindra on 25 October, but no such decision is recorded, so they stay gated until D-19 is answered. Sections marked **Gap** are known problems with a task ID, not accidents.
 
 ---
 
@@ -16,7 +16,7 @@ A single-store, in-store clothing recommendation system. Three user-facing apps 
 |---|---|---|---|---|
 | Kiosk | `kiosk/` | 5174 | The shopper, unattended | **None** (see §6) |
 | Dashboard | `dashboard/` | 5173 | Staff and the owner | Shared 4-digit PIN → cookie |
-| API | `backend/` | 3000 | Both apps | Issues and checks the staff cookie |
+| API | `backend/` | 3000 by default (`PORT`); the kiosk and dashboard dev proxies call **3008**, so local setups need `PORT=3008` (`setup.ps1` sets it) | Both apps | Issues and checks the staff cookie |
 | Garment tagger | `backend/ai-service/` | 8000 | The API only | None (private service) |
 
 `AI Creation/saree-studio/` is a standalone try-on prototype. It is git-ignored, holds live API keys, and is **not part of this architecture** until integration is approved (D-12).
@@ -52,6 +52,7 @@ backend/
     authGuard.ts        staff cookie auth + login/logout routes + login throttle
     imageSniff.ts       magic-byte check on uploads (used by upload + scan)
     analyticsMetrics.ts distinct-session metric helpers
+    lib/errors.ts       the API's single error shape, codes and handler
     routes/             one file per resource — HTTP + validation + rules + Prisma
     scoring/            engine.ts, tables.ts, sizes.ts — pure, no I/O, well tested
   prisma/               schema.prisma, migrations/, seed.ts
@@ -60,7 +61,7 @@ backend/
 dashboard/src/
   App.tsx (433 lines)   routing, auth shell, lock screen
   pages/                Inventory, Sessions, Analytics, BaselineLog
-  lib/api.ts            15-line fetch wrapper
+  lib/api.ts            77-line fetch wrapper; maps API errors to ApiError
 kiosk/src/
   App.tsx (226 lines)   the screen state machine — single source of navigation
   screens/              one component per step of the shopper flow
@@ -123,7 +124,7 @@ Enforced in review today; to be enforced by lint during S7-03/S7-04.
 These are tracked, not forgotten. Each is a Stage 7 task.
 
 ### Gap A — No layering · S7-03
-Every route file does HTTP parsing, validation, business rules and Prisma calls in one function. `routes/products.ts` is 298 lines, includes a hand-rolled CSV parser that cannot handle quoted newlines, and types one handler as `request: any`, which switches off type checking there.
+Every route file does HTTP parsing, validation, business rules and Prisma calls in one function. `routes/products.ts` is 291 lines, includes a hand-rolled CSV parser that cannot handle quoted newlines, and types one handler as `request: any`, which switches off type checking there.
 
 ### Gap B — No fixed API contract · S7-04
 Five different success shapes are live:
@@ -136,9 +137,9 @@ Five different success shapes are live:
 | `GET /api/scan-garment/health` | `{ aiServiceAvailable, ...spread }` |
 | `GET /api/analytics/summary` | an ad-hoc object |
 
-And three error shapes: `@fastify/sensible` helpers give `{ statusCode, error, message }`; the handler in `index.ts` gives `{ message }` only; `products.ts` bulk import gives `{ success: false, message, errors[] }`. **There are no stable error codes**, so the frontend cannot distinguish a duplicate SKU from a database outage without matching on English text. `dashboard/src/lib/api.ts` reads only `data.message` and `data.errors`, so it works by accident.
+Errors now have **one shape** (commit `caa85a7`): `backend/src/lib/errors.ts` returns `{ error: { code, message, details? } }` with stable codes, including for `@fastify/sensible` helpers, and `dashboard/src/lib/api.ts` reads it. Three defined codes are **not used yet**: `STOCK_INVALID`, `SESSION_UNAVAILABLE` and `AI_UNAVAILABLE`, so those failures still arrive under more general codes. The kiosk does not read the error body at all.
 
-**Target:** `{ error: { code, message } }` with stable codes, and one envelope for success.
+**Target:** the error shape is in place; use the remaining codes. One envelope for success is still open.
 
 ### Gap C — No shared types · S7-02
 `schema.prisma` defines 7 enums (`Category`, `ColorFamily`, `Pattern`, `FitType`, `SkinToneBucket`, `BodyShapeBucket`, `Gender`). The frontends hand-retype them:
@@ -154,7 +155,7 @@ And three error shapes: `@fastify/sensible` helpers give `{ statusCode, error, m
 20 such declarations exist across the two apps, none linked to the backend. **Changing an enum in the schema breaks the frontends silently at runtime** — nothing fails to compile.
 
 ### Gap D — No pagination
-Ten `findMany` calls have no `take`: `products.ts:34`, `sessions.ts:82`, `purchaseEvents.ts:37`, `baseline.ts:39`, `analytics.ts` (×5), `recommendations.ts:16`. Invisible at demo size; a failure at a real shop's catalogue. `ENGINEERING_STANDARDS.md` §9 already requires list limits.
+Six `findMany` calls can grow without limit: `products.ts:35`, `baseline.ts:40`, `analytics.ts:20`, `analytics.ts:22`, `analytics.ts:77` and `recommendations.ts:16`. The session and purchase-event lists are capped (`take: 100` and `take: 200`) but have no way to fetch the next page. Invisible at demo size; a failure at a real shop's catalogue. `ENGINEERING_STANDARDS.md` §9 already requires list limits.
 
 ### Gap E — Config is scattered
 `process.env` is read at module scope in `index.ts` and inside routes, with no validation beyond the `DASHBOARD_PIN` format check. `dotenv` is loaded twice (`import "dotenv/config"` and `dotenv.config()`). Target: one validated `lib/config.ts` that fails fast on boot.
@@ -163,7 +164,7 @@ Ten `findMany` calls have no `take`: `products.ts:34`, `sessions.ts:82`, `purcha
 - **Kiosk has no API client.** `const API = "/api"` is hardcoded inside `screens/Recommendations.tsx`.
 - Dashboard's client returns a raw `Response`, so every caller re-does `.json()` untyped.
 - Components far over the ~200-line guideline: `Inventory.tsx` **1,056**, `Sessions.tsx` 864, dashboard `App.tsx` 433, `Analytics.tsx` 429, kiosk `Recommendations.tsx` 402.
-- **Zero frontend tests** (backend has 46, the AI service 50).
+- **Zero frontend tests** (backend has 55, the AI service 50).
 
 ### Gap G — No generated API documentation
 The endpoint table in `README.md` is hand-written and will drift from the code. There is no OpenAPI spec, so the only reliable way to learn a response shape is to read the route handler.
@@ -176,7 +177,7 @@ The endpoint table in `README.md` is hand-written and will drift from the code. 
 |---|---|
 | Staff auth | One **shared** 4-digit PIN. No user identities, no roles, no audit of who did what. |
 | Kiosk routes | **No authentication and no rate limit.** `POST /api/sessions` and the recommendations route are open to anyone who can reach the server. Per-session access is guarded only by the `x-kiosk-key` request key. |
-| Login throttle | 5 attempts per IP per 15 minutes — but held **in memory** (`authGuard.ts:28`), so it resets on restart and is per-process. |
+| Login throttle | 5 attempts per IP per 15 minutes — but held **in memory** (`authGuard.ts:27`), so it resets on restart and is per-process. |
 | Uploads | Written to `backend/uploads/` and served **publicly** at `/uploads/...`. Anyone with the URL can read any uploaded photo. |
 | Security headers | None. `helmet` is not installed. |
 | API versioning | None. No `/v1/` prefix, so a response-shape change breaks any deployed kiosk. |

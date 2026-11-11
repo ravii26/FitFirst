@@ -18,7 +18,7 @@
 5. Then state back, in under 15 lines:
    - current stage
    - the task you intend to work on, **by ID** (e.g. `S1-06`)
-   - **what kind of task it is, in plain words** (see §4a): bug fix, config change, new feature, clean-up, docs only…; what problem it solves; what will change and what will not
+   - **what kind of task it is, in plain words** (see §4a): bug fix, config change, new feature, clean-up, docs only…; what problem it solves; before and after; what will change and what will not; the edge cases and how each will be checked
    - whether it is approved or needs a decision
    - the files you expect to touch
    - the command that will prove it works
@@ -78,17 +78,21 @@ Then wait. Record the answer in `docs/DECISIONS.md` with the date. Never write "
 
 Ravindra accepts work himself, so he must understand it and be able to check it without the AI's help.
 
-**When proposing a task**, before any code, explain in plain words:
+**When proposing any change, fix or plan**, however small, before any code, explain in plain words and then wait for Ravindra's go-ahead:
 - **Kind of change:** bug fix · config change · new feature · clean-up · docs only · test only
 - **The problem:** what goes wrong today, and who notices
+- **Before and after:** what happens today and what will happen after the change, side by side, with one concrete example
 - **What will change, and what will not** (e.g. "no database change, nothing the shopper sees")
+- **Edge cases:** every edge case you can identify, each with its expected result after the change. Go through: empty or missing input · invalid or extreme values · repeated actions and double-clicks · two people or devices at once · a service, network or database being down · no permission or an expired login · page refresh or restart midway · existing data and old records. If one does not apply, say why
+- **How it will be checked:** the steps that will prove the normal case and each edge case
 
 **When a task is ready for acceptance (`[~]`)**, give a "How to check it yourself" section with:
 1. **What changed:** the files and the key lines, in plain words, plus the command to see the diff (e.g. `git show <commit> -- <file>`)
 2. **Automated check:** the exact command, where to run it, and the expected result (e.g. `50 passed`)
-3. **Real-world check:** the steps to see the behaviour yourself, ideally before vs after, with the expected result of each step. Commands must be copy-pasteable and must never print secrets
-4. **Not verified:** what you could not check, and why
-5. **How to accept:** say "accept <task ID>"; the AI then marks it `[x]` with the date
+3. **Real-world check:** the steps to see the behaviour yourself, before and after, with the expected result of each step. Commands must be copy-pasteable and must never print secrets
+4. **Edge-case checks:** for each edge case from the proposal, plus any found during the work: the exact steps, the expected result, and whether the AI actually ran it. No one can promise a list is complete, so never claim "all edge cases are covered"; say which were checked and which were not
+5. **Not verified:** what you could not check, and why
+6. **How to accept:** say "accept <task ID>"; the AI then marks it `[x]` with the date
 
 **Record the check steps in the checklist item** as a *How to check:* note next to the evidence, so any AI in any later session can walk Ravindra through it.
 

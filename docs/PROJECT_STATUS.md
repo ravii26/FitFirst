@@ -4,18 +4,18 @@
 
 ## Right now
 
-- **Last updated:** 24 October 2026
+- **Last updated:** 11 November 2026
 - **Stage:** Stage 0.5 (urgent fixes, approved 25 Sep) in progress and **past its 2 Oct deadline**; Stage 1 implemented, **not yet accepted**
-- **Focus:** finish Stage 0.5 (S05-01 … S05-03 owner check, then S05-09), then the camera check (S1-08) and Ravindra's Stage 1 decision (D-03). S05-04 (`.env` path) was implemented and accepted 24 Oct; S05-05 (try-on default model) implemented and accepted 24 Oct; S05-06 (repo hygiene) implemented and accepted 24 Oct; S05-07 (config truth) implemented and accepted 24 Oct; S05-08 (demo-facing kiosk fixes, neutral "Tone 1–4" labels, DEC-24) implemented and accepted 24 Oct; the API keys were rotated (DEC-21)
+- **Focus:** confirm whether Stage 7 was really unblocked (D-19), finish Stage 0.5 (S05-01 … S05-03 owner check, then S05-09), then the camera check (S1-08) and Ravindra's Stage 1 decision (D-03). Stage 7 work has started ahead of the recorded gate: commit `caa85a7` (2 Nov, het2108) added the S7-04 error shape. S05-04 (`.env` path) was implemented and accepted 24 Oct; S05-05 (try-on default model) implemented and accepted 24 Oct; S05-06 (repo hygiene) implemented and accepted 24 Oct; S05-07 (config truth) implemented and accepted 24 Oct; S05-08 (demo-facing kiosk fixes, neutral "Tone 1–4" labels, DEC-24) implemented and accepted 24 Oct; the API keys were rotated (DEC-21)
 - **Maturity:** single-store pilot prototype
-- **Branch:** `feature/stage-1-pilot-stabilization` (verify with `git status` before relying on it)
-- **Blocked on owner decision:** yes — D-03 (Stage 1 acceptance); D-04 / D-05 (pilot shop, POS path) before any pitch
-- **Calendar pressure:** MASTER_PLAN §11 targeted an October pitch and an early-December go-live. The pitch kit (Stage 0, S0-10) has not started and Diwali is 8 Nov, so whether early December still holds is an open question for Ravindra
+- **Branch:** `architecture-changes`, two commits ahead of `feature/stage-1-pilot-stabilization`; `main` has none of the Stage 0.5 or Stage 1 work (verify with `git status` before relying on it)
+- **Blocked on owner decision:** yes — D-19 (was Stage 7 unblocked?); D-03 (Stage 1 acceptance); D-04 / D-05 (pilot shop, POS path) before any pitch
+- **Calendar pressure:** MASTER_PLAN §11 targeted an October pitch and an early-December go-live. October has passed with the pitch kit (Stage 0, S0-10) not started and no pilot shop confirmed, so whether early December still holds is an open question for Ravindra
 
 ## Start here (the next three actions)
 
-1. **S05-01 … S05-03 owner check** (the scan-proxy bug that blocked every dashboard scan was fixed 25 Sep, DEC-17): put the **newly rotated** `AICREDITS_API_KEY` in `backend/.env`, start the AI service, scan one real garment from the dashboard, and confirm `/scan` shows `aicredits (<model>)` and `/health` shows the model. The default model ID `google/gemini-2.5-flash-lite` is unconfirmed on AICredits; set `AICREDITS_TAG_MODEL` if it differs. If the call fails with a `response_format` error, set `AICREDITS_JSON_SCHEMA=0`.
-2. **S05-09.** The 2 Oct deadline has passed. S05-04 … S05-08 are accepted. Next is **S05-09** (CI: GitHub Actions running build, vitest, pytest and a secret scan); the secret-scanning tool is Ravindra's choice.
+1. **D-19 (a one-line answer from Ravindra).** `docs/ARCHITECTURE.md` says S7-02 … S7-06 were unblocked by Ravindra on 25 Oct, but `DECISIONS.md` has no such entry, and S7-04 work is already committed. Confirm it or reject it, so the checklist can be corrected either way.
+2. **S05-01 … S05-03 owner check, then S05-09.** Owner check (the scan-proxy bug that blocked every dashboard scan was fixed 25 Sep, DEC-17): put the **newly rotated** `AICREDITS_API_KEY` in `backend/.env`, start the AI service, scan one real garment from the dashboard, and confirm `/scan` shows `aicredits (<model>)` and `/health` shows the model. The default model ID `google/gemini-2.5-flash-lite` is unconfirmed on AICredits; set `AICREDITS_TAG_MODEL` if it differs. If the call fails with a `response_format` error, set `AICREDITS_JSON_SCHEMA=0`. Then **S05-09** (CI: GitHub Actions running build, vitest, pytest and a secret scan); the secret-scanning tool is Ravindra's choice.
 3. **S1-08 camera check, then D-03.** Ravindra runs the camera check, then accepts Stage 1 or raises a defect list from the browser test log in `STAGE_1_TEST_GUIDE.md`. In parallel, the pilot-shop conversation (D-04 / D-05) is the main business step; `docs/TEAM_GUIDE.md` lists the questions for team discussion.
 
 ## Progress at a glance
@@ -30,7 +30,7 @@
 | 4 — Measurement and deployment | 0 | 0 | 11 | 11 | Planned |
 | 5 — Recommendation evidence and AI | 0 | 0 | 12 | 12 | Planned |
 | 6 — Multi-store and commercial | 0 | 0 | 12 | 12 | Planned |
-| 7 — Engineering foundations (parallel) | 0 | 1 | 5 | 6 | S7-01 implemented, not accepted (CI never run on GitHub); S7-02 … S7-06 wait for D-03 |
+| 7 — Engineering foundations (parallel) | 0 | 1 | 5 | 6 | S7-01 implemented, not accepted (CI never run on GitHub); S7-02 … S7-06 recorded as waiting for D-03, but see D-19 (S7-04 error shape already committed) |
 | **Total** | **8** | **16** | **92** | **116** | |
 
 Update these counts whenever you tick an item in [END_TO_END_CHECKLIST.md](END_TO_END_CHECKLIST.md).
@@ -41,16 +41,18 @@ Full list and trade-offs in [DECISIONS.md](DECISIONS.md).
 
 | ID | Question | Urgency |
 |---|---|---|
+| D-19 | Did you unblock Stage 7 (S7-02 … S7-06) ahead of D-03, as `ARCHITECTURE.md` says? | Now — S7-04 work is already committed |
 | D-03 | Accept Stage 1, or raise a defect list? | After the camera check (S1-08) |
 | D-04 / D-05 | Pilot shop and scope; POS path A or B | Before the pitch meeting |
 | D-06 / D-07 | v2 migration strategy; how stock is split into sizes | Before Stage 2 coding |
+| D-20 | When do `orgId` / `storeId` go into the database? | Before Stage 2 schema work |
 
 ## Hard dates
 
 | Date | What |
 |---|---|
 | ~~2 Oct 2026~~ (passed) | `gemini-2.5-flash-image` shutdown date; the try-on default was moved to `gemini-3.1-flash-image` on 24 Oct (S05-05, not yet live-checked) |
-| **8 Nov 2026** | Diwali — avoid go-live and cut-overs around it; the plan targets early December |
+| ~~8 Nov 2026~~ (passed) | Diwali; the plan targets an early-December go-live, which is still an open question |
 | 13 May 2027 | India's DPDP obligations take full effect |
 
 ## Verified facts
@@ -69,8 +71,11 @@ Full list and trade-offs in [DECISIONS.md](DECISIONS.md).
 - The tagger loads `backend/.env` whatever directory it is started from (S05-04, 24 Oct 2026): AI service Python tests → 50 passed, including a regression test that ignores a stray `../.env`.
 - The try-on prototype defaults to `google/gemini-3.1-flash-image` in code, README and `.env.example` (S05-05, 24 Oct 2026): its 13 tests pass. A live try-on call with that model is not verified.
 - The three provider keys (Gemini, OpenRouter, AICredits) were rotated and spend caps set (DEC-21; reported by Ravindra, 22 Oct 2026; not checked by AI, by design).
+- Backend unit tests pass on `architecture-changes` with the new error shape (8 Nov 2026): `npm test` → 55 passed (46 before, plus 9 in `src/lib/errors.test.ts`).
 
 **Not verified:**
+- Commit `caa85a7` (the API's new error shape) beyond unit tests: builds, `npm run test:integration` and the dashboard's error messages in a browser were not run after it.
+- `setup.ps1` (added 4 Nov): not run on a clean machine in any recorded check.
 - The camera flow (S1-08): needs a real camera and store lighting.
 - Screenshots for the Stage 1 checks (S1-12).
 - A live AICredits tagging call: the model ID, image input, the JSON response schema and replies through the gateway are untested.
@@ -105,6 +110,10 @@ Real findings from code review that are **not** yet tasks. Raise them to the che
 | `.gitignore` ends with a bare `.env.example` line after `!.env.example`, so any new `.env.example` (e.g. a sub-folder's) is ignored; the root one is tracked only because it was added earlier | `.gitignore` (last line) |
 | Ravindra's `backend/.env` sets `AICREDITS_TAG_MODEL=gemini-2.0-flash`, so the tagger is not using the code default (`google/gemini-2.5-flash-lite`); worth confirming during the S05-01 … S05-03 owner check | `backend/.env` (local, not in git) |
 | The CI workflow still runs `npm install` with a comment saying the lock file is git-ignored; since S05-06 it is committed, so CI could use `npm ci` (S05-09) | `.github/workflows/ci.yml:18-19` |
+| The backend port disagrees: the kiosk and dashboard proxy `/api` and `/uploads` to 3008, while `.env.example`, `README.md`, `.claude/launch.json`, `AGENTS.md` and `PROJECT_CONTEXT.md` say 3000. `setup.ps1` works around it by writing `PORT=3008`, so following the README by hand would leave both apps unable to reach the API (read from the files, not run) | `kiosk/vite.config.ts:9-10`, `dashboard/vite.config.ts:9-10`, `.env.example:7` |
+| Shutdown disconnects Prisma before closing the server, so requests in progress can fail during a restart (read from the code, not run) | `backend/src/index.ts:90-94` |
+| `Product.sku` and `DailyBaseline.date` are unique across the whole database, so adding a store needs these constraints changed too; `ARCHITECTURE.md` §7 calls tenancy "one migration and a query filter", which understates it (see D-20) | `backend/prisma/schema.prisma:97,179` |
+| `/health` reports `ok` without checking the database | `backend/src/index.ts:83` |
 
 ## Working here
 

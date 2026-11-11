@@ -176,6 +176,8 @@ Before doing anything, reply with:
 Rules: I make every product, architecture, commercial, privacy and UX decision.
 You research, lay out options with trade-offs, recommend one, and wait for my answer.
 Work only the approved task. Never mark anything complete without running the check.
+For every change, fix or plan, first tell me the before and after, the edge cases and
+how to check each one (AGENTS.md section 4a).
 When a task is ready for me to accept, give me "How to check it yourself" steps
 (AGENTS.md section 4a). At the end of the session, give me the doc updates
 described in AGENTS.md section 5.
