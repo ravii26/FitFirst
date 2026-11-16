@@ -4,7 +4,7 @@
 
 ## Right now
 
-- **Last updated:** 11 November 2026
+- **Last updated:** 15 November 2026
 - **Stage:** Stage 0.5 (urgent fixes, approved 25 Sep) in progress and **past its 2 Oct deadline**; Stage 1 implemented, **not yet accepted**
 - **Focus:** confirm whether Stage 7 was really unblocked (D-19), finish Stage 0.5 (S05-01 … S05-03 owner check, then S05-09), then the camera check (S1-08) and Ravindra's Stage 1 decision (D-03). Stage 7 work has started ahead of the recorded gate: commit `caa85a7` (2 Nov, het2108) added the S7-04 error shape. S05-04 (`.env` path) was implemented and accepted 24 Oct; S05-05 (try-on default model) implemented and accepted 24 Oct; S05-06 (repo hygiene) implemented and accepted 24 Oct; S05-07 (config truth) implemented and accepted 24 Oct; S05-08 (demo-facing kiosk fixes, neutral "Tone 1–4" labels, DEC-24) implemented and accepted 24 Oct; the API keys were rotated (DEC-21)
 - **Maturity:** single-store pilot prototype
@@ -100,6 +100,8 @@ Real findings from code review that are **not** yet tasks. Raise them to the che
 
 | Finding | Where |
 |---|---|
+| A second, client-ready prototype in the real apps' visual identity exists (15 Nov 2026, synthetic data): `prototype_v2/`, with its own register `prototype_v2/PROTOTYPE_V2_IMPROVEMENTS.md`. Biggest remaining demo gap: no real product photos (S0-10) | `prototype_v2/` |
+| An interactive HTML prototype of the whole intended product now exists (15 Nov 2026, synthetic data, separate from the real apps). Its gap register lists 15 assumptions made for open decisions and two unanswered questions: whether staff see “priority” flags for control-group shoppers, and whether near-miss alternatives carry into the staff view | `prototype/`, `PROTOTYPE_GAPS_AND_IMPROVEMENTS.md` §3, §5.5, §5.8 |
 | `bulk_import_sample.csv` has a saree row with `sizeRange = UNISEX` (a gender value), so that row could never be recommended | repo root |
 | When a session has no skin tone, recommendations silently assume `WHEATISH` (Tone 2) | `kiosk/src/screens/Recommendations.tsx:80,97` |
 | The kiosk's progress dots show 5 steps while the screens say "Step 01 / 04" | `kiosk/src/screens/*` |

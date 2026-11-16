@@ -20,6 +20,12 @@
       "port": 3000
     },
     {
+      "name": "marketing",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["marketing/serve.mjs"],
+      "port": 5180
+    },
+    {
       "name": "ai-service",
       "runtimeExecutable": "cmd",
       "runtimeArgs": ["/c", "backend\\ai-service\\start.bat"],

@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#FBF9F5">
+<title>FitFirst — Demo launcher</title>
+<link rel="stylesheet" href="css/atelier.css">
+<style>
+  .hub { max-width: 1160px; margin: 0 auto; padding: 32px 28px 80px; }
+  .hubtop { display: flex; align-items: center; gap: 12px; justify-content: space-between; flex-wrap: wrap; }
+  .hero { display: grid; grid-template-columns: 1.25fr 1fr; gap: 48px; align-items: center; padding: 56px 0 44px; border-bottom: 1px solid var(--line); }
+  .hero h1 { font-size: clamp(40px, 5.4vw, 70px); line-height: 1.02; letter-spacing: -.03em; }
+  .hero .lead { font-size: 18px; color: var(--body); max-width: 50ch; margin-top: 18px; line-height: 1.6; }
+  .collage { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .collage > div { border-radius: 14px; overflow: hidden; border: 1px solid var(--line); animation: rise .7s var(--ease) both; }
+  .collage > div:nth-child(2) { transform: translateY(-22px); animation-delay: .08s; } .collage > div:nth-child(3) { animation-delay: .16s; } .collage > div:nth-child(5) { transform: translateY(-22px); animation-delay: .24s; } .collage > div:nth-child(n+4) { animation-delay: .3s; }
+  .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; margin-top: 36px; }
+  .three > div { background: var(--surface); padding: 22px 24px; } .three h3 { font-family: var(--serif); font-weight: 400; font-size: 21px; margin: 8px 0 6px; } .three p { font-size: 14px; }
+  .sh2 { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 52px 0 16px; } .sh2 h2 { font-size: 30px; }
+  .tours { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .tour { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 22px; display: flex; flex-direction: column; gap: 14px; transition: box-shadow var(--mid) var(--ease), transform var(--mid) var(--ease), border-color var(--fast); }
+  .tour:hover { box-shadow: var(--sh-2); transform: translateY(-2px); border-color: var(--line-2); }
+  .tour h3 { font-family: var(--serif); font-weight: 400; font-size: 23px; } .tour ol { margin: 0; padding: 0; list-style: none; counter-reset: s; display: flex; flex-direction: column; gap: 2px; }
+  .tour li a { display: grid; grid-template-columns: 26px 1fr auto; gap: 8px; align-items: baseline; padding: 9px 10px; border-radius: 10px; text-decoration: none; font-size: 14px; color: var(--ink); transition: background var(--fast); }
+  .tour li a:hover { background: var(--sub); } .tour li a::before { counter-increment: s; content: counter(s, decimal-leading-zero); font: 500 11px var(--mono); color: var(--brass); }
+  .tour li a span { font-size: 12.5px; color: var(--muted); grid-column: 2; }
+  .tour li a .go { grid-column: 3; grid-row: 1; color: var(--muted); }
+  .surf { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .surf a { display: flex; flex-direction: column; gap: 6px; padding: 18px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); text-decoration: none; min-height: 140px; transition: all var(--fast) var(--ease); }
+  .surf a:hover { border-color: var(--ink); transform: translateY(-2px); } .surf h3 { display: flex; gap: 8px; align-items: center; } .surf p { font-size: 13px; color: var(--muted); flex: 1; } .surf .go { font-size: 12.5px; font-weight: 700; color: var(--brass); }
+  @media (max-width: 900px) { .hero, .tours, .three { grid-template-columns: 1fr; } .surf { grid-template-columns: repeat(2, 1fr); } .hub { padding: 20px 16px 60px; } .hero { padding: 32px 0; gap: 28px; } }
+  @media (max-width: 480px) { .surf { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="hub">
+  <div class="hubtop"><div class="row"><span class="monogram" style="width:38px;height:38px;font-size:21px">F</span><div><div class="brandname" style="font-size:21px">FitFirst</div><div class="brandsub">Showroom styling engine</div></div></div>
+    <div class="row wrap"><span class="demo-tag">Interactive demo · all data is illustrative</span><button class="btn btn-s" id="theme">Light / dark</button><button class="btn btn-s" id="reset">Reset demo</button></div></div>
+
+  <section class="hero">
+    <div><div class="eyebrow">For independent clothing shops</div><h1 class="mt16">Your older stock, shown to the shoppers it <span class="it">actually suits.</span></h1>
+      <p class="lead">Shoppers get three strong picks from this shop’s own floor, in their size. Salespeople know exactly what to bring. Owners watch aged stock clear — measured, not claimed.</p>
+      <div class="row wrap mt24"><a class="btn btn-p btn-l" style="border-radius:99px" href="kiosk.html">Try it as a shopper →</a><a class="btn btn-l" style="border-radius:99px" href="console.html">Open the shop console</a></div></div>
+    <div class="collage" id="collage" aria-hidden="true"></div>
+  </section>
+
+  <div class="three">
+    <div><div class="eyebrow">Shopper</div><h3>“What suits me, in my size?”</h3><p>A 60-second consultation in English, Hindi or Gujarati. No photos stored. Picks explain why they suit.</p></div>
+    <div><div class="eyebrow">Salesperson</div><h3>“What do I bring, and from where?”</h3><p>A live list of shoppers waiting, each with their picks, rack locations and a line to say. Sales are credited to their name.</p></div>
+    <div><div class="eyebrow">Owner</div><h3>“Is it clearing my old stock?”</h3><p>Aged stock sold in rupees, compared with a control group. A buying list of what shoppers wanted and you didn’t have.</p></div>
+  </div>
+
+  <div class="sh2"><h2>Guided demos</h2><span class="muted small">Follow one path in front of your audience. Each step opens the right screen.</span></div>
+  <div class="tours">
+    <div class="tour"><div class="eyebrow">For a shop owner · 7 min</div><h3>The business case</h3><ol>
+      <li><a href="console.html#/pitch">The value calculator<span>Their aged stock, their numbers</span><b class="go">→</b></a></li>
+      <li><a href="kiosk.html?mode=assisted">A shopper’s consultation<span>On the salesperson’s tablet</span><b class="go">→</b></a></li>
+      <li><a href="console.html#/sessions">The salesperson takes over<span>Live board, racks, what to say</span><b class="go">→</b></a></li>
+      <li><a href="console.html#/billing">The sale at the counter<span>Scan the shopper’s QR</span><b class="go">→</b></a></li>
+      <li><a href="console.html#/home">The owner’s morning<span>Aged stock cleared this week</span><b class="go">→</b></a></li>
+      <li><a href="console.html#/clearance">The clearance dial<span>Never pushes what doesn’t suit</span><b class="go">→</b></a></li>
+      <li><a href="console.html#/analytics">Proof against the control group<span>Pilot pass marks, locked in advance</span><b class="go">→</b></a></li></ol><p class="tiny muted">Owner sign-in: phone code 123456</p></div>
+    <div class="tour"><div class="eyebrow">For sales staff · 10 min</div><h3>Training a salesperson</h3><ol>
+      <li><a href="console.html">Sign in with your own PIN<span>Tap your name · PIN 1111</span><b class="go">→</b></a></li>
+      <li><a href="console.html#/home">See who is waiting<span>Claim the longest wait first</span><b class="go">→</b></a></li>
+      <li><a href="console.html#/sessions">Open a session<span>Bring the pieces from their racks</span><b class="go">→</b></a></li>
+      <li><a href="console.html#/sessions">Tried · Rejected · Add to bill<span>One tap each</span><b class="go">→</b></a></li>
+      <li><a href="console.html#/billing">Bill it<span>Bargaining, GST and UPI handled</span><b class="go">→</b></a></li>
+      <li><a href="console.html#/team">Your incentives<span>Every sale in your name</span><b class="go">→</b></a></li></ol><p class="tiny muted">Sign in as Meera Joshi (Sales staff)</p></div>
+    <div class="tour"><div class="eyebrow">For a customer · 3 min</div><h3>Let them try it</h3><ol>
+      <li><a href="kiosk.html">The showroom kiosk<span>Big screen, big buttons</span><b class="go">→</b></a></li>
+      <li><a href="kiosk.html?mode=qr&lang=gu">On their own phone, in Gujarati<span>From a QR stand at the door</span><b class="go">→</b></a></li>
+      <li><a href="phone.html">Their picks on the phone<span>Share with family on WhatsApp</span><b class="go">→</b></a></li>
+      <li><a href="phone.html">“See it on me”<span>Separate consent · AI-labelled</span><b class="go">→</b></a></li></ol><p class="tiny muted">Finish a kiosk consultation first; its code opens on the phone.</p></div>
+  </div>
+
+  <div class="sh2"><h2>Every surface</h2></div>
+  <div class="surf">
+    <a href="kiosk.html"><h3>Showroom kiosk</h3><p>Self-serve touchscreen with idle reset and camera tone check.</p><span class="go">Open →</span></a>
+    <a href="kiosk.html?mode=assisted"><h3>Assisted tablet</h3><p>The salesperson guides a seated shopper — saree and lehenga counters.</p><span class="go">Open →</span></a>
+    <a href="kiosk.html?mode=qr"><h3>QR stylist</h3><p>The shopper’s own phone, from a stand or before they visit.</p><span class="go">Open →</span></a>
+    <a href="phone.html"><h3>Phone lookbook</h3><p>Picks, family sharing, try-on, e-bill, delete my data.</p><span class="go">Open →</span></a>
+    <a href="console.html#/sessions"><h3>Floor</h3><p>Today, live board, session detail, recording a sale.</p><span class="go">Open →</span></a>
+    <a href="console.html#/catalogue"><h3>Inventory</h3><p>Stock by size, AI-assisted intake, import, count, labels.</p><span class="go">Open →</span></a>
+    <a href="console.html#/billing"><h3>Counter</h3><p>FitFirst Billing: GST, UPI, returns, day close, CA exports.</p><span class="go">Open →</span></a>
+    <a href="console.html#/analytics"><h3>Analytics</h3><p>Pilot verdict, clearance, demand gaps, team, baseline log.</p><span class="go">Open →</span></a>
+  </div>
+  <p class="tiny muted mt32">Garment pictures are drawn illustrations. AI, camera, try-on, payments, printing and messaging are simulated. Presenter notes: open the console, then your avatar → “Show presenter notes”. The broader V1 prototype is in <a class="link" href="../prototype/index.html">prototype/</a>.</p>
+</div>
+<script src="js/core.js"></script>
+<script src="js/data.js"></script>
+<script>
+  FF.load(); FF.theme();
+  document.getElementById('collage').innerHTML = ['SR-1001', 'KS-2003', 'LH-3002', 'MK-4002', 'SR-1003', 'WD-5005'].map(function (id) { return '<div>' + FF.garment(FF.prod(id)) + '</div>'; }).join('');
+  document.getElementById('theme').addEventListener('click', function () { FF.theme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'); });
+  document.getElementById('reset').addEventListener('click', function () { FF.confirm('Reset the demo?', 'Every session, sale and setting returns to the starting demo.', 'Reset', function () { FF.resetDemo(); FF.toast('Demo reset', 'ok'); }, true); });
+</script>
+</body>
+</html>

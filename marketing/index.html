@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#FBF9F5">
+<title>FitFirst — The showroom styling engine for independent clothing shops</title>
+<meta name="description" content="FitFirst shows each shopper the pieces on your floor that suit them, in their size, tells your staff what to bring, and measures whether older stock is clearing.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="FitFirst — The showroom styling engine">
+<meta property="og:description" content="Your older stock, shown to the shoppers it actually suits. For independent clothing shops.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23161412'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-family='Georgia,serif' font-size='20' fill='%23FBF9F5'%3EF%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/site.css">
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- ───────────── Navigation ───────────── -->
+<header class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top" aria-label="FitFirst home">
+      <span class="monogram" aria-hidden="true">F</span>
+      <span class="brand-name">FitFirst</span>
+    </a>
+    <nav class="nav-links" id="nav-links" aria-label="Primary">
+      <a href="#product">Product</a>
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#principles">Principles</a>
+      <a class="nav-demo" data-cta="demo" href="../prototype_v2/index.html">Live demo</a>
+    </nav>
+    <div class="nav-end">
+      <a class="btn btn-ink btn-sm" data-cta="contact" href="#contact">Request a pilot</a>
+      <button class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu"><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ───────────── Hero ───────────── -->
+<section class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-copy">
+      <p class="eyebrow rise" style="--d:0s">For independent clothing shops</p>
+      <h1 class="display rise" style="--d:.08s">Your older stock, shown to the shoppers it <em>actually suits.</em></h1>
+      <div class="hero-sub">
+        <p class="lead rise" style="--d:.18s">FitFirst is a styling engine for the shop floor. Shoppers get a few strong picks from your own racks, in their size. Your staff know exactly what to bring. You see whether aged stock is clearing, measured against a control group.</p>
+        <div class="hero-cta rise" style="--d:.26s">
+          <a class="btn btn-ink btn-lg" data-cta="contact" href="#contact">Request a pilot <span class="arr" aria-hidden="true">→</span></a>
+          <a class="btn btn-line btn-lg" data-cta="demo" href="../prototype_v2/index.html">Explore the live demo</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage rise" style="--d:.34s" id="stage">
+      <div class="stage-bg" aria-hidden="true"></div>
+
+      <figure class="device" data-depth="1" aria-label="Preview of the shopper's picks screen">
+        <div class="screen">
+          <div class="k-top">
+            <span class="monogram sm" aria-hidden="true">F</span>
+            <span class="k-shop">Showroom stylist</span>
+            <ol class="k-steps" aria-label="Consultation steps">
+              <li class="done">Section</li><li class="done">Looking for</li><li class="done">Size</li><li class="done">Colouring &amp; fit</li><li class="on">Picks</li>
+            </ol>
+          </div>
+          <div class="k-body">
+            <article class="pick">
+              <div class="pick-img"><div class="g" data-g="teal-saree"></div><span class="tag">Top pick</span></div>
+              <div class="pick-b">
+                <h3>Teal silk saree, zari border</h3>
+                <p class="price">₹6,450 <span class="chip-ok">On the floor today</span></p>
+                <p class="why-h">Why it suits you</p>
+                <ul class="why">
+                  <li>This teal sits well with a warm undertone.</li>
+                  <li>A slim border keeps the line long, as you asked.</li>
+                  <li>Right for a wedding, inside your budget.</li>
+                </ul>
+              </div>
+            </article>
+            <div class="ranked">
+              <p class="ranked-h">More that suit you</p>
+              <div class="rrow"><div class="g th" data-g="rust-anarkali"></div><div><b>Rust anarkali, floral</b><span>₹3,200 · size M in stock</span></div><i class="try on">On try list</i></div>
+              <div class="rrow"><div class="g th" data-g="rose-saree"></div><div><b>Rosewood georgette saree</b><span>₹4,900 · Store pick · offer</span></div><i class="try">Add to try</i></div>
+              <div class="rrow"><div class="g th" data-g="mustard-kurta"></div><div><b>Mustard straight kurta</b><span>₹1,850 · size M in stock</span></div><i class="try">Add to try</i></div>
+              <div class="tray"><span><b>2 pieces</b> on your try list</span><span class="tray-btn">Show code to staff</span></div>
+            </div>
+          </div>
+        </div>
+      </figure>
+
+      <aside class="float f-code" data-depth="2.2" aria-label="Preview of a handoff code">
+        <p class="mono-l">Handoff code</p>
+        <p class="code">K7·42</p>
+        <p class="f-note">Show this code to our staff. They will bring your picks to you.</p>
+      </aside>
+
+      <aside class="float f-owner" data-depth="1.7" aria-label="Preview of an owner summary">
+        <p class="mono-l">Aged stock sold · this week</p>
+        <p class="big">₹48,200</p>
+        <div class="bars" aria-hidden="true"><span style="--h:38%"></span><span style="--h:52%"></span><span style="--h:44%"></span><span style="--h:66%"></span><span style="--h:58%"></span><span style="--h:82%"></span><span class="hi" style="--h:100%"></span></div>
+        <p class="f-note">Compared with the control group.</p>
+      </aside>
+
+      <p class="stage-note">Product previews use illustrative data and drawn garments.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── Three people ───────────── -->
+<section class="trio" aria-label="Who FitFirst serves">
+  <div class="wrap trio-in">
+    <div data-reveal><p class="eyebrow">The shopper asks</p><p class="q">“What suits me, in my size?”</p></div>
+    <div data-reveal style="--d:.08s"><p class="eyebrow">The salesperson asks</p><p class="q">“What do I bring, and from where?”</p></div>
+    <div data-reveal style="--d:.16s"><p class="eyebrow">The owner asks</p><p class="q">“Is my older stock actually moving?”</p></div>
+  </div>
+</section>
+
+<!-- ───────────── Problem ───────────── -->
+<section class="problem dark" id="problem">
+  <div class="wrap problem-in">
+    <div class="problem-head">
+      <p class="eyebrow" data-reveal>01 — The problem</p>
+      <h2 class="h-xl" data-reveal style="--d:.06s">A shop floor runs on memory. Memory forgets the back rack.</h2>
+      <p class="lead" data-reveal style="--d:.12s">Nobody in the shop is doing anything wrong. There has simply been no way to match the right piece to the right person at the moment they walk in.</p>
+    </div>
+    <ol class="frictions">
+      <li data-reveal>
+        <span class="num">i</span>
+        <div><h3>The shopper waits, tries, tires.</h3>
+          <p>Pieces come out one at a time, chosen by guesswork. Some suit, most do not, and the decision is often made on patience rather than on what looked best.</p></div>
+      </li>
+      <li data-reveal style="--d:.08s">
+        <span class="num">ii</span>
+        <div><h3>The salesperson brings what they remember.</h3>
+          <p>That means the newest arrivals and the nearest racks. A piece that would suit this shopper perfectly stays folded at the back because no one thought of it in time.</p></div>
+      </li>
+      <li data-reveal style="--d:.16s">
+        <span class="num">iii</span>
+        <div><h3>The owner watches stock age quietly.</h3>
+          <p>Discounting is the only lever, and it cuts margin on everything. After a sale, there is no way to tell what the effort changed and what would have sold anyway.</p></div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ───────────── Solution ───────────── -->
+<section class="solution" id="product">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow" data-reveal>02 — The product</p>
+      <h2 class="h-xl" data-reveal style="--d:.06s">One short consultation. <em>Three answers.</em></h2>
+      <p class="lead" data-reveal style="--d:.12s">The shopper answers a few questions on a kiosk, a staff tablet or their own phone. FitFirst checks every piece on your floor against those answers, and returns the few that genuinely suit. The same result tells your salesperson what to bring and tells you what is working.</p>
+    </div>
+
+    <div class="funnel" data-reveal id="funnel" aria-label="How a pick is made, with illustrative numbers">
+      <div class="fstep" style="--w:100%"><span class="fl">On your floor</span><b data-count="412">412</b><i></i></div>
+      <div class="fstep" style="--w:62%"><span class="fl">Right section</span><b data-count="96">96</b><i></i></div>
+      <div class="fstep" style="--w:38%"><span class="fl">In their size, in stock</span><b data-count="38">38</b><i></i></div>
+      <div class="fstep" style="--w:22%"><span class="fl">Suits this shopper</span><b data-count="11">11</b><i></i></div>
+      <div class="fstep final" style="--w:11%"><span class="fl">Their picks</span><b data-count="3">3</b><i></i></div>
+      <p class="fnote">Illustrative numbers. Older stock receives a capped nudge only among the pieces that already suit.</p>
+    </div>
+
+    <div class="tenets">
+      <div data-reveal><h3><span>AI</span> sees.</h3><p>It reads a garment photograph and drafts the tags: category, colour, pattern, occasion. A person approves them before the piece goes live.</p></div>
+      <div data-reveal style="--d:.08s"><h3><span>Rules</span> decide.</h3><p>Recommendations come from stylist rules you can read and audit. Every pick can explain itself in a sentence, to the shopper and to you.</p></div>
+      <div data-reveal style="--d:.16s"><h3><span>Outcomes</span> tune.</h3><p>What was tried, rejected and bought is recorded against each consultation, so the rules improve on evidence from your own shop.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── Features ───────────── -->
+<section class="features" id="features">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow" data-reveal>03 — What it does</p>
+      <h2 class="h-xl" data-reveal style="--d:.06s">Built around the moment a shopper says “show me something.”</h2>
+    </div>
+
+    <!-- Feature: explained picks -->
+    <div class="feat">
+      <div class="feat-copy" data-reveal>
+        <p class="feat-k">For the shopper</p>
+        <h3 class="h-lg">Picks that explain themselves.</h3>
+        <p>Each recommendation says why it suits: the colour against their colouring, the cut against the fit they asked for, the occasion, the budget. No scores, no percentages, no labels on anyone's body.</p>
+        <ul class="ticks">
+          <li>Only pieces that are on your floor, in their size</li>
+          <li>Fit goals such as “look taller”, never body types</li>
+          <li>Promoted pieces carry an honest “Store pick” label</li>
+        </ul>
+      </div>
+      <div class="feat-vis" data-reveal style="--d:.1s">
+        <div class="card why-card">
+          <div class="g" data-g="rust-anarkali"></div>
+          <div class="why-body">
+            <p class="mono-l">Why it suits you</p>
+            <h4>Rust anarkali, floral</h4>
+            <ul class="reasons">
+              <li><span>Colour</span>Rust is a strong match for a warm undertone.</li>
+              <li><span>Fit goal</span>The flare from the waist balances the hips.</li>
+              <li><span>Occasion</span>Right for a family function.</li>
+              <li><span>Stock</span>Size M is on the floor, Rack C2.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature: handoff -->
+    <div class="feat flip">
+      <div class="feat-copy" data-reveal>
+        <p class="feat-k">For the salesperson</p>
+        <h3 class="h-lg">A handoff, with the racks written down.</h3>
+        <p>The shopper shows a short code. Your salesperson opens it and sees who they are serving, what to bring, where each piece is kept, and a line to open the conversation. Every sale is credited to their name.</p>
+        <ul class="ticks">
+          <li>A live board of who is waiting and for how long</li>
+          <li>Tried, rejected or added to the bill in one tap</li>
+          <li>Reasons for a “no” are kept, so you learn from them</li>
+        </ul>
+      </div>
+      <div class="feat-vis" data-reveal style="--d:.1s">
+        <div class="card session">
+          <div class="s-head"><span class="code sm">K7·42</span><div><b>Waiting 3 min</b><span>Wedding · Size M · up to ₹8,000</span></div><span class="pill">Claim</span></div>
+          <div class="s-row"><div class="g th" data-g="teal-saree"></div><div><b>Teal silk saree</b><span>Rack A4 · shelf 2</span></div><div class="acts"><i>Tried</i><i>Rejected</i><i class="on">Add to bill</i></div></div>
+          <div class="s-row"><div class="g th" data-g="rust-anarkali"></div><div><b>Rust anarkali</b><span>Rack C2 · rail</span></div><div class="acts"><i class="on">Tried</i><i>Rejected</i><i>Add to bill</i></div></div>
+          <p class="say"><span class="mono-l">A line to say</span>“This teal will look lovely with your colouring. Shall I open it out for you?”</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature: clearance dial (interactive, dark) -->
+  <div class="dial-sec dark">
+    <div class="wrap dial-in">
+      <div class="dial-copy" data-reveal>
+        <p class="feat-k">For the owner</p>
+        <h3 class="h-lg">Clear older stock without pushing it.</h3>
+        <p>You control how strongly aged pieces are favoured. The nudge is capped, it only applies to pieces that already suit the shopper, and a clearly better match always stays on top. Try the dial.</p>
+        <div class="dial-ctl">
+          <label for="dial">Clearance nudge <output id="dial-out" for="dial">Off</output></label>
+          <input type="range" id="dial" min="0" max="4" step="1" value="0" aria-describedby="dial-help">
+          <div class="dial-scale" aria-hidden="true"><span>Off</span><span>Gentle</span><span>Capped max</span></div>
+          <p id="dial-help" class="dial-help">The ranking on the right updates as you move it.</p>
+        </div>
+      </div>
+      <div class="dial-vis" data-reveal style="--d:.1s">
+        <p class="mono-l">One shopper's ranking · illustrative</p>
+        <ol class="rank" id="rank" aria-live="polite"></ol>
+        <p class="held"><span class="g th" data-g="indigo-saree"></span><span><b>Indigo bandhani saree</b> · 140 days in stock<br><em>Held back. It does not suit this shopper, so no nudge can bring it in.</em></span></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <!-- Feature bento -->
+    <div class="bento">
+      <article class="tile t-intake" data-reveal>
+        <div class="tile-copy"><p class="feat-k">Inventory intake</p><h3 class="h-md">AI drafts the tags. A person approves them.</h3>
+          <p>Photograph a garment and the fields fill themselves in. Anything the AI is unsure of is left empty and marked for review, never guessed.</p></div>
+        <div class="intake">
+          <div class="g" data-g="mustard-kurta"></div>
+          <dl>
+            <div><dt>Category</dt><dd>Straight kurta</dd></div>
+            <div><dt>Colour</dt><dd>Mustard</dd></div>
+            <div><dt>Pattern</dt><dd>Block print</dd></div>
+            <div class="rev"><dt>Fabric</dt><dd>Needs review</dd></div>
+            <div><dt>Occasion</dt><dd>Daily · Festive</dd></div>
+          </dl>
+        </div>
+      </article>
+      <article class="tile t-lang" data-reveal style="--d:.08s">
+        <p class="feat-k">Languages</p><h3 class="h-md">In the shopper's own words.</h3>
+        <ul class="langs" id="langs">
+          <li class="on" lang="en">Show this code to our staff</li>
+          <li lang="hi">यह कोड हमारे स्टाफ़ को दिखाएँ</li>
+          <li lang="gu">આ કોડ અમારા સ્ટાફને બતાવો</li>
+        </ul>
+        <p>English, Hindi and Gujarati, switched with one tap.</p>
+      </article>
+      <article class="tile t-priv" data-reveal style="--d:.16s">
+        <p class="feat-k">Privacy</p><h3 class="h-md">The tone check stays on the device.</h3>
+        <p>The optional camera step reads colouring on the kiosk itself. Camera frames are not uploaded, and a shopper can skip it and choose from swatches instead.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── How it works ───────────── -->
+<section class="how" id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow" data-reveal>04 — How it works</p>
+      <h2 class="h-xl" data-reveal style="--d:.06s">From the stock room to the sale, in four steps.</h2>
+    </div>
+    <ol class="steps" id="steps">
+      <li data-reveal><span class="node">1</span><h3>Catalogue the floor</h3><p>Photograph your pieces, starting with aged stock. AI drafts the tags, your team approves them, and each piece is live with its rack location.</p></li>
+      <li data-reveal style="--d:.08s"><span class="node">2</span><h3>The shopper consults</h3><p>Section, what they are looking for, size, colouring and fit. A short guided flow on a kiosk, a staff tablet or their phone.</p></li>
+      <li data-reveal style="--d:.16s"><span class="node">3</span><h3>Staff bring the picks</h3><p>The handoff code opens the session: what to bring, from where, and what to say. Outcomes are recorded as they happen.</p></li>
+      <li data-reveal style="--d:.24s"><span class="node">4</span><h3>You see what moved</h3><p>Aged stock sold, compared with a control group that got no nudge, and a list of what shoppers wanted that you did not have.</p></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ───────────── Showcase ───────────── -->
+<section class="showcase" id="showcase">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow" data-reveal>05 — Inside the shop console</p>
+      <h2 class="h-xl" data-reveal style="--d:.06s">One console for the floor, the stock room and the counter.</h2>
+    </div>
+
+    <div class="show" data-reveal>
+      <div class="show-tabs" role="tablist" aria-label="Shop console screens">
+        <button role="tab" id="tab-floor" aria-controls="pan-floor" aria-selected="true"><b>Sessions</b><span>Who is waiting, and with whom</span><i class="prog"></i></button>
+        <button role="tab" id="tab-counter" aria-controls="pan-counter" aria-selected="false" tabindex="-1"><b>Counter</b><span>The try list becomes the bill</span><i class="prog"></i></button>
+        <button role="tab" id="tab-proof" aria-controls="pan-proof" aria-selected="false" tabindex="-1"><b>Pilot analytics</b><span>Proof against a control group</span><i class="prog"></i></button>
+        <button role="tab" id="tab-gaps" aria-controls="pan-gaps" aria-selected="false" tabindex="-1"><b>Demand gaps</b><span>What shoppers wanted and you lacked</span><i class="prog"></i></button>
+      </div>
+
+      <div class="browser">
+        <div class="b-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="url">FitFirst shop console</span><span class="illus">Illustrative data</span></div>
+        <div class="b-body">
+
+          <div class="pan" role="tabpanel" id="pan-floor" aria-labelledby="tab-floor">
+            <div class="board">
+              <div class="bcol"><p class="mono-l">Waiting · 2</p>
+                <div class="bcard"><span class="code sm">K7·42</span><b>Wedding · Size M</b><span>3 min · 2 on try list</span></div>
+                <div class="bcard"><span class="code sm">R2·08</span><b>Festive · Size L</b><span>1 min · 3 picks</span></div></div>
+              <div class="bcol"><p class="mono-l">With staff · 2</p>
+                <div class="bcard"><span class="code sm">D4·61</span><b>Daily wear · Size S</b><span>Meera · 1 tried, 1 on bill</span></div>
+                <div class="bcard"><span class="code sm">P9·15</span><b>Reception · Size XL</b><span>Kiran · 2 tried</span></div></div>
+              <div class="bcol"><p class="mono-l">Done today · 9</p>
+                <div class="bcard done"><span class="code sm">H1·33</span><b>Sold · ₹6,450</b><span>Meera · recommended piece</span></div>
+                <div class="bcard done"><span class="code sm">T6·70</span><b>No purchase</b><span>Reason: wanted lighter fabric</span></div></div>
+            </div>
+          </div>
+
+          <div class="pan" role="tabpanel" id="pan-counter" aria-labelledby="tab-counter" hidden>
+            <div class="bill">
+              <div class="bill-lines">
+                <p class="mono-l">Bill · session K7·42</p>
+                <div class="bl"><div class="g th" data-g="teal-saree"></div><div><b>Teal silk saree, zari border</b><span>Recommended piece</span></div><b>₹6,450</b></div>
+                <div class="bl"><div class="g th" data-g="mustard-kurta"></div><div><b>Mustard straight kurta</b><span>Added at the counter</span></div><b>₹1,850</b></div>
+                <div class="bl sum"><span>Negotiated discount</span><b>−₹300</b></div>
+                <div class="bl sum tot"><span>Total, GST included</span><b>₹8,000</b></div>
+              </div>
+              <div class="bill-pay">
+                <p class="mono-l">Payment</p>
+                <div class="qr" aria-hidden="true"></div>
+                <p><b>UPI · ₹8,000</b><br><span>Sale credited to Meera</span></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="pan" role="tabpanel" id="pan-proof" aria-labelledby="tab-proof" hidden>
+            <div class="proof">
+              <div class="proof-l">
+                <p class="mono-l">Aged stock sold per 100 consultations</p>
+                <div class="hbar"><span>With the clearance nudge</span><div><i style="--w:78%"></i></div><b>31</b></div>
+                <div class="hbar ctl"><span>Control group, no nudge</span><div><i style="--w:48%"></i></div><b>19</b></div>
+                <p class="proof-n">About one consultation in ten gets no nudge on purpose. That is the only honest way to know what the nudge changed.</p>
+              </div>
+              <div class="proof-r">
+                <p class="mono-l">Pass marks · locked before the pilot</p>
+                <ul>
+                  <li><span>Aged stock lift vs control</span><b class="ok">On track</b></li>
+                  <li><span>Average bill vs baseline</span><b class="ok">On track</b></li>
+                  <li><span>Staff using the handoff</span><b class="wait">Too early</b></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="pan" role="tabpanel" id="pan-gaps" aria-labelledby="tab-gaps" hidden>
+            <div class="gaps">
+              <p class="mono-l">Asked for this month, with fewer than three pieces to show</p>
+              <div class="gap"><b>Sarees · wedding · up to ₹5,000</b><span>Asked 14 times</span><div><i style="--w:92%"></i></div></div>
+              <div class="gap"><b>Kurta sets · size XXL</b><span>Asked 9 times</span><div><i style="--w:60%"></i></div></div>
+              <div class="gap"><b>Lehengas · pastel colours</b><span>Asked 6 times</span><div><i style="--w:40%"></i></div></div>
+              <div class="gap"><b>Kurtis · office wear · size S</b><span>Asked 4 times</span><div><i style="--w:27%"></i></div></div>
+              <p class="proof-n">A buying list drawn from what your own shoppers asked for.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <p class="show-foot">These screens come from the interactive prototype. <a class="tlink" data-cta="demo" href="../prototype_v2/index.html">Open it and click through yourself <span aria-hidden="true">→</span></a></p>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── Principles ───────────── -->
+<section class="principles" id="principles">
+  <div class="wrap pr-in">
+    <div class="pr-head">
+      <p class="eyebrow" data-reveal>06 — What we hold to</p>
+      <h2 class="h-xl" data-reveal style="--d:.06s">A recommendation is only worth something if it is honest.</h2>
+      <p class="lead" data-reveal style="--d:.12s">Shops live on returning customers. So the rules below are built into how FitFirst ranks and speaks. They are not settings that can be switched off.</p>
+    </div>
+    <ol class="plist">
+      <li data-reveal><span>01</span><div><h3>Never recommend what does not suit.</h3><p>Suitability is a gate, not a preference. Aged stock is favoured only among pieces that pass it.</p></div></li>
+      <li data-reveal><span>02</span><div><h3>Rules you can read.</h3><p>Ranking is deterministic and explainable. An owner or a stylist can see why any piece was shown.</p></div></li>
+      <li data-reveal><span>03</span><div><h3>Respectful language, always.</h3><p>Colouring is described in neutral terms. Shoppers choose fit goals and are never given a body label.</p></div></li>
+      <li data-reveal><span>04</span><div><h3>Measured, not claimed.</h3><p>A control group and pass marks agreed in advance decide whether FitFirst earned its place in your shop.</p></div></li>
+      <li data-reveal><span>05</span><div><h3>Fits how your shop already bills.</h3><p>Designed to sit alongside the billing software you use today, or to be the counter itself.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ───────────── Stage / vision ───────────── -->
+<section class="stagebar" id="vision">
+  <div class="wrap"><div class="stagebar-box" data-reveal>
+    <p class="eyebrow">Where we are</p>
+    <p class="vision">FitFirst is at pilot stage. The consultation, recommendations, staff handoff, inventory and pilot analytics run today. The counter, the phone lookbook and virtual try-on are designed and demonstrable in the prototype. We are looking for our first partner shops to prove it on a real floor.</p>
+  </div></div>
+</section>
+
+<!-- ───────────── Final CTA ───────────── -->
+<section class="cta dark" id="contact">
+  <div class="wrap cta-in">
+    <h2 class="display" data-reveal>Let the right piece find <em>the right person.</em></h2>
+    <p class="lead" data-reveal style="--d:.08s">A pilot starts small: your aged stock and a few key categories, with a baseline and pass marks agreed before it begins.</p>
+    <div class="hero-cta" data-reveal style="--d:.16s">
+      <a class="btn btn-light btn-lg" data-cta="contact" href="#contact">Request a pilot <span class="arr" aria-hidden="true">→</span></a>
+      <a class="btn btn-ghost btn-lg" data-cta="demo" href="../prototype_v2/index.html">Explore the live demo</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ───────────── Footer ───────────── -->
+<footer class="foot">
+  <div class="wrap foot-in">
+    <div class="foot-brand">
+      <a class="brand" href="#top" aria-label="FitFirst home"><span class="monogram" aria-hidden="true">F</span><span class="brand-name">FitFirst</span></a>
+      <p>The showroom styling engine for independent clothing shops.</p>
+    </div>
+    <nav aria-label="Footer: product"><p class="mono-l">Product</p><a href="#product">Overview</a><a href="#features">Features</a><a href="#how">How it works</a><a href="#showcase">Shop console</a></nav>
+    <nav aria-label="Footer: company"><p class="mono-l">FitFirst</p><a href="#principles">Principles</a><a href="#vision">Where we are</a><a data-cta="demo" href="../prototype_v2/index.html">Live demo</a><a data-cta="contact" href="#contact">Request a pilot</a></nav>
+  </div>
+  <div class="wrap foot-base">
+    <p>© 2026 FitFirst</p>
+    <p>Product previews use illustrative data. Garments are drawn illustrations, not product photographs.</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="js/config.js"></script>
+<script src="js/garments.js"></script>
+<script src="js/site.js"></script>
+</body>
+</html>
