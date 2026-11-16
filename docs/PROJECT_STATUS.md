@@ -9,12 +9,12 @@
 - **Focus:** confirm whether Stage 7 was really unblocked (D-19), finish Stage 0.5 (S05-01 … S05-03 owner check, then S05-09), then the camera check (S1-08) and Ravindra's Stage 1 decision (D-03). Stage 7 work has started ahead of the recorded gate: commit `caa85a7` (2 Nov, het2108) added the S7-04 error shape. S05-04 (`.env` path) was implemented and accepted 24 Oct; S05-05 (try-on default model) implemented and accepted 24 Oct; S05-06 (repo hygiene) implemented and accepted 24 Oct; S05-07 (config truth) implemented and accepted 24 Oct; S05-08 (demo-facing kiosk fixes, neutral "Tone 1–4" labels, DEC-24) implemented and accepted 24 Oct; the API keys were rotated (DEC-21)
 - **Maturity:** single-store pilot prototype
 - **Branch:** `architecture-changes`, two commits ahead of `feature/stage-1-pilot-stabilization`; `main` has none of the Stage 0.5 or Stage 1 work (verify with `git status` before relying on it)
-- **Blocked on owner decision:** yes — D-19 (was Stage 7 unblocked?); D-03 (Stage 1 acceptance); D-04 / D-05 (pilot shop, POS path) before any pitch
+- **Blocked on owner decision:** yes — D-03 (Stage 1 acceptance); D-04 / D-05 (pilot shop, POS path) before any pitch; D-20 (when tenancy enters the schema). **D-19 is answered: Stage 7 is unblocked ahead of D-03 (DEC-26, 15 Nov 2026).**
 - **Calendar pressure:** MASTER_PLAN §11 targeted an October pitch and an early-December go-live. October has passed with the pitch kit (Stage 0, S0-10) not started and no pilot shop confirmed, so whether early December still holds is an open question for Ravindra
 
 ## Start here (the next three actions)
 
-1. **D-19 (a one-line answer from Ravindra).** `docs/ARCHITECTURE.md` says S7-02 … S7-06 were unblocked by Ravindra on 25 Oct, but `DECISIONS.md` has no such entry, and S7-04 work is already committed. Confirm it or reject it, so the checklist can be corrected either way.
+1. **Stage 7 architecture work (Het).** D-19 is answered — Stage 7 is unblocked ahead of D-03 (DEC-26, 15 Nov 2026), so S7-02 … S7-06 may run now. Next is **S7-02** (shared types package), starting with the audit of how many API shapes are duplicated today. S7-04 is `[~]`: the error shape is committed (`caa85a7`), while shared validation, structured logging and the config module are still open.
 2. **S05-01 … S05-03 owner check, then S05-09.** Owner check (the scan-proxy bug that blocked every dashboard scan was fixed 25 Sep, DEC-17): put the **newly rotated** `AICREDITS_API_KEY` in `backend/.env`, start the AI service, scan one real garment from the dashboard, and confirm `/scan` shows `aicredits (<model>)` and `/health` shows the model. The default model ID `google/gemini-2.5-flash-lite` is unconfirmed on AICredits; set `AICREDITS_TAG_MODEL` if it differs. If the call fails with a `response_format` error, set `AICREDITS_JSON_SCHEMA=0`. Then **S05-09** (CI: GitHub Actions running build, vitest, pytest and a secret scan); the secret-scanning tool is Ravindra's choice.
 3. **S1-08 camera check, then D-03.** Ravindra runs the camera check, then accepts Stage 1 or raises a defect list from the browser test log in `STAGE_1_TEST_GUIDE.md`. In parallel, the pilot-shop conversation (D-04 / D-05) is the main business step; `docs/TEAM_GUIDE.md` lists the questions for team discussion.
 
@@ -30,8 +30,8 @@
 | 4 — Measurement and deployment | 0 | 0 | 11 | 11 | Planned |
 | 5 — Recommendation evidence and AI | 0 | 0 | 12 | 12 | Planned |
 | 6 — Multi-store and commercial | 0 | 0 | 12 | 12 | Planned |
-| 7 — Engineering foundations (parallel) | 0 | 1 | 5 | 6 | S7-01 implemented, not accepted (CI never run on GitHub); S7-02 … S7-06 recorded as waiting for D-03, but see D-19 (S7-04 error shape already committed) |
-| **Total** | **8** | **16** | **92** | **116** | |
+| 7 — Engineering foundations (parallel) | 0 | 2 | 4 | 6 | **Unblocked ahead of D-03 (DEC-26, 15 Nov)**; S7-01 implemented, not accepted (CI never run on GitHub); S7-04 `[~]` — error shape committed (`caa85a7`), validation, logging and config open; S7-02 is next |
+| **Total** | **8** | **17** | **91** | **116** | |
 
 Update these counts whenever you tick an item in [END_TO_END_CHECKLIST.md](END_TO_END_CHECKLIST.md).
 
