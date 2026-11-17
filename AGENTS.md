@@ -96,6 +96,23 @@ Ravindra accepts work himself, so he must understand it and be able to check it 
 
 **Record the check steps in the checklist item** as a *How to check:* note next to the evidence, so any AI in any later session can walk Ravindra through it.
 
+### 4b. Which AI model to use (DEC-27)
+
+Tasks in the checklist carry a **tier** (`— Tier: deep`). Pick the model from this table. When models change, update **only this table**; the tags on tasks stay.
+
+| Tier | Claude Code (Nov 2026) | Other tools | Use it for |
+|---|---|---|---|
+| **deep** | Opus, high effort | The tool's strongest reasoning model, highest effort | Data model and migrations; sales and stock that must never double-count; auth, roles and privacy; the recommendation engine; preparing a `DECISION NEEDED`; the review before any stage gate |
+| **standard** | Sonnet | The tool's default capable model | Most screens, routes and tests; ordinary bug fixes; wiring an approved design |
+| **light** | Haiku, or Sonnet at low effort | The tool's fast, cheap model | Doc updates and the handoff; copy and config edits; simple renames |
+| **none** | — | — | Owner-only tasks: Ravindra does them himself |
+
+Rules:
+- **When unsure, go one tier up.** A cheap model on a deep task can create bugs that cost more than it saved.
+- **The review before accepting a stage is always deep**, even when the stage's tasks were standard.
+- If a task turns out harder or easier than its tier, say so and update the tag in the checklist.
+- Only the current and next stages are tagged; tag a later stage's tasks when it is broken down.
+
 ---
 
 ## 5. End of every session — the handoff update (this is what keeps the docs alive)

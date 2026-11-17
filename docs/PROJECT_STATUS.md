@@ -4,7 +4,9 @@
 
 ## Right now
 
-- **Last updated:** 15 November 2026
+- **Last updated:** 17 November 2026
+- **Target design:** `prototype_v2/` (DEC-26, 17 Nov). Its screens that had no task were added to the checklist as 34 **V2 draft** tasks (116 → 150) for Ravindra's review; they do not change the order of work below. Each stage gate now needs a V2 comparison first
+- **AI model per task:** tasks in Stages 0, 0.5, 1, 2 and 7 carry a tier (deep / standard / light / none); pick the model from `AGENTS.md` §4b (DEC-27)
 - **Stage:** Stage 0.5 (urgent fixes, approved 25 Sep) in progress and **past its 2 Oct deadline**; Stage 1 implemented, **not yet accepted**
 - **Focus:** confirm whether Stage 7 was really unblocked (D-19), finish Stage 0.5 (S05-01 … S05-03 owner check, then S05-09), then the camera check (S1-08) and Ravindra's Stage 1 decision (D-03). Stage 7 work has started ahead of the recorded gate: commit `caa85a7` (2 Nov, het2108) added the S7-04 error shape. S05-04 (`.env` path) was implemented and accepted 24 Oct; S05-05 (try-on default model) implemented and accepted 24 Oct; S05-06 (repo hygiene) implemented and accepted 24 Oct; S05-07 (config truth) implemented and accepted 24 Oct; S05-08 (demo-facing kiosk fixes, neutral "Tone 1–4" labels, DEC-24) implemented and accepted 24 Oct; the API keys were rotated (DEC-21)
 - **Maturity:** single-store pilot prototype
@@ -25,13 +27,13 @@
 | 0 — Direction and safety | 3 | 1 | 6 | 10 | Keys rotated (S0-04, awaiting tick); rest waiting on owner input |
 | 0.5 — Urgent technical fixes | 5 | 3 | 1 | 9 | **Past the 2 Oct deadline** — approved (D-01); S05-04 … S05-08 accepted; S05-01 … S05-03 implemented, owner check not run; S05-09 open |
 | 1 — Stabilise the pilot | 0 | 11 | 2 | 13 | Browser checks recorded 25 Sep (camera S1-08 left); awaiting D-03 |
-| 2 — Single-store operations | 0 | 0 | 31 | 31 | Not started; 4 decisions first |
-| 3 — Customer and staff experience | 0 | 0 | 12 | 12 | Planned |
-| 4 — Measurement and deployment | 0 | 0 | 11 | 11 | Planned |
-| 5 — Recommendation evidence and AI | 0 | 0 | 12 | 12 | Planned |
-| 6 — Multi-store and commercial | 0 | 0 | 12 | 12 | Planned |
+| 2 — Single-store operations | 0 | 0 | 42 | 42 | Not started; 4 decisions first |
+| 3 — Customer and staff experience | 0 | 0 | 23 | 23 | Planned |
+| 4 — Measurement and deployment | 0 | 0 | 13 | 13 | Planned |
+| 5 — Recommendation evidence and AI | 0 | 0 | 14 | 14 | Planned |
+| 6 — Multi-store and commercial | 0 | 0 | 20 | 20 | Planned |
 | 7 — Engineering foundations (parallel) | 0 | 1 | 5 | 6 | S7-01 implemented, not accepted (CI never run on GitHub); S7-02 … S7-06 recorded as waiting for D-03, but see D-19 (S7-04 error shape already committed) |
-| **Total** | **8** | **16** | **92** | **116** | |
+| **Total** | **8** | **16** | **126** | **150** | |
 
 Update these counts whenever you tick an item in [END_TO_END_CHECKLIST.md](END_TO_END_CHECKLIST.md).
 
@@ -46,6 +48,8 @@ Full list and trade-offs in [DECISIONS.md](DECISIONS.md).
 | D-04 / D-05 | Pilot shop and scope; POS path A or B | Before the pitch meeting |
 | D-06 / D-07 | v2 migration strategy; how stock is split into sizes | Before Stage 2 coding |
 | D-20 | When do `orgId` / `storeId` go into the database? | Before Stage 2 schema work |
+| D-21 … D-24 | Raised from the V2 target: staff-text language in assisted mode; near-miss alternatives in the staff view; staff incentives; exchange window and kiosk idle timing | With the stage that needs each |
+| (review) | Review the 34 **V2 draft** tasks in the checklist: keep, edit, merge or delete | Before Stage 2 is decomposed |
 
 ## Hard dates
 
@@ -100,8 +104,8 @@ Real findings from code review that are **not** yet tasks. Raise them to the che
 
 | Finding | Where |
 |---|---|
-| A second, client-ready prototype in the real apps' visual identity exists (15 Nov 2026, synthetic data): `prototype_v2/`, with its own register `prototype_v2/PROTOTYPE_V2_IMPROVEMENTS.md`. Biggest remaining demo gap: no real product photos (S0-10) | `prototype_v2/` |
-| An interactive HTML prototype of the whole intended product now exists (15 Nov 2026, synthetic data, separate from the real apps). Its gap register lists 15 assumptions made for open decisions and two unanswered questions: whether staff see “priority” flags for control-group shoppers, and whether near-miss alternatives carry into the staff view | `prototype/`, `PROTOTYPE_GAPS_AND_IMPROVEMENTS.md` §3, §5.5, §5.8 |
+| `prototype_v2/` is the target design (DEC-26); its screens are now V2 draft tasks. The open decisions it assumed (D-04, D-05, D-07 … D-12, D-14 … D-16, D-20) are still open. Biggest remaining demo gap: no real product photos (S0-10) | `prototype_v2/`, `prototype_v2/PROTOTYPE_V2_IMPROVEMENTS.md` |
+| V1 (`prototype/`) is kept as a reference. Its register's two open questions are now handled: control-group flags hidden from staff (part of DEC-26), near-miss alternatives raised as D-22 | `prototype/`, `PROTOTYPE_GAPS_AND_IMPROVEMENTS.md` §3, §5.5, §5.8 |
 | `bulk_import_sample.csv` has a saree row with `sizeRange = UNISEX` (a gender value), so that row could never be recommended | repo root |
 | When a session has no skin tone, recommendations silently assume `WHEATISH` (Tone 2) | `kiosk/src/screens/Recommendations.tsx:80,97` |
 | The kiosk's progress dots show 5 steps while the screens say "Step 01 / 04" | `kiosk/src/screens/*` |
