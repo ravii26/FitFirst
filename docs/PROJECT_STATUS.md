@@ -8,32 +8,31 @@
 - **Target design:** `prototype_v2/` (DEC-26, 17 Nov). Its screens that had no task were added to the checklist as 34 **V2 draft** tasks (116 → 150) for Ravindra's review; they do not change the order of work below. Each stage gate now needs a V2 comparison first
 - **AI model per task:** tasks in Stages 0, 0.5, 1, 2 and 7 carry a tier (deep / standard / light / none); pick the model from `AGENTS.md` §4b (DEC-27)
 - **Stage:** Stage 0.5 (urgent fixes, approved 25 Sep) in progress and **past its 2 Oct deadline**; Stage 1 implemented, **not yet accepted**
-- **Focus:** confirm whether Stage 7 was really unblocked (D-19), finish Stage 0.5 (S05-01 … S05-03 owner check, then S05-09), then the camera check (S1-08) and Ravindra's Stage 1 decision (D-03). Stage 7 work has started ahead of the recorded gate: commit `caa85a7` (2 Nov, het2108) added the S7-04 error shape. S05-04 (`.env` path) was implemented and accepted 24 Oct; S05-05 (try-on default model) implemented and accepted 24 Oct; S05-06 (repo hygiene) implemented and accepted 24 Oct; S05-07 (config truth) implemented and accepted 24 Oct; S05-08 (demo-facing kiosk fixes, neutral "Tone 1–4" labels, DEC-24) implemented and accepted 24 Oct; the API keys were rotated (DEC-21)
+- **Focus:** finish Stage 0.5 (S05-09, CI: written, first GitHub run pending; S05-01 … S05-03 accepted 20 Nov after a live dashboard scan), then the camera check (S1-08) and Ravindra's Stage 1 decision (D-03). Stage 7 stays gated until D-03 (DEC-28, 20 Nov): the early S7-04 error-shape commit `caa85a7` (2 Nov, het2108) is kept, but nothing more is built on it. S05-04 (`.env` path) was implemented and accepted 24 Oct; S05-05 (try-on default model) implemented and accepted 24 Oct; S05-06 (repo hygiene) implemented and accepted 24 Oct; S05-07 (config truth) implemented and accepted 24 Oct; S05-08 (demo-facing kiosk fixes, neutral "Tone 1–4" labels, DEC-24) implemented and accepted 24 Oct; the API keys were rotated (DEC-21)
 - **Maturity:** single-store pilot prototype
 - **Branch:** `architecture-changes`, two commits ahead of `feature/stage-1-pilot-stabilization`; `main` has none of the Stage 0.5 or Stage 1 work (verify with `git status` before relying on it)
-- **Blocked on owner decision:** yes — D-19 (was Stage 7 unblocked?); D-03 (Stage 1 acceptance); D-04 / D-05 (pilot shop, POS path) before any pitch
+- **Blocked on owner decision:** yes — D-03 (Stage 1 acceptance); D-04 / D-05 (pilot shop, POS path) before any pitch
 - **Calendar pressure:** MASTER_PLAN §11 targeted an October pitch and an early-December go-live. October has passed with the pitch kit (Stage 0, S0-10) not started and no pilot shop confirmed, so whether early December still holds is an open question for Ravindra
 
 ## Start here (the next three actions)
 
-1. **D-19 (a one-line answer from Ravindra).** `docs/ARCHITECTURE.md` says S7-02 … S7-06 were unblocked by Ravindra on 25 Oct, but `DECISIONS.md` has no such entry, and S7-04 work is already committed. Confirm it or reject it, so the checklist can be corrected either way.
-2. **S05-01 … S05-03 owner check, then S05-09.** Owner check (the scan-proxy bug that blocked every dashboard scan was fixed 25 Sep, DEC-17): put the **newly rotated** `AICREDITS_API_KEY` in `backend/.env`, start the AI service, scan one real garment from the dashboard, and confirm `/scan` shows `aicredits (<model>)` and `/health` shows the model. The default model ID `google/gemini-2.5-flash-lite` is unconfirmed on AICredits; set `AICREDITS_TAG_MODEL` if it differs. If the call fails with a `response_format` error, set `AICREDITS_JSON_SCHEMA=0`. Then **S05-09** (CI: GitHub Actions running build, vitest, pytest and a secret scan); the secret-scanning tool is Ravindra's choice.
-3. **S1-08 camera check, then D-03.** Ravindra runs the camera check, then accepts Stage 1 or raises a defect list from the browser test log in `STAGE_1_TEST_GUIDE.md`. In parallel, the pilot-shop conversation (D-04 / D-05) is the main business step; `docs/TEAM_GUIDE.md` lists the questions for team discussion.
+1. **S05-09: first CI run on GitHub.** The workflow is written (DEC-29 gitleaks, DEC-30 lint scope) and every step except gitleaks passes locally. Commit and push, then check that `check`, `ai-service` and `secrets` are green; any gitleaks finding goes to Ravindra before it is allowlisted.
+2. **S1-08 camera check, then D-03.** Ravindra runs the camera check, then accepts Stage 1 or raises a defect list from the browser test log in `STAGE_1_TEST_GUIDE.md`. In parallel, the pilot-shop conversation (D-04 / D-05) is the main business step; `docs/TEAM_GUIDE.md` lists the questions for team discussion.
 
 ## Progress at a glance
 
 | Stage | Done | Partial | Open | Total | State |
 |---|---|---|---|---|---|
 | 0 — Direction and safety | 3 | 1 | 6 | 10 | Keys rotated (S0-04, awaiting tick); rest waiting on owner input |
-| 0.5 — Urgent technical fixes | 5 | 3 | 1 | 9 | **Past the 2 Oct deadline** — approved (D-01); S05-04 … S05-08 accepted; S05-01 … S05-03 implemented, owner check not run; S05-09 open |
+| 0.5 — Urgent technical fixes | 8 | 1 | 0 | 9 | **Past the 2 Oct deadline** — approved (D-01); S05-01 … S05-08 accepted (S05-01 … S05-03 on 20 Nov); S05-09 implemented 20 Nov, waiting for its first run on GitHub |
 | 1 — Stabilise the pilot | 0 | 11 | 2 | 13 | Browser checks recorded 25 Sep (camera S1-08 left); awaiting D-03 |
 | 2 — Single-store operations | 0 | 0 | 42 | 42 | Not started; 4 decisions first |
 | 3 — Customer and staff experience | 0 | 0 | 23 | 23 | Planned |
 | 4 — Measurement and deployment | 0 | 0 | 13 | 13 | Planned |
 | 5 — Recommendation evidence and AI | 0 | 0 | 14 | 14 | Planned |
 | 6 — Multi-store and commercial | 0 | 0 | 20 | 20 | Planned |
-| 7 — Engineering foundations (parallel) | 0 | 1 | 5 | 6 | S7-01 implemented, not accepted (CI never run on GitHub); S7-02 … S7-06 recorded as waiting for D-03, but see D-19 (S7-04 error shape already committed) |
-| **Total** | **8** | **16** | **126** | **150** | |
+| 7 — Engineering foundations (parallel) | 0 | 1 | 5 | 6 | S7-01 implemented, not accepted (CI never run on GitHub); S7-02 … S7-06 recorded as waiting for D-03, the early S7-04 error shape (`caa85a7`) is kept but gated (DEC-28) |
+| **Total** | **11** | **14** | **125** | **150** | |
 
 Update these counts whenever you tick an item in [END_TO_END_CHECKLIST.md](END_TO_END_CHECKLIST.md).
 
@@ -43,7 +42,6 @@ Full list and trade-offs in [DECISIONS.md](DECISIONS.md).
 
 | ID | Question | Urgency |
 |---|---|---|
-| D-19 | Did you unblock Stage 7 (S7-02 … S7-06) ahead of D-03, as `ARCHITECTURE.md` says? | Now — S7-04 work is already committed |
 | D-03 | Accept Stage 1, or raise a defect list? | After the camera check (S1-08) |
 | D-04 / D-05 | Pilot shop and scope; POS path A or B | Before the pitch meeting |
 | D-06 / D-07 | v2 migration strategy; how stock is split into sizes | Before Stage 2 coding |

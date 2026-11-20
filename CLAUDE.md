@@ -23,7 +23,7 @@ Run `/handoff` (or follow `AGENTS.md` §5) to update `PROJECT_STATUS.md`, `END_T
 
 ## Claude-Code specifics
 
-- **Running the apps:** use the preview tooling with `.claude/launch.json` (`backend` 3000, `dashboard` 5173, `kiosk` 5174) rather than starting dev servers in a shell.
+- **Running the apps:** use the preview tooling with `.claude/launch.json` (`backend` 3008, `dashboard` 5173, `kiosk` 5174) rather than starting dev servers in a shell.
 - **Plan mode:** for anything larger than one file, plan first and get approval.
 - **Subagents:** useful for read-only exploration. They must not commit, migrate or decide.
 - **Git:** never commit, push, amend or change branches unless asked. The working tree often holds Ravindra's own edits.

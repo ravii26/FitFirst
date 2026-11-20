@@ -4,7 +4,7 @@
 >
 > Related: [ENGINEERING_STANDARDS.md](ENGINEERING_STANDARDS.md) is the target structure and coding rules. [MASTER_PLAN.md](MASTER_PLAN.md) is where the product is going. [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) has the repo map, commands and landmines. [AGENTS.md](../AGENTS.md) is how work is approved here.
 >
-> **Status:** written 25 October 2026 for the Stage 7 architecture track; facts re-checked against the code on 11 November 2026. This file originally said S7-02 … S7-06 were unblocked by Ravindra on 25 October, but no such decision is recorded, so they stay gated until D-19 is answered. Sections marked **Gap** are known problems with a task ID, not accidents.
+> **Status:** written 25 October 2026 for the Stage 7 architecture track; facts re-checked against the code on 11 November 2026. This file originally said S7-02 … S7-06 were unblocked by Ravindra on 25 October, but that was never decided: Ravindra confirmed on 20 Nov 2026 (DEC-28) that they stay gated until Stage 1 is accepted (D-03), and that the S7-04 error-shape commit `caa85a7` is kept. Sections marked **Gap** are known problems with a task ID, not accidents.
 
 ---
 

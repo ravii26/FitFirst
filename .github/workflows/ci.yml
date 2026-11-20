@@ -3,9 +3,12 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main]
+
+permissions:
+  contents: read
 
 jobs:
+  # Node apps: backend, dashboard, kiosk, plus the docs check.
   check:
     runs-on: ubuntu-latest
     steps:
@@ -14,12 +17,54 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: '**/package.json'
-      # package-lock.json is git-ignored in this repo, so `npm ci` is not available.
-      - run: npm install
+          cache-dependency-path: package-lock.json
+      # Installs exactly what package-lock.json records (committed since S05-06).
+      - run: npm ci
       - run: npx prisma generate
         working-directory: backend
       - run: npm run build
       - run: npm test
       - run: npm run lint
       - run: npm run docs:check -- --strict
+
+  # AI garment tagger (backend/ai-service). The tests replace the AICredits call
+  # with a stand-in and force the "no CLIP" path, so no API key, torch or
+  # transformers are needed here. Installing torch would also make the service
+  # download the ~600 MB CLIP model from Hugging Face during the tests.
+  # test_ai_scan.py in the service folder is a manual check against a running
+  # server, so only tests/ is collected.
+  ai-service:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend/ai-service
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: backend/ai-service/requirements*.txt
+      - run: grep -vE '^(torch|transformers)\b' requirements.txt > requirements-ci.txt
+      - run: pip install -r requirements-ci.txt "pytest>=8.0.0"
+      - run: python -m pytest -q tests
+
+  # Secret scan (DEC-29): gitleaks over the whole git history, findings redacted.
+  secrets:
+    runs-on: ubuntu-latest
+    env:
+      GITLEAKS_VERSION: 8.28.0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install gitleaks (pinned, checksum-verified)
+        run: |
+          base="https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}"
+          file="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl -sSfL -o "$file" "$base/$file"
+          curl -sSfL -o checksums.txt "$base/gitleaks_${GITLEAKS_VERSION}_checksums.txt"
+          grep " $file\$" checksums.txt | sha256sum -c -
+          tar -xzf "$file" gitleaks
+      - name: Scan full history
+        run: ./gitleaks git . --redact --verbose --no-banner

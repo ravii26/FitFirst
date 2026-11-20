@@ -17,6 +17,11 @@ export default tseslint.config(
       'backend/prisma/migrations/**',
       'AI Creation/**',
       'scripts/**',
+      // Design references and the static marketing page: plain browser
+      // scripts, not shipped product code (DEC-30).
+      'prototype/**',
+      'prototype_v2/**',
+      'marketing/**',
       '**/*.cjs',
       '**/*.mjs',
     ],
