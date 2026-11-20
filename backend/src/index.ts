@@ -23,7 +23,7 @@ import { registerErrorHandling } from "./lib/errors";
 dotenv.config();
 
 const prisma = new PrismaClient();
-const PORT = parseInt(process.env.PORT ?? "3000", 10);
+const PORT = parseInt(process.env.PORT ?? "3008", 10);
 
 const uploadsDir = path.join(process.cwd(), "uploads");
 if (!fs.existsSync(uploadsDir)) {

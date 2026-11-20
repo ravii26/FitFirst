@@ -7,8 +7,8 @@
 - **Last updated:** 20 November 2026
 - **Target design:** `prototype_v2/` (DEC-26, 17 Nov). Its screens that had no task were added to the checklist as 34 **V2 draft** tasks (116 → 150) for Ravindra's review; they do not change the order of work below. Each stage gate now needs a V2 comparison first
 - **AI model per task:** tasks in Stages 0, 0.5, 1, 2 and 7 carry a tier (deep / standard / light / none); pick the model from `AGENTS.md` §4b (DEC-27)
-- **Stage:** Stage 0.5 (urgent fixes, approved 25 Sep) in progress and **past its 2 Oct deadline**; Stage 1 implemented, **not yet accepted**
-- **Focus:** finish Stage 0.5 (S05-09, CI: written, first GitHub run pending; S05-01 … S05-03 accepted 20 Nov after a live dashboard scan), then the camera check (S1-08) and Ravindra's Stage 1 decision (D-03). Stage 7 stays gated until D-03 (DEC-28, 20 Nov): the early S7-04 error-shape commit `caa85a7` (2 Nov, het2108) is kept, but nothing more is built on it. S05-04 (`.env` path) was implemented and accepted 24 Oct; S05-05 (try-on default model) implemented and accepted 24 Oct; S05-06 (repo hygiene) implemented and accepted 24 Oct; S05-07 (config truth) implemented and accepted 24 Oct; S05-08 (demo-facing kiosk fixes, neutral "Tone 1–4" labels, DEC-24) implemented and accepted 24 Oct; the API keys were rotated (DEC-21)
+- **Stage:** Stage 0.5 (urgent fixes) **complete**: all 9 tasks accepted by 20 Nov 2026, seven weeks after its 2 Oct deadline; Stage 1 implemented, **not yet accepted**
+- **Focus:** the camera check (S1-08) and Ravindra's Stage 1 decision (D-03). Stage 7 stays gated until D-03 (DEC-28, 20 Nov): the early S7-04 error-shape commit `caa85a7` (2 Nov, het2108) is kept, but nothing more is built on it. S05-04 (`.env` path) was implemented and accepted 24 Oct; S05-05 (try-on default model) implemented and accepted 24 Oct; S05-06 (repo hygiene) implemented and accepted 24 Oct; S05-07 (config truth) implemented and accepted 24 Oct; S05-08 (demo-facing kiosk fixes, neutral "Tone 1–4" labels, DEC-24) implemented and accepted 24 Oct; the API keys were rotated (DEC-21)
 - **Maturity:** single-store pilot prototype
 - **Branch:** `architecture-changes`, two commits ahead of `feature/stage-1-pilot-stabilization`; `main` has none of the Stage 0.5 or Stage 1 work (verify with `git status` before relying on it)
 - **Blocked on owner decision:** yes — D-03 (Stage 1 acceptance); D-04 / D-05 (pilot shop, POS path) before any pitch
@@ -16,15 +16,14 @@
 
 ## Start here (the next three actions)
 
-1. **S05-09: first CI run on GitHub.** The workflow is written (DEC-29 gitleaks, DEC-30 lint scope) and every step except gitleaks passes locally. Commit and push, then check that `check`, `ai-service` and `secrets` are green; any gitleaks finding goes to Ravindra before it is allowlisted.
-2. **S1-08 camera check, then D-03.** Ravindra runs the camera check, then accepts Stage 1 or raises a defect list from the browser test log in `STAGE_1_TEST_GUIDE.md`. In parallel, the pilot-shop conversation (D-04 / D-05) is the main business step; `docs/TEAM_GUIDE.md` lists the questions for team discussion.
+1. **S1-08 camera check, then D-03.** Ravindra runs the camera check, then accepts Stage 1 or raises a defect list from the browser test log in `STAGE_1_TEST_GUIDE.md`. In parallel, the pilot-shop conversation (D-04 / D-05) is the main business step; `docs/TEAM_GUIDE.md` lists the questions for team discussion.
 
 ## Progress at a glance
 
 | Stage | Done | Partial | Open | Total | State |
 |---|---|---|---|---|---|
 | 0 — Direction and safety | 3 | 1 | 6 | 10 | Keys rotated (S0-04, awaiting tick); rest waiting on owner input |
-| 0.5 — Urgent technical fixes | 8 | 1 | 0 | 9 | **Past the 2 Oct deadline** — approved (D-01); S05-01 … S05-08 accepted (S05-01 … S05-03 on 20 Nov); S05-09 implemented 20 Nov, waiting for its first run on GitHub |
+| 0.5 — Urgent technical fixes | 9 | 0 | 0 | 9 | **Complete (20 Nov 2026)**, past the 2 Oct deadline. S05-01 … S05-03 accepted after a live dashboard scan; S05-09 CI green on GitHub (build, vitest, lint, pytest, gitleaks) |
 | 1 — Stabilise the pilot | 0 | 11 | 2 | 13 | Browser checks recorded 25 Sep (camera S1-08 left); awaiting D-03 |
 | 2 — Single-store operations | 0 | 0 | 42 | 42 | Not started; 4 decisions first |
 | 3 — Customer and staff experience | 0 | 0 | 23 | 23 | Planned |
@@ -32,7 +31,7 @@
 | 5 — Recommendation evidence and AI | 0 | 0 | 14 | 14 | Planned |
 | 6 — Multi-store and commercial | 0 | 0 | 20 | 20 | Planned |
 | 7 — Engineering foundations (parallel) | 0 | 1 | 5 | 6 | S7-01 implemented, not accepted (CI never run on GitHub); S7-02 … S7-06 recorded as waiting for D-03, the early S7-04 error shape (`caa85a7`) is kept but gated (DEC-28) |
-| **Total** | **11** | **14** | **125** | **150** | |
+| **Total** | **12** | **13** | **125** | **150** | |
 
 Update these counts whenever you tick an item in [END_TO_END_CHECKLIST.md](END_TO_END_CHECKLIST.md).
 
@@ -114,7 +113,6 @@ Real findings from code review that are **not** yet tasks. Raise them to the che
 | `.gitignore` ends with a bare `.env.example` line after `!.env.example`, so any new `.env.example` (e.g. a sub-folder's) is ignored; the root one is tracked only because it was added earlier | `.gitignore` (last line) |
 | Ravindra's `backend/.env` sets `AICREDITS_TAG_MODEL=gemini-2.0-flash`, so the tagger is not using the code default (`google/gemini-2.5-flash-lite`); worth confirming during the S05-01 … S05-03 owner check | `backend/.env` (local, not in git) |
 | The CI workflow still runs `npm install` with a comment saying the lock file is git-ignored; since S05-06 it is committed, so CI could use `npm ci` (S05-09) | `.github/workflows/ci.yml:18-19` |
-| The backend port disagrees: the kiosk and dashboard proxy `/api` and `/uploads` to 3008, while `.env.example`, `README.md`, `.claude/launch.json`, `AGENTS.md` and `PROJECT_CONTEXT.md` say 3000. `setup.ps1` works around it by writing `PORT=3008`, so following the README by hand would leave both apps unable to reach the API (read from the files, not run) | `kiosk/vite.config.ts:9-10`, `dashboard/vite.config.ts:9-10`, `.env.example:7` |
 | Shutdown disconnects Prisma before closing the server, so requests in progress can fail during a restart (read from the code, not run) | `backend/src/index.ts:90-94` |
 | `Product.sku` and `DailyBaseline.date` are unique across the whole database, so adding a store needs these constraints changed too; `ARCHITECTURE.md` §7 calls tenancy "one migration and a query filter", which understates it (see D-20) | `backend/prisma/schema.prisma:97,179` |
 | `/health` reports `ok` without checking the database | `backend/src/index.ts:83` |

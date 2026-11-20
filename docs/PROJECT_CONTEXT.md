@@ -12,7 +12,7 @@ Three surfaces plus a helper service:
 |---|---|---|---|
 | Kiosk | `kiosk/` | 5174 | Customer consultation app (React, no router; screens are a state machine) |
 | Dashboard | `dashboard/` | 5173 | Staff and owner app (React Router, Chart.js) |
-| API | `backend/` | 3000 | Fastify + Prisma + PostgreSQL |
+| API | `backend/` | 3008 | Fastify + Prisma + PostgreSQL |
 | Garment tagger | `backend/ai-service/` | 8000 | Optional Python FastAPI service |
 
 `AI Creation/saree-studio/` is a standalone virtual try-on prototype. It is **git-ignored, contains live API keys, and is not integrated**.
@@ -66,7 +66,7 @@ npm run docs:check                                # do the docs still agree with
 npm install
 docker-compose up -d                              # Postgres, host port 5434
 npm run db:deploy --workspace=backend             # migrations
-npm run dev                                       # backend 3000 + dashboard 5173 + kiosk 5174
+npm run dev                                       # backend 3008 + dashboard 5173 + kiosk 5174
 npm test                                          # backend unit tests (vitest)
 npm run build                                     # all three builds
 npm run test:integration --workspace=backend      # disposable-schema Postgres checks

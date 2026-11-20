@@ -170,7 +170,7 @@ Every one of these points back to this file, so the rules stay in one place:
 npm install
 docker-compose up -d                              # Postgres on host port 5434
 npm run db:deploy --workspace=backend             # apply migrations
-npm run dev                                       # backend 3000, dashboard 5173, kiosk 5174
+npm run dev                                       # backend 3008, dashboard 5173, kiosk 5174
 npm test                                          # backend unit tests (vitest)
 npm run build                                     # all three builds
 npm run test:integration --workspace=backend      # disposable-schema Postgres checks

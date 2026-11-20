@@ -4,7 +4,7 @@ Full rules: [`AGENTS.md`](../AGENTS.md). Read these three docs before suggesting
 
 ## What this project is
 
-An in-store clothing recommendation system for independent Indian retailers: a customer kiosk (`kiosk/`, port 5174), a staff and owner dashboard (`dashboard/`, 5173), a Fastify + Prisma + PostgreSQL API (`backend/`, 3000), and an optional Python garment tagger (`backend/ai-service/`, 8000). It is a **single-store pilot prototype**, not production, not multi-tenant, and not a POS.
+An in-store clothing recommendation system for independent Indian retailers: a customer kiosk (`kiosk/`, port 5174), a staff and owner dashboard (`dashboard/`, 5173), a Fastify + Prisma + PostgreSQL API (`backend/`, 3008), and an optional Python garment tagger (`backend/ai-service/`, 8000). It is a **single-store pilot prototype**, not production, not multi-tenant, and not a POS.
 
 ## How to work here
 

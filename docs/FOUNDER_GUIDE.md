@@ -42,7 +42,7 @@ docker-compose up -d                      # Postgres on host port 5434
 npm install
 npm run db:deploy --workspace=backend     # apply migrations
 npm run db:seed --workspace=backend       # demo data (random numbers, not store evidence)
-npm run dev                               # backend 3000, dashboard 5173, kiosk 5174
+npm run dev                               # backend 3008, dashboard 5173, kiosk 5174
 ```
 
 Inside the Claude desktop app you can start the same servers from `.claude/launch.json` instead.

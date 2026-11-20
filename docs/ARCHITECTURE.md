@@ -16,7 +16,7 @@ A single-store, in-store clothing recommendation system. Three user-facing apps 
 |---|---|---|---|---|
 | Kiosk | `kiosk/` | 5174 | The shopper, unattended | **None** (see §6) |
 | Dashboard | `dashboard/` | 5173 | Staff and the owner | Shared 4-digit PIN → cookie |
-| API | `backend/` | 3000 by default (`PORT`); the kiosk and dashboard dev proxies call **3008**, so local setups need `PORT=3008` (`setup.ps1` sets it) | Both apps | Issues and checks the staff cookie |
+| API | `backend/` | 3008 (`PORT`, default and `.env.example`, DEC-31); the kiosk and dashboard dev proxies call it | Both apps | Issues and checks the staff cookie |
 | Garment tagger | `backend/ai-service/` | 8000 | The API only | None (private service) |
 
 `AI Creation/saree-studio/` is a standalone try-on prototype. It is git-ignored, holds live API keys, and is **not part of this architecture** until integration is approved (D-12).

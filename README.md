@@ -27,7 +27,7 @@ An in-store recommendation kiosk for independent clothing retailers. A customer 
 
 ```
 FitFirst/
-├── backend/      Fastify + Prisma + PostgreSQL API (port 3000)
+├── backend/      Fastify + Prisma + PostgreSQL API (port 3008)
 ├── dashboard/    React staff dashboard (port 5173)
 └── kiosk/        React customer kiosk (port 5174)
 ```
@@ -81,7 +81,7 @@ npm run dev
 ```
 
 Opens:
-- Backend API: http://localhost:3000
+- Backend API: http://localhost:3008
 - Staff Dashboard: http://localhost:5173 (use the PIN configured in backend/.env)
 - Customer Kiosk: http://localhost:5174
 
@@ -180,7 +180,7 @@ cd backend && npm test
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `DATABASE_URL` | `postgresql://fitfirst:fitfirst_dev@localhost:5434/fitfirst` (in `.env.example`) | Postgres connection; 5434 is the host port in `docker-compose.yml` |
-| `PORT` | `3000` | Backend API port |
+| `PORT` | `3008` | Backend API port (the dashboard and kiosk dev proxies call this port) |
 | `KIOSK_URL` | `http://localhost:5174` | CORS whitelist |
 | `DASHBOARD_URL` | `http://localhost:5173` | CORS whitelist |
 | `DASHBOARD_PIN` | none (must be set) | Four-digit staff dashboard PIN; staff login is refused until it is set |
