@@ -2,13 +2,13 @@
 
 **This is the canonical rulebook for every AI assistant working on this repo** (Claude Code, Copilot, Codex, Cursor, ChatGPT, Gemini or any other). `CLAUDE.md` and `.github/copilot-instructions.md` point here.
 
-**Human:** Ravindra (project owner). **Role of AI:** guide, research, propose options, implement *approved* tasks, and verify. **AI does not decide the project.**
+**Humans:** two project owners with equal authority, **Ravindra** and **Het Thakkar** (DEC-34). Either may decide, accept work, merge to `main` and hold the API keys; if they disagree, **Ravindra's answer is final**. In these rules, "an owner" or "the owners" means either of them. **Role of AI:** guide, research, propose options, implement *approved* tasks, and verify. **AI does not decide the project.**
 
 ---
 
 ## 1. Boot sequence — do this before anything else
 
-**Shortcut:** `npm run brief` prints the current stage, the next three actions, the decisions waiting on Ravindra and the hard dates, straight from the status file. It works in any tool, and Claude Code runs it automatically at session start.
+**Shortcut:** `npm run brief` prints the current stage, the next three actions, the decisions waiting on the owners and the hard dates, straight from the status file. It works in any tool, and Claude Code runs it automatically at session start.
 
 1. Read `docs/PROJECT_STATUS.md` — where the project stands today, and the next approved task.
 2. Read `docs/END_TO_END_CHECKLIST.md` — the task list, with IDs and gates.
@@ -31,7 +31,7 @@ Only after that, start work. `docs/MASTER_PLAN.md` is the long-form strategy; re
 
 AI **may**: investigate, explain trade-offs, recommend, implement an approved task, write tests, run checks, and report results honestly.
 
-AI **may not**, without an explicit "yes" from Ravindra in the conversation:
+AI **may not**, without an explicit "yes" from an owner (Ravindra or Het Thakkar) in the conversation:
 - start a task that is not the approved next task
 - change architecture, the data model, or a product behaviour beyond the task
 - add a dependency, external service, AI model or provider
@@ -52,13 +52,15 @@ Reversible?      easy / hard / one-way door
 Blocked until decided: task IDs
 ```
 
-Then wait. Record the answer in `docs/DECISIONS.md` with the date. Never write "as decided" for something the human did not actually say.
+Then wait. Record the answer in `docs/DECISIONS.md` with the date and **which owner gave it**. Never write "as decided" for something the human did not actually say.
+
+**Two owners (DEC-34):** a decision from either owner counts on its own. If the other owner disagrees later, raise it again as a new decision that names the earlier one; never undo it silently. When the owners disagree, Ravindra's answer is final. If it is unclear which owner you are talking to, ask.
 
 ---
 
 ## 3. Scope rule — one task at a time
 
-- Work the **first unchecked item of the current stage**, unless Ravindra names another.
+- Work the **first unchecked item of the current stage**, unless an owner names another.
 - If a task turns out to be bigger than one session, split it in the checklist (add sub-IDs) and confirm which part to do.
 - If you notice an unrelated problem, **write it down** in `docs/PROJECT_STATUS.md` under "Noticed, not actioned". Do not fix it silently.
 - Keep diffs small and in the existing style. Prefer the smallest change that can be tested.
@@ -74,11 +76,11 @@ Then wait. Record the answer in `docs/DECISIONS.md` with the date. Never write "
 - Demo and seed data are **not** evidence of anything about a real store. Label synthetic numbers as synthetic, every time.
 - If you could not verify something, write "not verified" rather than implying it works.
 
-### 4a. Explain the task, then show Ravindra how to check it
+### 4a. Explain the task, then show the owner how to check it
 
-Ravindra accepts work himself, so he must understand it and be able to check it without the AI's help.
+The owners accept work themselves, so they must understand it and be able to check it without the AI's help.
 
-**When proposing any change, fix or plan**, however small, before any code, explain in plain words and then wait for Ravindra's go-ahead:
+**When proposing any change, fix or plan**, however small, before any code, explain in plain words and then wait for an owner's go-ahead:
 - **Kind of change:** bug fix · config change · new feature · clean-up · docs only · test only
 - **The problem:** what goes wrong today, and who notices
 - **Before and after:** what happens today and what will happen after the change, side by side, with one concrete example
@@ -94,7 +96,7 @@ Ravindra accepts work himself, so he must understand it and be able to check it 
 5. **Not verified:** what you could not check, and why
 6. **How to accept:** say "accept <task ID>"; the AI then marks it `[x]` with the date
 
-**Record the check steps in the checklist item** as a *How to check:* note next to the evidence, so any AI in any later session can walk Ravindra through it.
+**Record the check steps in the checklist item** as a *How to check:* note next to the evidence, so any AI in any later session can walk either owner through it.
 
 ### 4b. Which AI model to use (DEC-27)
 
@@ -105,7 +107,7 @@ Tasks in the checklist carry a **tier** (`— Tier: deep`). Pick the model from 
 | **deep** | Opus, high effort | The tool's strongest reasoning model, highest effort | Data model and migrations; sales and stock that must never double-count; auth, roles and privacy; the recommendation engine; preparing a `DECISION NEEDED`; the review before any stage gate |
 | **standard** | Sonnet | The tool's default capable model | Most screens, routes and tests; ordinary bug fixes; wiring an approved design |
 | **light** | Haiku, or Sonnet at low effort | The tool's fast, cheap model | Doc updates and the handoff; copy and config edits; simple renames |
-| **none** | — | — | Owner-only tasks: Ravindra does them himself |
+| **none** | — | — | Owner-only tasks: an owner (Ravindra or Het Thakkar) does them |
 
 Rules:
 - **When unsure, go one tier up.** A cheap model on a deep task can create bugs that cost more than it saved.
@@ -128,7 +130,7 @@ Rules:
 
 Then run **`npm run docs:check`**, which verifies that the progress counts match the actual checkboxes, that task IDs are unique, that links resolve, and that the status and session log are not stale. Fix whatever it reports.
 
-Finally, end your reply with a **3-line handoff**: what changed, what is next (task ID), what needs Ravindra's decision. If a task is waiting for acceptance, put the "How to check it yourself" section (§4a) before the handoff.
+Finally, end your reply with a **3-line handoff**: what changed, what is next (task ID), what needs an owner's decision. If a task is waiting for acceptance, put the "How to check it yourself" section (§4a) before the handoff.
 
 Shortcuts: `/handoff` in Claude Code, `/handoff` prompt file in Copilot, or just ask any other assistant for "the handoff update".
 
@@ -198,11 +200,11 @@ Check `docs/PROJECT_CONTEXT.md` ("Landmines") for the full list with file refere
 
 ## 8. Working with more than one person
 
-Ravindra and a collaborator (each with their own AI, in their own tool) will never share a chat history. The documents in `docs/` **are** the shared memory. These rules keep two people and two AIs from undoing each other's work.
+The two owners and any collaborator (each with their own AI, in their own tool) will never share a chat history. The documents in `docs/` **are** the shared memory. These rules keep several people and their AIs from undoing each other's work.
 
 **Roles**
 
-| | Ravindra (owner) | Collaborator |
+| | Owners: Ravindra, Het Thakkar (DEC-34) | Collaborator |
 |---|---|---|
 | Decides scope, architecture, providers, pricing, privacy, UX | Yes | No — raises it, then waits |
 | Implements an approved task | Yes | Yes |
@@ -213,7 +215,7 @@ Ravindra and a collaborator (each with their own AI, in their own tool) will nev
 **Before starting a task**
 
 1. `git pull`, then `npm run brief`.
-2. Tell Ravindra the **task ID** you intend to take (e.g. "taking S2-C03"). He keeps the list of who is on what; two people on one task is the main way work gets lost.
+2. Tell the other owner (or, as a collaborator, an owner) the **task ID** you intend to take (e.g. "taking S2-C03"), and note it in `docs/PROJECT_STATUS.md` so everyone can see who is on what; two people on one task is the main way work gets lost.
 3. If the task is `[?]`, the decision must be recorded in `docs/DECISIONS.md` **first**. A decision made in your chat but not written down does not exist for anyone else.
 4. One task per branch: `task/S2-C03-inventory-lots`. Never commit straight to `main`.
 
@@ -226,7 +228,7 @@ Ravindra and a collaborator (each with their own AI, in their own tool) will nev
 **Finishing**
 
 - Run the handoff update (§5) in **your own** session, then `npm run docs:check`.
-- Tick nothing. Mark your work `[~]` with the evidence and the date; Ravindra promotes it to `[x]` when he accepts it.
+- Tick nothing. Mark your work `[~]` with the evidence and the date; an owner promotes it to `[x]` when they accept it. (An owner may accept their own work, but should ask the other owner to run the check when it is practical.)
 - Open the pull request with the task ID in the title and the per-task completion record from the bottom of the checklist in the description.
 
 **When the docs conflict in git**

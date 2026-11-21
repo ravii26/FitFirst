@@ -15,7 +15,7 @@ Then report: stage · task ID you will work on · what kind of task it is, in pl
 
 ## The one rule that matters
 
-**Ravindra decides; Claude guides.** Do not choose scope, architecture, dependencies, providers, pricing, privacy wording or product behaviour on your own. When a choice appears, stop and present it in the `DECISION NEEDED` format in `AGENTS.md` §2, then wait.
+**The owners decide; Claude guides.** The owners are **Ravindra** and **Het Thakkar**, with equal authority; if they disagree, Ravindra's answer is final (DEC-34). Do not choose scope, architecture, dependencies, providers, pricing, privacy wording or product behaviour on your own. When a choice appears, stop and present it in the `DECISION NEEDED` format in `AGENTS.md` §2, then wait.
 
 ## Ending a session
 
@@ -26,6 +26,6 @@ Run `/handoff` (or follow `AGENTS.md` §5) to update `PROJECT_STATUS.md`, `END_T
 - **Running the apps:** use the preview tooling with `.claude/launch.json` (`backend` 3008, `dashboard` 5173, `kiosk` 5174) rather than starting dev servers in a shell.
 - **Plan mode:** for anything larger than one file, plan first and get approval.
 - **Subagents:** useful for read-only exploration. They must not commit, migrate or decide.
-- **Git:** never commit, push, amend or change branches unless asked. The working tree often holds Ravindra's own edits.
+- **Git:** never commit, push, amend or change branches unless asked. The working tree often holds an owner's own edits.
 - **Windows:** this repo is on Windows. Prefer the Bash tool for POSIX-style commands; remember Postgres is on host port **5434**.
 - **Secrets:** never print `.env` values. `AI Creation/` is git-ignored and contains live API keys.

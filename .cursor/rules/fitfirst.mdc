@@ -7,7 +7,7 @@ Read `AGENTS.md` (canonical rules), then `docs/PROJECT_STATUS.md`, `docs/END_TO_
 
 Before changing code, state: current stage · task ID (e.g. `S1-06`) · what kind of task it is, in plain words · approved or blocked on a decision · files · the check command. For every change, fix or plan, also give the before and after, the edge cases and how to check each one (`AGENTS.md` §4a). Then wait. When a task is ready for acceptance, give the "How to check it yourself" steps (`AGENTS.md` §4a).
 
-- **Ravindra decides; AI guides.** No scope, architecture, dependency, provider, pricing, privacy or product decisions without an explicit yes.
+- **The owners (Ravindra and Het Thakkar, equal authority; Ravindra breaks ties, DEC-34) decide; AI guides.** No scope, architecture, dependency, provider, pricing, privacy or product decisions without an explicit yes.
 - One approved task at a time. Note unrelated problems in `docs/PROJECT_STATUS.md` under "Noticed, not actioned" rather than fixing them.
 - No claim without evidence. Run the check, report the real result, never self-mark a task complete.
 - This is a single-store pilot prototype: stock is per product not per size, `daysInStock` never increments, the garment tagger's fallback tags are only guesses (flagged "AI off"), `/uploads` is public, staff auth is one shared PIN, and scores can exceed 1.0 so are never a match %.

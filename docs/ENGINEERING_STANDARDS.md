@@ -125,6 +125,6 @@ Do not add queues, caches, microservices or Kubernetes for a single-store pilot.
 2. If the task adds a dependency, package or tool, present a `DECISION NEEDED` first and wait.
 3. Make the structural change only. No behaviour change.
 4. Run `npm run build`, `npm test`, and the integration check where relevant. Real output goes in the PR and session log.
-5. Update the docs in the same change. Only Ravindra marks the item `[x]`.
+5. Update the docs in the same change. Only an owner (Ravindra or Het Thakkar) marks the item `[x]`.
 
-**Sequencing:** only S7-01 may start before D-03. S7-02 to S7-06 stay `[?]` until Ravindra accepts Stage 1 (D-03), and also need the working tree committed first, because they touch files with uncommitted edits.
+**Sequencing:** only S7-01 could start before D-03. Stage 1 was accepted on 21 Nov 2026 (DEC-33), so S7-02 to S7-06 are unblocked; when they run relative to the perception track (DEC-32) is the owners' call.

@@ -148,7 +148,7 @@ The checklist's **Stages** are what we execute. MASTER_PLAN's **Phases** are the
 
 ## Working agreement (summary — full version in [AGENTS.md](../AGENTS.md))
 
-**Ravindra decides. AI guides.** AI may investigate, explain, recommend, implement an approved task and verify it. AI may not choose scope, architecture, dependencies, providers, pricing, privacy wording or product behaviour, and may not mark work complete.
+**The owners decide. AI guides.** The owners are Ravindra and Het Thakkar, with equal authority; Ravindra breaks ties (DEC-34). AI may investigate, explain, recommend, implement an approved task and verify it. AI may not choose scope, architecture, dependencies, providers, pricing, privacy wording or product behaviour, and may not mark work complete.
 
 1. Read status and the checklist first; name the task by its ID before starting.
 2. One approved task at a time. Note unrelated problems instead of fixing them.

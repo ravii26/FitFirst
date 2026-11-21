@@ -15,17 +15,17 @@ Run the handoff update for this session, exactly as defined in `AGENTS.md` §5.
 
 2. Update these files in one pass:
    - **`docs/PROJECT_STATUS.md`** — the last-updated date, current stage and focus, "Start here (the next three actions)", verified facts, "Noticed, not actioned", the progress table, and the decisions waiting on the owner.
-   - **`docs/END_TO_END_CHECKLIST.md`** — re-mark the tasks touched, with the evidence and date. `[x]` only if Ravindra accepted it and a check was actually run; otherwise `[~]`. Keep the progress table in step with the boxes.
-   - **`docs/DECISIONS.md`** — record any decision Ravindra made this session (date, choice, reasoning, what it unblocks), and add any new `OPEN` decision that came up.
+   - **`docs/END_TO_END_CHECKLIST.md`** — re-mark the tasks touched, with the evidence and date. `[x]` only if an owner (Ravindra or Het Thakkar) accepted it and a check was actually run; otherwise `[~]`. Keep the progress table in step with the boxes.
+   - **`docs/DECISIONS.md`** — record any decision an owner made this session (date, which owner, choice, reasoning, what it unblocks), and add any new `OPEN` decision that came up.
    - **`docs/SESSION_LOG.md`** — one new row at the top: date · what changed · files · validation · next/decision needed.
 
 3. Run `npm run docs:check` and fix anything it reports.
 
-4. If a task is waiting for Ravindra's acceptance (`[~]`), first give the "How to check it yourself" section from `AGENTS.md` §4a, and make sure its checklist item has a *How to check:* note.
+4. If a task is waiting for an owner's acceptance (`[~]`), first give the "How to check it yourself" section from `AGENTS.md` §4a, and make sure its checklist item has a *How to check:* note.
 
 5. Finish with the 3-line handoff:
    - **Changed:** …
    - **Next:** task ID and what it needs
-   - **Needs Ravindra:** the decision IDs waiting, or "nothing"
+   - **Needs an owner:** the decision IDs waiting, or "nothing"
 
-Rules: do not invent evidence, do not mark work complete that was not verified, and do not record a decision Ravindra did not actually make.
+Rules: do not invent evidence, do not mark work complete that was not verified, and do not record a decision an owner did not actually make.

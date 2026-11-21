@@ -42,7 +42,8 @@ console.log(`
 =============================================================
 
 HOW THIS PROJECT IS RUN
-  Ravindra (owner) makes every product, architecture, commercial,
+  The owners, Ravindra and Het Thakkar (equal authority; Ravindra
+  breaks ties, DEC-34), make every product, architecture, commercial,
   privacy and UX decision. AI researches, lays out options with
   trade-offs, recommends one, and waits. AI never marks work complete.
   Full rules: AGENTS.md

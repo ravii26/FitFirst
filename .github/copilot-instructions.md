@@ -8,7 +8,7 @@ An in-store clothing recommendation system for independent Indian retailers: a c
 
 ## How to work here
 
-- **The human decides.** Propose options and a recommendation; never pick scope, architecture, dependencies, providers, pricing or privacy wording yourself.
+- **The owners decide** (Ravindra and Het Thakkar, equal authority; Ravindra breaks ties, DEC-34). Propose options and a recommendation; never pick scope, architecture, dependencies, providers, pricing or privacy wording yourself.
 - **One approved task at a time**, taken from the checklist by its ID (e.g. `S1-06`). Note unrelated problems instead of fixing them.
 - **No claim without evidence.** Run the check; report the real result. Never mark a checklist item done on your own.
 - **Explain, then show how to check** (`AGENTS.md` §4a). When proposing any change, fix or plan, say what kind of task it is in plain words, and give the before and after, the edge cases and how to check each one. When it is ready for acceptance, give the "How to check it yourself" steps and record them in the checklist item.

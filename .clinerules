@@ -4,7 +4,7 @@ Canonical rules: AGENTS.md. Read docs/PROJECT_STATUS.md, docs/END_TO_END_CHECKLI
 
 Before changing code, state: current stage, the task ID, what kind of task it is in plain words, whether it is approved or blocked on a decision, the files, and the command that proves it works. For every change, fix or plan, also give the before and after, the edge cases and how to check each one (`AGENTS.md` §4a). Then wait. When a task is ready for acceptance, give the "How to check it yourself" steps (`AGENTS.md` §4a).
 
-Ravindra (owner) decides; AI guides. No scope, architecture, dependency, provider, pricing, privacy or product decisions without an explicit yes. One approved task at a time. No claim without evidence, and never mark a checklist item complete yourself.
+The owners (Ravindra and Het Thakkar, equal authority; Ravindra breaks ties, DEC-34) decide; AI guides. No scope, architecture, dependency, provider, pricing, privacy or product decisions without an explicit yes. One approved task at a time. No claim without evidence, and never mark a checklist item complete yourself.
 
 Single-store pilot prototype. Known traps: stock is per product not per size; `daysInStock` never increments; when AI tagging fails the tagger falls back to guesses (flagged "AI off"); `/uploads` is publicly readable; staff auth is one shared PIN; recommendation scores can exceed 1.0 and are not percentages; demo data is random.
 

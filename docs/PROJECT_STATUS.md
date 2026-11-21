@@ -5,10 +5,10 @@
 ## Right now
 
 - **Last updated:** 21 November 2026
-- **Target design:** `prototype_v2/` (DEC-26, 17 Nov). Its screens that had no task were added to the checklist as 34 **V2 draft** tasks (116 → 150) for Ravindra's review; they do not change the order of work below. Each stage gate now needs a V2 comparison first
+- **Target design:** `prototype_v2/` (DEC-26, 17 Nov). Its screens that had no task were added to the checklist as 34 **V2 draft** tasks (116 → 150) for the owners' review; they do not change the order of work below. Each stage gate now needs a V2 comparison first
 - **AI model per task:** tasks in Stages 0, 0.5, 1, 2 and 7 carry a tier (deep / standard / light / none); pick the model from `AGENTS.md` §4b (DEC-27)
 - **Stage:** Stage 0.5 complete (20 Nov); **Stage 1 accepted 21 Nov 2026** (D-03, DEC-33). Next is the **perception track** (DEC-32), before Stage 2
-- **Focus:** Ravindra reviews the draft [PERCEPTION_PLAN.md](PERCEPTION_PLAN.md) (tasks SP-01 … SP-11; decisions P-D1 … P-D4 and D-11). Stage 7 (S7-02 … S7-06) is unblocked by DEC-33; when it runs relative to the perception track is Ravindra's call. The early S7-04 error-shape commit `caa85a7` counts as that task's first piece
+- **Focus:** the owners (Ravindra, Het Thakkar) review the draft [PERCEPTION_PLAN.md](PERCEPTION_PLAN.md) (tasks SP-01 … SP-11; decisions P-D1 … P-D4 and D-11). Stage 7 (S7-02 … S7-06) is unblocked by DEC-33; when it runs relative to the perception track is the owners' call. The early S7-04 error-shape commit `caa85a7` counts as that task's first piece
 - **Maturity:** single-store pilot prototype
 - **Branch:** `architecture-changes`, two commits ahead of `feature/stage-1-pilot-stabilization`; `main` has none of the Stage 0.5 or Stage 1 work (verify with `git status` before relying on it)
 - **Blocked on owner decision:** yes — the perception plan review (P-D1 … P-D4, D-11); D-04 / D-05 (pilot shop, POS path) before any pitch
