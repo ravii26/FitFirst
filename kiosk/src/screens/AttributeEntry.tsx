@@ -1,16 +1,17 @@
 // Attribute Entry Screen — Editorial Dual-Matrix Tone & Silhouette
 
 import { useState } from "react";
+import { SKIN_TONE_LABEL } from "../utils/toneLabels";
 
 type SkinTone = "FAIR" | "WHEATISH" | "MEDIUM" | "DEEP";
 type BodyShape = "RECTANGLE" | "TRIANGLE" | "INVERTED_T" | "HOURGLASS";
 
 const SKIN_TONES: { value: SkinTone; label: string; sub: string; color: string }[] = [
-  // Shopper-facing labels are neutral numbers (DEC-24); the internal codes stay unchanged.
-  { value: "FAIR", label: "Tone 1", sub: "Pairs with Emerald, Deep Ruby & Cobalt", color: "#F7E6D0" },
-  { value: "WHEATISH", label: "Tone 2", sub: "Pairs with Warm Gold, Mustard, Maroon & Teal", color: "#D49C65" },
-  { value: "MEDIUM", label: "Tone 3", sub: "Pairs with Champagne, Coral, Beige & Navy", color: "#9E6B43" },
-  { value: "DEEP", label: "Tone 4", sub: "Pairs with Ivory, Rich Ochre, Crimson & Fuchsia", color: "#543422" },
+  // Shopper-facing labels are neutral numbers (DEC-24), shared with the camera screen.
+  { value: "FAIR", label: SKIN_TONE_LABEL.FAIR, sub: "Pairs with Emerald, Deep Ruby & Cobalt", color: "#F7E6D0" },
+  { value: "WHEATISH", label: SKIN_TONE_LABEL.WHEATISH, sub: "Pairs with Warm Gold, Mustard, Maroon & Teal", color: "#D49C65" },
+  { value: "MEDIUM", label: SKIN_TONE_LABEL.MEDIUM, sub: "Pairs with Champagne, Coral, Beige & Navy", color: "#9E6B43" },
+  { value: "DEEP", label: SKIN_TONE_LABEL.DEEP, sub: "Pairs with Ivory, Rich Ochre, Crimson & Fuchsia", color: "#543422" },
 ];
 
 const BODY_SHAPES: { value: BodyShape; label: string; sub: string; icon: JSX.Element }[] = [

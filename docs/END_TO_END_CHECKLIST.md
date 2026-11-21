@@ -20,14 +20,14 @@
 |---|---|---|---|---|
 | 0 — Direction and safety | 3 | 1 | 6 | 10 |
 | 0.5 — Urgent technical fixes | 9 | 0 | 0 | 9 |
-| 1 — Stabilise the pilot | 0 | 11 | 2 | 13 |
+| 1 — Stabilise the pilot | 13 | 0 | 0 | 13 |
 | 2 — Single-store operations | 0 | 0 | 42 | 42 |
 | 3 — Customer and staff experience | 0 | 0 | 23 | 23 |
 | 4 — Measurement and deployment | 0 | 0 | 13 | 13 |
-| 5 — Recommendation evidence and AI | 0 | 0 | 14 | 14 |
+| 5 — Recommendation evidence and AI | 0 | 0 | 16 | 16 |
 | 6 — Multi-store and commercial | 0 | 0 | 20 | 20 |
-| 7 — Engineering foundations (parallel) | 0 | 1 | 5 | 6 |
-| **Total** | **12** | **13** | **125** | **150** |
+| 7 — Engineering foundations (parallel) | 0 | 2 | 4 | 6 |
+| **Total** | **25** | **3** | **124** | **152** |
 
 Keep this table and the one in `PROJECT_STATUS.md` in step.
 
@@ -45,7 +45,7 @@ This confirms the plan covers the whole product, while keeping *planned* separat
 | POS integration (path A) | Yes | Not started | 0, 6 |
 | FitFirst Billing (path B) | Yes | Not started; needs owner approval | 0, 6 |
 | AI tagging and recommendations | Yes | Prototype tagger and deterministic scorer | 1, 5 |
-| Camera perception | Yes | Skin-tone prototype only; unvalidated | 1, 5 |
+| Camera perception | Yes | Skin-tone prototype only; unvalidated; camera v2 and the swatch-plus-quiz fallback drafted as S5-15 / S5-16 | 1, 5 |
 | Virtual try-on | Yes | Separate prototype, not integrated | 5 |
 | Auth, roles and tenancy | Yes | Shared-PIN pilot auth; no roles or stores | 2, 6 |
 | Privacy, consent and retention | Yes | Notice screen only; no consent records | 0, 2, 5, 6 |
@@ -93,19 +93,19 @@ This confirms the plan covers the whole product, while keeping *planned* separat
 
 Automated checks pass; browser checks were recorded 25 Sep 2026 in `STAGE_1_TEST_GUIDE.md` (camera S1-08 not run). *How for all of Stage 1:* start the services, use `http://localhost:5174` (kiosk) and `http://localhost:5173` (dashboard), on **dedicated test stock**, and record each result in `STAGE_1_TEST_GUIDE.md` or a linked test log.
 
-- [~] **S1-01** Backend unit tests pass. — 42 tests (9 Sep); 46 after S05-03 (25 Sep 2026) — Tier: light
-- [~] **S1-02** Backend, dashboard and kiosk builds pass. — Tier: light
-- [~] **S1-03** Disposable-schema PostgreSQL integration checks pass. — `npm run test:integration --workspace=backend` — Tier: light
-- [~] **S1-04** Migration backup and additive migration exercised locally. — `npm run db:backup --workspace=backend` — Tier: light
-- [~] **S1-05** Browser walkthrough reaches privacy, department, size and preferences. — Tier: light
-- [~] **S1-06** Staff login, refresh, lock and wrong-PIN checks. *Evidence (25 Sep 2026):* wrong PIN, refresh and Lock pass — see the browser test log in `STAGE_1_TEST_GUIDE.md`. — Tier: light
-- [~] **S1-07** The complete customer path through recommendations and handoff. *Evidence (25 Sep 2026):* full path to handoff code and dashboard lookup passes; Edit preferences left a duplicate session (issue 1); fixed the same day by updating the session in place (`PUT /api/sessions/:id/answers`), re-tested in the browser and covered by `npm run test:integration` — `STAGE_1_TEST_GUIDE.md`. — Tier: light
-- [ ] **S1-08** Camera success, denied permission, poor light and manual fallback. — Tier: none
-- [~] **S1-09** Idle warning, keep-shopping and full reset. *Evidence (25 Sep 2026):* warning, Keep shopping, 120 s reset and Start over pass — `STAGE_1_TEST_GUIDE.md`. — Tier: light
-- [~] **S1-10** Recommended sale, other-item sale and repeated-submit checks. *Evidence (25 Sep 2026):* recommended sale, other-item sale and double-click save pass on demo data — `STAGE_1_TEST_GUIDE.md`. — Tier: light
-- [~] **S1-11** Inventory image, invalid stock, CSV validation and analytics checks. *Evidence (25 Sep 2026):* invalid stock (UI and API), CSV validation and analytics pass; no demo product has an image — `STAGE_1_TEST_GUIDE.md`. — Tier: light
-- [~] **S1-12** Record expected result, actual result, screenshots/issues, tester and date for each check. *Evidence (25 Sep 2026):* the browser test log in `STAGE_1_TEST_GUIDE.md` records check, expected, actual, result, tester, date and five issues. **Missing:** screenshots, and S1-08 (camera). — Tier: light
-- [ ] **S1-13 (owner)** Accept Stage 1, or produce a prioritised defect list. — D-03 — Tier: none
+- [x] **S1-01** Backend unit tests pass. — 42 tests (9 Sep); 46 after S05-03 (25 Sep 2026) **Accepted by Ravindra, 21 Nov 2026 (D-03, DEC-33).** — Tier: light
+- [x] **S1-02** Backend, dashboard and kiosk builds pass. **Accepted by Ravindra, 21 Nov 2026 (D-03, DEC-33).** — Tier: light
+- [x] **S1-03** Disposable-schema PostgreSQL integration checks pass. — `npm run test:integration --workspace=backend` **Accepted by Ravindra, 21 Nov 2026 (D-03, DEC-33).** — Tier: light
+- [x] **S1-04** Migration backup and additive migration exercised locally. — `npm run db:backup --workspace=backend` **Accepted by Ravindra, 21 Nov 2026 (D-03, DEC-33).** — Tier: light
+- [x] **S1-05** Browser walkthrough reaches privacy, department, size and preferences. **Accepted by Ravindra, 21 Nov 2026 (D-03, DEC-33).** — Tier: light
+- [x] **S1-06** Staff login, refresh, lock and wrong-PIN checks. *Evidence (25 Sep 2026):* wrong PIN, refresh and Lock pass — see the browser test log in `STAGE_1_TEST_GUIDE.md`. **Accepted by Ravindra, 21 Nov 2026 (D-03, DEC-33).** — Tier: light
+- [x] **S1-07** The complete customer path through recommendations and handoff. *Evidence (25 Sep 2026):* full path to handoff code and dashboard lookup passes; Edit preferences left a duplicate session (issue 1); fixed the same day by updating the session in place (`PUT /api/sessions/:id/answers`), re-tested in the browser and covered by `npm run test:integration` — `STAGE_1_TEST_GUIDE.md`. **Accepted by Ravindra, 21 Nov 2026 (D-03, DEC-33).** — Tier: light
+- [x] **S1-08** Camera success, denied permission, poor light and manual fallback. *Owner check, part 1 (20 Nov 2026):* in Chrome, the camera opened, sampled and returned an estimate (success flow works), but the card said "Estimated tone: fair" (against DEC-24) and the estimate looked too light in a backlit room. This led to DEC-32 (perception becomes the core track; see [PERCEPTION_PLAN.md](PERCEPTION_PLAN.md)). *Camera-beta fix (21 Nov 2026):* new shared label list `kiosk/src/utils/toneLabels.ts` used by both `AttributeEntry.tsx` and `CameraScan.tsx`; the result card now says "Estimated tone: Tone N" under a "Beta" label and "You'll confirm or change it on the next screen". Checks: the list maps FAIR/WHEATISH/MEDIUM/DEEP to Tone 1–4 (script); kiosk build passes; `npm test` → 55 passed; kiosk lint 0 errors; in the browser pane the picker shows Tone 1–4 and the camera screen opens and returns to the picker with "Select manually" (the pane blocks cameras, so the result card itself was not seen). *Owner check, part 2 (21 Nov 2026):* Ravindra re-ran all four cases in Chrome and reported all pass; the result card showed "Beta · Estimated tone: Tone 2". Recorded in the browser test log in `STAGE_1_TEST_GUIDE.md`. Accuracy is not validated (that is the perception track, DEC-32). **Accepted by Ravindra, 21 Nov 2026 (D-03, DEC-33).** — Tier: none
+- [x] **S1-09** Idle warning, keep-shopping and full reset. *Evidence (25 Sep 2026):* warning, Keep shopping, 120 s reset and Start over pass — `STAGE_1_TEST_GUIDE.md`. **Accepted by Ravindra, 21 Nov 2026 (D-03, DEC-33).** — Tier: light
+- [x] **S1-10** Recommended sale, other-item sale and repeated-submit checks. *Evidence (25 Sep 2026):* recommended sale, other-item sale and double-click save pass on demo data — `STAGE_1_TEST_GUIDE.md`. **Accepted by Ravindra, 21 Nov 2026 (D-03, DEC-33).** — Tier: light
+- [x] **S1-11** Inventory image, invalid stock, CSV validation and analytics checks. *Evidence (25 Sep 2026):* invalid stock (UI and API), CSV validation and analytics pass; no demo product has an image — `STAGE_1_TEST_GUIDE.md`. **Accepted by Ravindra, 21 Nov 2026 (D-03, DEC-33).** — Tier: light
+- [x] **S1-12** Record expected result, actual result, screenshots/issues, tester and date for each check. *Evidence (25 Sep 2026):* the browser test log in `STAGE_1_TEST_GUIDE.md` records check, expected, actual, result, tester, date and five issues. **Missing:** screenshots. S1-08 (camera) was added to the log on 21 Nov 2026. **Accepted by Ravindra, 21 Nov 2026 (D-03, DEC-33), without screenshots.** — Tier: light
+- [x] **S1-13 (owner)** Accept Stage 1, or produce a prioritised defect list. — D-03 **Ravindra accepted Stage 1 on 21 Nov 2026 (DEC-33); follow-ups listed there.** — Tier: none
 
 ## Stage 2 — Single-store operations
 
@@ -226,6 +226,8 @@ Automated checks pass; browser checks were recorded 25 Sep 2026 in `STAGE_1_TEST
 - [ ] **S5-11** If approved: consent, 18+ gate, provider DPA, quotas, automated QA, AI labelling, retention and cost monitoring.
 - [?] **S5-13** Clearance page: aged stock with "shown · 7 days", a plain-words markdown suggestion (never an automatic price change), the clearance simulator (same shopper, nudge off and on), and pushes with an optional staff incentive. — V2 draft; with S5-07; D-23
 - [ ] **S5-14** Ruleset lifecycle: clone → edit weights on the draft → activate with a manager PIN. — V2 draft; with S5-02
+- [ ] **S5-15** Camera v2 skin-tone estimate, as `MASTER_PLAN.md` §5.3 "Skin tone v2" describes it: MediaPipe Face Landmarker with quality gates and a face-skin mask; forehead and upper-cheek samples with highlights and shadows dropped; 20–30 frames; a grey reference patch with exposure and white balance locked where the camera allows; ITA depth groups shown as the 3 nearest Monk swatches for the shopper to pick; undertone and skin–hair contrast with an "unknown" answer when unsure; a confidence score; no images stored; neutral wording only (never fair, dark or wheatish). *Why:* the Stage 1 camera (a raw colour average of a fixed centre box, no face detection or lighting correction) gave a clearly lighter estimate in a backlit room during the S1-08 owner check (20 Nov 2026). — Draft (20 Nov 2026), for Ravindra's review; D-10, S0-08, S5-05; needs a kiosk camera whose exposure and white balance can be locked (a hardware buying criterion) — Tier: deep
+- [ ] **S5-16** Swatch-plus-quiz tone fallback, as `MASTER_PLAN.md` §5.3 "Fallbacks" describes it: the Tone swatches plus three questions (gold or silver jewellery; wrist veins green, blue or both; in the sun you tan, burn or both) for shoppers who skip or decline the camera, have no camera, cover their hair, or are on a Kids profile; never blocks shopping. — Draft (20 Nov 2026), for Ravindra's review; D-10, S3-03 — Tier: standard
 - [ ] **S5-12 (owner)** Approve every new model or provider, and review the evaluation report. *V2 comparison first:* list each difference from `prototype_v2/` for this stage's screens as intended, improved or missed (see "V2 target tasks").
 
 ## Stage 6 — Multi-store and commercial scale
@@ -255,14 +257,14 @@ Automated checks pass; browser checks were recorded 25 Sep 2026 in `STAGE_1_TEST
 
 ## Stage 7 — Engineering foundations (parallel track)
 
-**Approved 3 Oct 2026 as DEC-19 (option B).** Structure and coding standards are in [ENGINEERING_STANDARDS.md](ENGINEERING_STANDARDS.md). This track changes structure only, never behaviour. **Only S7-01 may start before D-03.** S7-02 … S7-06 touch files that carry uncommitted edits, so they also wait until that work is committed. *D-19 answered 20 Nov 2026 (DEC-28, option B):* S7-02 … S7-06 were never unblocked, so this gate stands until D-03; the early S7-04 commit `caa85a7` is kept as it is.
+**Approved 3 Oct 2026 as DEC-19 (option B).** Structure and coding standards are in [ENGINEERING_STANDARDS.md](ENGINEERING_STANDARDS.md). This track changes structure only, never behaviour. **Only S7-01 may start before D-03.** *D-03 answered 21 Nov 2026 (DEC-33): Stage 1 accepted, so S7-02 … S7-06 are unblocked; when they run relative to the perception track (DEC-32) is Ravindra's call.* S7-02 … S7-06 touch files that carry uncommitted edits, so they also wait until that work is committed. *D-19 answered 20 Nov 2026 (DEC-28, option B):* S7-02 … S7-06 were never unblocked, so this gate stands until D-03; the early S7-04 commit `caa85a7` is kept as it is.
 
 - [~] **S7-01** Tooling baseline (option A, 3 Oct 2026): root ESLint (typescript-eslint, react-hooks), Prettier, `.editorconfig`, `lint`/`format` scripts and a CI workflow. No application logic changed. — *evidence (3 Oct 2026):* `npm run lint` → 0 errors, 73 warnings; `npm run build` passes; `npm test` → 46 passed; `npm run docs:check` passes. **Not done / not verified:** the CI workflow has never run on GitHub; `format:check` is **not** in CI because 59 files are unformatted and ~20 carry uncommitted edits, so the one-time `npm run format` waits until that work is committed; `no-useless-catch` is a warning (5 sites in `products.ts`, `purchaseEvents.ts`) until S7-03; 73 existing warnings (`any`, unused vars, hook dependencies) are untouched. — Tier: light
-- [?] **S7-02** Shared types package (`packages/types`) for API request/response shapes and enums; first audit and count how many shapes are duplicated today. — D-03; *check:* three builds pass — Tier: standard
-- [?] **S7-03** Backend layering: route → service → repository, one route file per sub-task, starting with `sessions.ts` then `products.ts`. — D-03; *check:* `npm test` and `npm run test:integration --workspace=backend` unchanged — Tier: deep
-- [?] **S7-04** Backend cross-cutting: shared validation, one error shape, structured logging and a validated config module. — D-03; *check:* same, plus a test per piece. *Note (8 Nov 2026):* the "one error shape" piece is already committed (`caa85a7`, 2 Nov, het2108: `backend/src/lib/errors.ts`, routes and the dashboard API client) ahead of this gate. Ravindra chose to keep it and keep the gate (DEC-28, 20 Nov 2026). `npm test` → 55 passed, including 9 for the error module. **Not verified:** builds, `npm run test:integration`, and dashboard error messages in a browser. Shared validation, structured logging and the config module are not done. Stays `[?]` until D-03; nothing more is built on `caa85a7` before then. — Tier: standard
-- [?] **S7-05** Shared UI package (`packages/ui`): audit dashboard and kiosk for real duplication first, then extract only what both use. — D-03; *check:* both frontend builds pass — Tier: standard
-- [?] **S7-06** Frontend feature folders for the dashboard pages and kiosk screens; tidy `lib/api.ts` into the single typed client. — D-03; *check:* both builds pass, kiosk path to handoff re-checked in a browser — Tier: standard
+- [ ] **S7-02** Shared types package (`packages/types`) for API request/response shapes and enums; first audit and count how many shapes are duplicated today. — D-03; *check:* three builds pass — Tier: standard
+- [ ] **S7-03** Backend layering: route → service → repository, one route file per sub-task, starting with `sessions.ts` then `products.ts`. — D-03; *check:* `npm test` and `npm run test:integration --workspace=backend` unchanged — Tier: deep
+- [~] **S7-04** Backend cross-cutting: shared validation, one error shape, structured logging and a validated config module. — D-03; *check:* same, plus a test per piece. *Note (8 Nov 2026):* the "one error shape" piece is already committed (`caa85a7`, 2 Nov, het2108: `backend/src/lib/errors.ts`, routes and the dashboard API client) ahead of this gate. Ravindra chose to keep it and keep the gate (DEC-28, 20 Nov 2026). `npm test` → 55 passed, including 9 for the error module. **Not verified:** builds, `npm run test:integration`, and dashboard error messages in a browser. Shared validation, structured logging and the config module are not done. D-03 answered 21 Nov 2026 (DEC-33): the gate is lifted, so the finished error-shape piece is marked `[~]`; the other three pieces are not started. — Tier: standard
+- [ ] **S7-05** Shared UI package (`packages/ui`): audit dashboard and kiosk for real duplication first, then extract only what both use. — D-03; *check:* both frontend builds pass — Tier: standard
+- [ ] **S7-06** Frontend feature folders for the dashboard pages and kiosk screens; tidy `lib/api.ts` into the single typed client. — D-03; *check:* both builds pass, kiosk path to handoff re-checked in a browser — Tier: standard
 
 ---
 

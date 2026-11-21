@@ -33,7 +33,11 @@ Setup faults found and fixed before testing: `DATABASE_URL` in `backend/.env` ha
 | S1-07 | Privacy → department → sizes (M, L) → preferences → tone/shape (manual) | Recommendations load | 8 in-stock pieces; FREE-size items matched M/L | Pass |
 | S1-07 | Edit preferences → Designer Sarees | New list reflects the change | 4 sarees | Pass — see issue 1 (fixed, re-tested below) |
 | S1-07 | Handoff | Code shown; staff can find it | Code `MKB93L`; found in dashboard search (lower-case input works) with the edited preferences and 4 pieces | Pass |
-| S1-08 | Camera: success, denied, poor light | — | Not run: needs a real camera and store lighting | **Owner** |
+| S1-08 | Camera: success (21 Nov 2026, Ravindra, Chrome, home webcam) | Estimate shown in neutral wording; "Use this estimate" returns to the picker with that tone selected and changeable | Card showed "Beta · Estimated tone: Tone 2"; picker kept Tone 2 and could change it | Pass (wording); accuracy not validated, see DEC-32 |
+| S1-08 | Camera: permission denied | Helpful message, manual selection still possible | Pass, as reported by Ravindra | Pass |
+| S1-08 | Camera: poor light | "Unable to estimate reliably" or an estimate the shopper can correct; never blocks | Pass, as reported by Ravindra | Pass |
+| S1-08 | Camera: manual fallback | "Select manually" → pick tone and shape → recommendations load | Pass, as reported by Ravindra | Pass |
+| S1-08 | Camera: first run (20 Nov 2026) | Neutral wording | Card said "Estimated tone: fair"; estimate looked too light in a backlit room | Fail → fixed 21 Nov (shared Tone 1–4 labels, "Beta"), re-run above |
 | S1-09 | Idle on size screen | Warning, then Keep shopping keeps choices | Warning at ~105 s ("cleared in 15 seconds"); Keep shopping kept XL | Pass |
 | S1-09 | Idle without interaction | Reset to welcome at 120 s | Returned to welcome; sizes cleared on re-entry | Pass |
 | S1-09 | Start over | Choices cleared | Sizes cleared on re-entry | Pass |

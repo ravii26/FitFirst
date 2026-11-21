@@ -4,19 +4,20 @@
 
 ## Right now
 
-- **Last updated:** 20 November 2026
+- **Last updated:** 21 November 2026
 - **Target design:** `prototype_v2/` (DEC-26, 17 Nov). Its screens that had no task were added to the checklist as 34 **V2 draft** tasks (116 → 150) for Ravindra's review; they do not change the order of work below. Each stage gate now needs a V2 comparison first
 - **AI model per task:** tasks in Stages 0, 0.5, 1, 2 and 7 carry a tier (deep / standard / light / none); pick the model from `AGENTS.md` §4b (DEC-27)
-- **Stage:** Stage 0.5 (urgent fixes) **complete**: all 9 tasks accepted by 20 Nov 2026, seven weeks after its 2 Oct deadline; Stage 1 implemented, **not yet accepted**
-- **Focus:** the camera check (S1-08) and Ravindra's Stage 1 decision (D-03). Stage 7 stays gated until D-03 (DEC-28, 20 Nov): the early S7-04 error-shape commit `caa85a7` (2 Nov, het2108) is kept, but nothing more is built on it. S05-04 (`.env` path) was implemented and accepted 24 Oct; S05-05 (try-on default model) implemented and accepted 24 Oct; S05-06 (repo hygiene) implemented and accepted 24 Oct; S05-07 (config truth) implemented and accepted 24 Oct; S05-08 (demo-facing kiosk fixes, neutral "Tone 1–4" labels, DEC-24) implemented and accepted 24 Oct; the API keys were rotated (DEC-21)
+- **Stage:** Stage 0.5 complete (20 Nov); **Stage 1 accepted 21 Nov 2026** (D-03, DEC-33). Next is the **perception track** (DEC-32), before Stage 2
+- **Focus:** Ravindra reviews the draft [PERCEPTION_PLAN.md](PERCEPTION_PLAN.md) (tasks SP-01 … SP-11; decisions P-D1 … P-D4 and D-11). Stage 7 (S7-02 … S7-06) is unblocked by DEC-33; when it runs relative to the perception track is Ravindra's call. The early S7-04 error-shape commit `caa85a7` counts as that task's first piece
 - **Maturity:** single-store pilot prototype
 - **Branch:** `architecture-changes`, two commits ahead of `feature/stage-1-pilot-stabilization`; `main` has none of the Stage 0.5 or Stage 1 work (verify with `git status` before relying on it)
-- **Blocked on owner decision:** yes — D-03 (Stage 1 acceptance); D-04 / D-05 (pilot shop, POS path) before any pitch
+- **Blocked on owner decision:** yes — the perception plan review (P-D1 … P-D4, D-11); D-04 / D-05 (pilot shop, POS path) before any pitch
 - **Calendar pressure:** MASTER_PLAN §11 targeted an October pitch and an early-December go-live. October has passed with the pitch kit (Stage 0, S0-10) not started and no pilot shop confirmed, so whether early December still holds is an open question for Ravindra
 
 ## Start here (the next three actions)
 
-1. **S1-08 camera check, then D-03.** Ravindra runs the camera check, then accepts Stage 1 or raises a defect list from the browser test log in `STAGE_1_TEST_GUIDE.md`. In parallel, the pilot-shop conversation (D-04 / D-05) is the main business step; `docs/TEAM_GUIDE.md` lists the questions for team discussion.
+1. **Review the perception plan** ([PERCEPTION_PLAN.md](PERCEPTION_PLAN.md), draft 21 Nov): approve its tasks (SP-01 … SP-11) and answer P-D1 … P-D4 and D-11.
+2. **Pilot-shop conversation (D-04 / D-05)** in parallel: it is the main business step, and the shop's camera hardware feeds P-D2; `docs/TEAM_GUIDE.md` lists the questions for team discussion.
 
 ## Progress at a glance
 
@@ -24,14 +25,14 @@
 |---|---|---|---|---|---|
 | 0 — Direction and safety | 3 | 1 | 6 | 10 | Keys rotated (S0-04, awaiting tick); rest waiting on owner input |
 | 0.5 — Urgent technical fixes | 9 | 0 | 0 | 9 | **Complete (20 Nov 2026)**, past the 2 Oct deadline. S05-01 … S05-03 accepted after a live dashboard scan; S05-09 CI green on GitHub (build, vitest, lint, pytest, gitleaks) |
-| 1 — Stabilise the pilot | 0 | 11 | 2 | 13 | Browser checks recorded 25 Sep (camera S1-08 left); awaiting D-03 |
+| 1 — Stabilise the pilot | 13 | 0 | 0 | 13 | **Accepted 21 Nov 2026** (DEC-33); camera S1-08 passed after the beta wording fix; follow-ups in DEC-33 |
 | 2 — Single-store operations | 0 | 0 | 42 | 42 | Not started; 4 decisions first |
 | 3 — Customer and staff experience | 0 | 0 | 23 | 23 | Planned |
 | 4 — Measurement and deployment | 0 | 0 | 13 | 13 | Planned |
-| 5 — Recommendation evidence and AI | 0 | 0 | 14 | 14 | Planned |
+| 5 — Recommendation evidence and AI | 0 | 0 | 16 | 16 | Planned |
 | 6 — Multi-store and commercial | 0 | 0 | 20 | 20 | Planned |
-| 7 — Engineering foundations (parallel) | 0 | 1 | 5 | 6 | S7-01 implemented, not accepted (CI never run on GitHub); S7-02 … S7-06 recorded as waiting for D-03, the early S7-04 error shape (`caa85a7`) is kept but gated (DEC-28) |
-| **Total** | **12** | **13** | **125** | **150** | |
+| 7 — Engineering foundations (parallel) | 0 | 2 | 4 | 6 | S7-01 implemented (CI green on GitHub since 20 Nov), not accepted; S7-02 … S7-06 unblocked by DEC-33; S7-04's error-shape piece (`caa85a7`) done, the rest not started |
+| **Total** | **25** | **2** | **125** | **152** | |
 
 Update these counts whenever you tick an item in [END_TO_END_CHECKLIST.md](END_TO_END_CHECKLIST.md).
 
@@ -41,7 +42,6 @@ Full list and trade-offs in [DECISIONS.md](DECISIONS.md).
 
 | ID | Question | Urgency |
 |---|---|---|
-| D-03 | Accept Stage 1, or raise a defect list? | After the camera check (S1-08) |
 | D-04 / D-05 | Pilot shop and scope; POS path A or B | Before the pitch meeting |
 | D-06 / D-07 | v2 migration strategy; how stock is split into sizes | Before Stage 2 coding |
 | D-20 | When do `orgId` / `storeId` go into the database? | Before Stage 2 schema work |

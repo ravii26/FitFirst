@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { sampleSkinToneFromCanvas, classifySkinToneFromRGB, SkinToneBucket } from "../utils/visionAnalyzer";
+import { SKIN_TONE_LABEL } from "../utils/toneLabels";
 
 interface SampleItem {
   r: number;
@@ -81,8 +82,9 @@ export default function CameraScan({ onDetected, onCancel }: { onDetected: (skin
     {error && <p role="alert">{error}</p>}
     {!finished && !error && <button className="btn-kiosk btn-primary" disabled={!ready || remaining !== null} onClick={() => { samples.current = []; setRemaining(3); }}>{!ready ? "Waiting for camera…" : remaining !== null ? `Sampling… ${remaining}s` : "Estimate my skin tone"}</button>}
     {finished && <div className="privacy-box" style={{ textAlign: "center" }}>
-      <h3>{result ? `Estimated tone: ${result.toLowerCase()}` : "Unable to estimate reliably"}</h3>
-      <p>{result ? "This is an approximate colour sample, not a confirmed measurement. Please review it." : "No consistent sample was found. Try different lighting or select manually."}</p>
+      {result && <div style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--brass)", letterSpacing: "0.14em", textTransform: "uppercase" }}>Beta</div>}
+      <h3>{result ? `Estimated tone: ${SKIN_TONE_LABEL[result]}` : "Unable to estimate reliably"}</h3>
+      <p>{result ? "This is an approximate colour sample, not a confirmed measurement. You'll confirm or change it on the next screen." : "No consistent sample was found. Try different lighting or select manually."}</p>
       {result && <button className="btn-kiosk btn-primary" onClick={() => onDetected(result)}>Use this estimate</button>}
       <button className="btn-kiosk btn-ghost" onClick={() => setAttempt(n => n + 1)}>Try again</button>
     </div>}
