@@ -111,7 +111,6 @@ Real findings from code review that are **not** yet tasks. Raise them to the che
 | A fresh checkout needs `npx prisma generate` before `npm test`, or 3 scoring tests fail with "Cannot convert undefined or null to object" | `backend/` |
 | Inventory low-stock and ageing highlights use a CSS variable that is not defined, so they never show colour | `dashboard/src/pages/Inventory.tsx` |
 | `.gitignore` ends with a bare `.env.example` line after `!.env.example`, so any new `.env.example` (e.g. a sub-folder's) is ignored; the root one is tracked only because it was added earlier | `.gitignore` (last line) |
-| Ravindra's `backend/.env` sets `AICREDITS_TAG_MODEL=gemini-2.0-flash`, so the tagger is not using the code default (`google/gemini-2.5-flash-lite`); worth confirming during the S05-01 … S05-03 owner check | `backend/.env` (local, not in git) |
 | The CI workflow still runs `npm install` with a comment saying the lock file is git-ignored; since S05-06 it is committed, so CI could use `npm ci` (S05-09) | `.github/workflows/ci.yml:18-19` |
 | Shutdown disconnects Prisma before closing the server, so requests in progress can fail during a restart (read from the code, not run) | `backend/src/index.ts:90-94` |
 | `Product.sku` and `DailyBaseline.date` are unique across the whole database, so adding a store needs these constraints changed too; `ARCHITECTURE.md` §7 calls tenancy "one migration and a query filter", which understates it (see D-20) | `backend/prisma/schema.prisma:97,179` |
