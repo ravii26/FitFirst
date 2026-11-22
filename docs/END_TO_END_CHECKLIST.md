@@ -21,13 +21,14 @@
 | 0 — Direction and safety | 3 | 1 | 6 | 10 |
 | 0.5 — Urgent technical fixes | 9 | 0 | 0 | 9 |
 | 1 — Stabilise the pilot | 13 | 0 | 0 | 13 |
+| P — Perception (core track) | 0 | 0 | 12 | 12 |
 | 2 — Single-store operations | 0 | 0 | 42 | 42 |
 | 3 — Customer and staff experience | 0 | 0 | 23 | 23 |
 | 4 — Measurement and deployment | 0 | 0 | 13 | 13 |
-| 5 — Recommendation evidence and AI | 0 | 0 | 16 | 16 |
+| 5 — Recommendation evidence and AI | 0 | 0 | 14 | 14 |
 | 6 — Multi-store and commercial | 0 | 0 | 20 | 20 |
 | 7 — Engineering foundations (parallel) | 0 | 2 | 4 | 6 |
-| **Total** | **25** | **3** | **124** | **152** |
+| **Total** | **25** | **3** | **134** | **162** |
 
 Keep this table and the one in `PROJECT_STATUS.md` in step.
 
@@ -45,7 +46,7 @@ This confirms the plan covers the whole product, while keeping *planned* separat
 | POS integration (path A) | Yes | Not started | 0, 6 |
 | FitFirst Billing (path B) | Yes | Not started; needs owner approval | 0, 6 |
 | AI tagging and recommendations | Yes | Prototype tagger and deterministic scorer | 1, 5 |
-| Camera perception | Yes | Skin-tone prototype only; unvalidated; camera v2 and the swatch-plus-quiz fallback drafted as S5-15 / S5-16 | 1, 5 |
+| Camera perception | Yes | Skin-tone prototype only (beta, unvalidated); the perception track SP-01 … SP-12 covers skin tone v2, body type, garment colour, rules and a 200-person evaluation | 1, P, 5 |
 | Virtual try-on | Yes | Separate prototype, not integrated | 5 |
 | Auth, roles and tenancy | Yes | Shared-PIN pilot auth; no roles or stores | 2, 6 |
 | Privacy, consent and retention | Yes | Notice screen only; no consent records | 0, 2, 5, 6 |
@@ -106,6 +107,23 @@ Automated checks pass; browser checks were recorded 25 Sep 2026 in `STAGE_1_TEST
 - [x] **S1-11** Inventory image, invalid stock, CSV validation and analytics checks. *Evidence (25 Sep 2026):* invalid stock (UI and API), CSV validation and analytics pass; no demo product has an image — `STAGE_1_TEST_GUIDE.md`. **Accepted by Ravindra, 21 Nov 2026 (D-03, DEC-33).** — Tier: light
 - [x] **S1-12** Record expected result, actual result, screenshots/issues, tester and date for each check. *Evidence (25 Sep 2026):* the browser test log in `STAGE_1_TEST_GUIDE.md` records check, expected, actual, result, tester, date and five issues. **Missing:** screenshots. S1-08 (camera) was added to the log on 21 Nov 2026. **Accepted by Ravindra, 21 Nov 2026 (D-03, DEC-33), without screenshots.** — Tier: light
 - [x] **S1-13 (owner)** Accept Stage 1, or produce a prioritised defect list. — D-03 **Ravindra accepted Stage 1 on 21 Nov 2026 (DEC-33); follow-ups listed there.** — Tier: none
+
+## Stage P — Perception (core track)
+
+**Approved by Ravindra, 23 Nov 2026** ("Yes, add all 12"), from [PERCEPTION_PLAN.md](PERCEPTION_PLAN.md) §8. DEC-32 makes this FitFirst's core track and puts it before Stage 2. Decisions: vision library DEC-35, camera DEC-36, rule tables DEC-37, accuracy bars DEC-38, body wording DEC-39, shape set DEC-40. **No shopper, including at the pilot shop, sees either scan until SP-10's report passes every bar in every skin-depth group, an owner accepts it (SP-11), and S0-08 is done.** Can start now: SP-01, the SP-04 draft, SP-06, SP-12.
+
+- [ ] **SP-01** MediaPipe Tasks-Vision spike (DEC-35): add `@mediapipe/tasks-vision` to the kiosk at an exact pinned version; host the Face Landmarker, Pose Landmarker and selfie multiclass segmenter model files ourselves; a hidden test page (not reachable by shoppers) showing the face mesh, body points and skin/hair/clothes mask with fps and scan time, and the camera's exposure and white-balance lock capabilities. Measure on a laptop, a mid-range Android phone and a candidate kiosk device, on built-in cameras (DEC-36). Edge cases: no WebGL, camera blocked, first load offline, two people in frame, dupatta or hijab, very dark or bright light. *Done when:* a report with numbers per device; more than about 3 s per kiosk scan reopens a kiosk-only shop server as a decision. — P-D1 (DEC-35) — Tier: deep
+- [ ] **SP-02** Buy and test the kiosk camera kit (DEC-36): a mid-range 1080p webcam whose exposure and white balance lock from the browser (checked on the actual unit, from a seller with a return window), a soft panel light and a grey reference card, about ₹8,000–12,000 per kiosk. Must finish before SP-03's sessions and SP-10; not needed for SP-01 or SP-05 development. — P-D2 (DEC-36) — Tier: standard
+- [ ] **SP-03** Evaluation tool and consent form; recruit **200 adults**, about 40 per skin-depth group, men and women, 18–60, each scanned in daylight, shop LED and a warm bulb (and fitted and loose clothing for body). A stylist labels each person in person; self-report recorded. The first 60 are an internal checkpoint only. Consented photos kept encrypted inside the evaluation set and deleted at the end. — P-D4 (DEC-38); S0-08 for the consent wording; SP-02 for the kit — Tier: standard
+- [ ] **SP-04** Stylist rule tables v1 (DEC-37): Claude drafts a readable document (not code) from published guidance, adapted for Indian skin and garments, with sources: colour (depth × undertone × contrast × garment colour), shape (5 women's and 3 men's shapes × garment type × silhouette and drape, DEC-40) and neutral reason texts in EN/HI/GU. Guardrails: no colour forbidden for any tone; no "fairer", "slimmer" or weight words; a fairness check that every depth gets an equally wide and attractive range. A stylist reviews and signs; an owner approves; only then does it enter the code. — P-D3 (DEC-37); sign-off needs SP-12 — Tier: deep
+- [ ] **SP-05** Skin tone v2 on the kiosk (PERCEPTION_PLAN §3; replaces draft S5-15): face landmarks with quality gates and a face-skin mask; forehead and upper-cheek samples with highlights and shadows dropped; 20–30 frames, median; grey-card light correction, with exposure and white balance locked where the camera allows and working when it does not (DEC-36); depth group shown as the 3 nearest Monk swatches for the shopper to tap; undertone and skin–hair contrast, each allowed to be "unknown"; a confidence score; "not sure" instead of a guess; no image stored or sent; neutral wording only. Stays switched off for shoppers until SP-11. — SP-01; SP-02 before evaluation — Tier: deep
+- [ ] **SP-06** Swatch-plus-quiz tone fallback (PERCEPTION_PLAN §3; replaces draft S5-16): the Tone swatches plus three questions (gold or silver jewellery; wrist veins green, blue or both; in the sun you tan, burn or both) for shoppers who skip or decline the camera, have no camera, cover their hair, or are on a Kids profile; never blocks shopping. — S3-03 — Tier: standard
+- [ ] **SP-07** Body type from a phone photo (PERCEPTION_PLAN §4), behind a switch that stays off: quality gates, pose points and body outline, shoulder/waist/hip ratios, a height band from the shopper, a loose-clothing check that lowers confidence or abstains; result shown as the closest **unnamed drawing** with its neighbours, in fit-goal words only (DEC-39), over 5 women's and 3 men's shapes (DEC-40); adults only (18+), no body estimate on a Kids profile; photos processed in the phone's browser and discarded. — SP-01; D-11 and D-25 (DEC-39, DEC-40) — Tier: deep
+- [ ] **SP-08** Measured garment colour (CIELAB) from product photos, with confidence and source, so rules can score depth × undertone × contrast; does the work of S5-03. — SP-01 — Tier: standard
+- [ ] **SP-09** Confidence-aware scoring and neutral reasons (PERCEPTION_PLAN §5.3, §5.4) from the signed SP-04 tables; tone and shape may be "unknown" and are then scored without that input, replacing the silent Tone 2 / Hourglass defaults in `kiosk/src/screens/Recommendations.tsx:80-81, 97-98` (DEC-33 follow-up). — SP-04, SP-05 — Tier: deep
+- [ ] **SP-10** Run the 200-person evaluation and write the report: every PERCEPTION_PLAN §1 bar, per condition and **per skin-depth group** (each group must pass on its own), on the option B kit. — SP-02, SP-03, SP-05, SP-07; DEC-38 — Tier: deep
+- [ ] **SP-11 (owner)** Accept the perception track: review SP-10's report against the §1 bars and decide whether each scan may be switched on for shoppers. — SP-10, S0-08 — Tier: none
+- [ ] **SP-12 (owner)** Find a stylist who knows Indian skin and ethnic wear to review and sign the SP-04 rule tables; agree scope and fee. — DEC-37 — Tier: none
 
 ## Stage 2 — Single-store operations
 
@@ -174,7 +192,7 @@ Automated checks pass; browser checks were recorded 25 Sep 2026 in `STAGE_1_TEST
 - [ ] **S3-01** Ask department/category before attributes, and ask only size questions relevant to that category.
 - [ ] **S3-02** Add budget, occasion, colour likes/dislikes and optional fit goals.
 - [ ] **S3-03** Make tone and body inputs optional, neutral and easy to correct.
-- [ ] **S3-04** Replace colourist labels with neutral depth language throughout. — D-11
+- [ ] **S3-04** Replace colourist labels with neutral depth language throughout. — D-11 (decided, DEC-39: body shape as unnamed drawings, fit-goal words)
 - [ ] **S3-05** Show three strong picks first, with real product media and true availability.
 - [ ] **S3-06** Add details, shortlist / Add to Try, edit preferences and contextual help.
 - [ ] **S3-07** Add the expiring QR handoff, and show "staff notified" only when delivery is confirmed.
@@ -182,7 +200,7 @@ Automated checks pass; browser checks were recorded 25 Sep 2026 in `STAGE_1_TEST
 - [ ] **S3-09** Complete responsive, keyboard, touch, focus, contrast and reduced-motion checks.
 - [ ] **S3-10** Add missing-photo and connection states that never misrepresent inventory.
 - [ ] **S3-11** Validate the journey with representative shoppers and staff.
-- [?] **S3-13** Regroup the kiosk into V2's five labelled steps (Section → Looking for → Size → Colouring & fit → Picks), every step-4 input skippable with nothing assumed, plus V2's idle prompt and reset timing. — V2 draft; D-10, D-11, D-24
+- [?] **S3-13** Regroup the kiosk into V2's five labelled steps (Section → Looking for → Size → Colouring & fit → Picks), every step-4 input skippable with nothing assumed, plus V2's idle prompt and reset timing. — V2 draft; D-10 (decided, DEC-32), D-11 (decided, DEC-39), D-24
 - [ ] **S3-14** Results as one hero pick plus a ranked list: no match %, "why it suits you" from the top-scoring rule, true size availability, an add-to-try toggle and try-list tray, "Store pick · offer" labels. — V2 draft; details S3-05, S3-06
 - [ ] **S3-15** A "Call staff" button on every kiosk screen that raises an alert in the live queue. — V2 draft
 - [ ] **S3-16** Per-purpose consent switches and a kind "nothing was saved" screen when the shopper declines. — V2 draft; with S2-A04
@@ -215,7 +233,7 @@ Automated checks pass; browser checks were recorded 25 Sep 2026 in `STAGE_1_TEST
 
 - [ ] **S5-01** Create a stylist-reviewed garment evaluation set.
 - [ ] **S5-02** Version the taxonomy, rulesets, prompts and model adapters. — D-09
-- [ ] **S5-03** Measure colour in a documented colour space; retain confidence and source.
+- [ ] **S5-03** Measure colour in a documented colour space; retain confidence and source. — the work is done by SP-08 (approved 23 Nov 2026)
 - [ ] **S5-04** Add human review for uncertain garment tags; invalid values must never silently default.
 - [ ] **S5-05** Evaluate camera repeatability and lighting before making any store claim. — D-10
 - [ ] **S5-06** Improve category-specific size, silhouette, occasion, budget and diversity rules.
@@ -226,8 +244,6 @@ Automated checks pass; browser checks were recorded 25 Sep 2026 in `STAGE_1_TEST
 - [ ] **S5-11** If approved: consent, 18+ gate, provider DPA, quotas, automated QA, AI labelling, retention and cost monitoring.
 - [?] **S5-13** Clearance page: aged stock with "shown · 7 days", a plain-words markdown suggestion (never an automatic price change), the clearance simulator (same shopper, nudge off and on), and pushes with an optional staff incentive. — V2 draft; with S5-07; D-23
 - [ ] **S5-14** Ruleset lifecycle: clone → edit weights on the draft → activate with a manager PIN. — V2 draft; with S5-02
-- [ ] **S5-15** Camera v2 skin-tone estimate, as `MASTER_PLAN.md` §5.3 "Skin tone v2" describes it: MediaPipe Face Landmarker with quality gates and a face-skin mask; forehead and upper-cheek samples with highlights and shadows dropped; 20–30 frames; a grey reference patch with exposure and white balance locked where the camera allows; ITA depth groups shown as the 3 nearest Monk swatches for the shopper to pick; undertone and skin–hair contrast with an "unknown" answer when unsure; a confidence score; no images stored; neutral wording only (never fair, dark or wheatish). *Why:* the Stage 1 camera (a raw colour average of a fixed centre box, no face detection or lighting correction) gave a clearly lighter estimate in a backlit room during the S1-08 owner check (20 Nov 2026). — Draft (20 Nov 2026), for Ravindra's review; D-10, S0-08, S5-05; needs a kiosk camera whose exposure and white balance can be locked (a hardware buying criterion) — Tier: deep
-- [ ] **S5-16** Swatch-plus-quiz tone fallback, as `MASTER_PLAN.md` §5.3 "Fallbacks" describes it: the Tone swatches plus three questions (gold or silver jewellery; wrist veins green, blue or both; in the sun you tan, burn or both) for shoppers who skip or decline the camera, have no camera, cover their hair, or are on a Kids profile; never blocks shopping. — Draft (20 Nov 2026), for Ravindra's review; D-10, S3-03 — Tier: standard
 - [ ] **S5-12 (owner)** Approve every new model or provider, and review the evaluation report. *V2 comparison first:* list each difference from `prototype_v2/` for this stage's screens as intended, improved or missed (see "V2 target tasks").
 
 ## Stage 6 — Multi-store and commercial scale

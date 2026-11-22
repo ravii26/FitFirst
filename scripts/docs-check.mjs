@@ -58,12 +58,13 @@ function parseDate(text) {
 
 /**
  * Rows of a "| 0.5 — Label | done | partial | open | total |" progress table,
- * keyed by stage NUMBER so wording can drift without breaking the check.
+ * keyed by stage NUMBER (or "P", the perception track, DEC-32) so wording can
+ * drift without breaking the check.
  */
 function progressRows(md) {
   const rows = new Map();
   for (const line of md.split(/\r?\n/)) {
-    const m = line.match(/^\|\s*(?:\*\*)?([0-9][0-9.]*)\s+—[^|*]*?(?:\*\*)?\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|/);
+    const m = line.match(/^\|\s*(?:\*\*)?([0-9][0-9.]*|P)\s+—[^|*]*?(?:\*\*)?\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|/);
     if (m) rows.set(m[1], { done: +m[2], partial: +m[3], open: +m[4], total: +m[5] });
   }
   return rows;
@@ -82,7 +83,7 @@ if (checklist && status) {
   let stage = null;
 
   for (const line of checklist.split(/\r?\n/)) {
-    const heading = line.match(/^##\s+Stage\s+([0-9][0-9.]*)\s*(?:—\s*(.*))?$/);
+    const heading = line.match(/^##\s+Stage\s+([0-9][0-9.]*|P)\s*(?:—\s*(.*))?$/);
     if (heading) {
       stage = heading[1];
       actual.set(stage, { done: 0, partial: 0, open: 0, total: 0, label: (heading[2] || '').trim() });
@@ -98,7 +99,7 @@ if (checklist && status) {
     else bucket.open++;
     bucket.total++;
 
-    const id = line.match(/\*\*([A-Z]\d+(?:\.\d+)?-[A-Z]?\d+[a-z]?)\b/);
+    const id = line.match(/\*\*([A-Z]\d+(?:\.\d+)?-[A-Z]?\d+[a-z]?|SP-\d+)\b/);
     if (!id) {
       warnings.push(`Checklist item without an ID in Stage ${stage}: ${line.trim().slice(0, 70)}…`);
     } else if (ids.has(id[1])) {

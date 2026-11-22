@@ -4,19 +4,19 @@
 
 ## Right now
 
-- **Last updated:** 21 November 2026
+- **Last updated:** 23 November 2026
 - **Target design:** `prototype_v2/` (DEC-26, 17 Nov). Its screens that had no task were added to the checklist as 34 **V2 draft** tasks (116 → 150) for the owners' review; they do not change the order of work below. Each stage gate now needs a V2 comparison first
 - **AI model per task:** tasks in Stages 0, 0.5, 1, 2 and 7 carry a tier (deep / standard / light / none); pick the model from `AGENTS.md` §4b (DEC-27)
 - **Stage:** Stage 0.5 complete (20 Nov); **Stage 1 accepted 21 Nov 2026** (D-03, DEC-33). Next is the **perception track** (DEC-32), before Stage 2
-- **Focus:** the owners (Ravindra, Het Thakkar) review the draft [PERCEPTION_PLAN.md](PERCEPTION_PLAN.md) (tasks SP-01 … SP-11; decisions P-D1 … P-D4 and D-11). Stage 7 (S7-02 … S7-06) is unblocked by DEC-33; when it runs relative to the perception track is the owners' call. The early S7-04 error-shape commit `caa85a7` counts as that task's first piece
+- **Focus:** the owners (Ravindra, Het Thakkar) review the draft [PERCEPTION_PLAN.md](PERCEPTION_PLAN.md) (tasks SP-01 … SP-12 approved into the checklist 23 Nov as Stage P; every perception decision answered 22–23 Nov: P-D1 MediaPipe in the browser, DEC-35; P-D2 built-in camera for now, webcam kit before real testing, DEC-36; P-D3 rules drafted from published guidance and reviewed by a stylist, DEC-37, with no stylist found yet; P-D4 full bar on 200 people before any shopper sees a scan, DEC-38; D-11 body shape as unnamed drawings with fit-goal words, DEC-39; D-25 five women's shapes plus a men's set, DEC-40). Stage 7 (S7-02 … S7-06) is unblocked by DEC-33; when it runs relative to the perception track is the owners' call. The early S7-04 error-shape commit `caa85a7` counts as that task's first piece
 - **Maturity:** single-store pilot prototype
 - **Branch:** `architecture-changes`, two commits ahead of `feature/stage-1-pilot-stabilization`; `main` has none of the Stage 0.5 or Stage 1 work (verify with `git status` before relying on it)
-- **Blocked on owner decision:** yes — the perception plan review (P-D1 … P-D4, D-11); D-04 / D-05 (pilot shop, POS path) before any pitch
+- **Blocked on owner decision:** yes — the perception plan review (none left; SP-01 waits only for an owner to say start); D-04 / D-05 (pilot shop, POS path) before any pitch
 - **Calendar pressure:** MASTER_PLAN §11 targeted an October pitch and an early-December go-live. October has passed with the pitch kit (Stage 0, S0-10) not started and no pilot shop confirmed, so whether early December still holds is an open question for Ravindra
 
 ## Start here (the next three actions)
 
-1. **Review the perception plan** ([PERCEPTION_PLAN.md](PERCEPTION_PLAN.md), draft 21 Nov): approve its tasks (SP-01 … SP-11) and answer P-D1 … P-D4 and D-11.
+1. **Review the perception plan** ([PERCEPTION_PLAN.md](PERCEPTION_PLAN.md), draft 21 Nov): Stage P is approved (SP-01 … SP-12). Next: an owner says "start SP-01" (the MediaPipe test page, the first code change); in parallel Claude drafts the SP-04 rule tables and the owners look for a stylist (SP-12). Start looking for a stylist who knows Indian wear to review the rule tables (DEC-37).
 2. **Pilot-shop conversation (D-04 / D-05)** in parallel: it is the main business step, and the shop's camera hardware feeds P-D2; `docs/TEAM_GUIDE.md` lists the questions for team discussion.
 
 ## Progress at a glance
@@ -26,13 +26,14 @@
 | 0 — Direction and safety | 3 | 1 | 6 | 10 | Keys rotated (S0-04, awaiting tick); rest waiting on owner input |
 | 0.5 — Urgent technical fixes | 9 | 0 | 0 | 9 | **Complete (20 Nov 2026)**, past the 2 Oct deadline. S05-01 … S05-03 accepted after a live dashboard scan; S05-09 CI green on GitHub (build, vitest, lint, pytest, gitleaks) |
 | 1 — Stabilise the pilot | 13 | 0 | 0 | 13 | **Accepted 21 Nov 2026** (DEC-33); camera S1-08 passed after the beta wording fix; follow-ups in DEC-33 |
+| P — Perception (core track) | 0 | 0 | 12 | 12 | **Next.** Tasks approved 23 Nov 2026; all decisions answered (DEC-35 … DEC-40). Can start: SP-01, the SP-04 draft, SP-06, SP-12 (owner: find a stylist) |
 | 2 — Single-store operations | 0 | 0 | 42 | 42 | Not started; 4 decisions first |
 | 3 — Customer and staff experience | 0 | 0 | 23 | 23 | Planned |
 | 4 — Measurement and deployment | 0 | 0 | 13 | 13 | Planned |
-| 5 — Recommendation evidence and AI | 0 | 0 | 16 | 16 | Planned |
+| 5 — Recommendation evidence and AI | 0 | 0 | 14 | 14 | Planned |
 | 6 — Multi-store and commercial | 0 | 0 | 20 | 20 | Planned |
 | 7 — Engineering foundations (parallel) | 0 | 2 | 4 | 6 | S7-01 implemented (CI green on GitHub since 20 Nov), not accepted; S7-02 … S7-06 unblocked by DEC-33; S7-04's error-shape piece (`caa85a7`) done, the rest not started |
-| **Total** | **25** | **2** | **125** | **152** | |
+| **Total** | **25** | **3** | **134** | **162** | |
 
 Update these counts whenever you tick an item in [END_TO_END_CHECKLIST.md](END_TO_END_CHECKLIST.md).
 

@@ -1,6 +1,6 @@
 # Perception track plan — skin tone, body type and the recommendations built on them
 
-> **Status:** DRAFT for Ravindra's approval (21 Nov 2026). Nothing here is built or decided yet except what DEC-32 says. The choices still open are listed in §9 in the `DECISION NEEDED` style; the proposed tasks in §8 enter the checklist only after approval.
+> **Status:** DRAFT (21 Nov 2026); every §9 decision answered 22–23 Nov (DEC-35 … DEC-40). Nothing is built yet. The §8 tasks were approved into the checklist as Stage P on 23 Nov 2026 (SP-01 … SP-12); the checklist is now the source of truth for them.
 >
 > **Why this exists:** DEC-32 makes perception FitFirst's core track: understanding a shopper's skin tone and body type and recommending from them is "the main whole purpose of this app". The S1-08 owner check (20 Nov 2026) showed the Stage 1 camera is not good enough: in a backlit room it gave a clearly lighter tone.
 
@@ -15,7 +15,7 @@ No camera reads skin tone or body shape perfectly; lighting, makeup, clothing an
 3. **Say "not sure" instead of guessing** when quality is poor.
 4. **Learn from every confirmation**, so the estimate improves at each shop.
 
-**Proposed accuracy bars** (Ravindra sets the final numbers, §9 decision P-D4). No shopper sees an estimate until it meets them on the evaluation set (§6):
+**Accuracy bars, accepted 23 Nov 2026 (DEC-38).** No shopper, including at the pilot shop, sees an estimate until it meets every bar on the full 200-person evaluation set (§6), **in every skin-depth group separately**:
 
 | Measure | Skin tone | Body type |
 |---|---|---|
@@ -58,7 +58,7 @@ Follows `MASTER_PLAN.md` §5.3 "Skin tone v2" (already researched), summarised:
 3. **Outline:** the selfie segmenter gives the body outline; measure widths at shoulder, bust, waist and hip lines.
 4. **Ratios, not sizes:** shoulder ÷ hip, waist ÷ hip, waist ÷ shoulder. Ratios cancel out distance, so no tape measure is needed. Height comes from the shopper (a band: petite / average / tall).
 5. **Clothing check:** loose or draped clothing (saree, anarkali, dupatta, oversized kurta) hides the outline. The app asks the shopper to note it, and a loose outline lowers confidence or abstains. This is the main accuracy risk.
-6. **Classify** into the shape set (D-11 decides which set and which words), with confidence; "not sure" when the ratios sit on a boundary.
+6. **Classify** into the shape set (DEC-40: five women's shapes including a fuller middle, three men's shapes; DEC-39: shown as unnamed drawings with fit-goal words), with confidence; "not sure" when the ratios sit on a boundary.
 7. **Confirm:** show the result as the closest silhouette with its neighbours; the shopper confirms or changes it. Shown in **fit-goal language** ("defines the waist", "balances shoulders"), never as a judgement.
 8. **Output** `{shape, ratios, heightBand, confidence, method}`; photos are processed in the phone's browser and discarded, never uploaded or stored.
 
@@ -76,7 +76,7 @@ Perception is only worth something if the suggestions improve:
 
 ## 6. Evaluation set (proves it works)
 
-- **People:** 60 adults to start (enough to see big problems), 200 to tune (MASTER_PLAN's figure). Spread across all depth groups, men and women, ages 18–60. Signed consent; the photos are kept only inside the evaluation set, encrypted, deleted at the end.
+- **People:** 200 adults (DEC-38), about 40 per depth group; the first 60 are an internal checkpoint to catch big problems early and never switch a scan on. Spread across all depth groups, men and women, ages 18–60. Signed consent; the photos are kept only inside the evaluation set, encrypted, deleted at the end.
 - **Labels:** a stylist labels each person's depth, undertone, contrast and shape in person, under daylight; the person's self-report is recorded too.
 - **Conditions:** each person scanned in three lights (daylight, shop LED, warm bulb) and, for body, in fitted and loose clothing.
 - **Report:** the §1 table per condition and per depth group, so the camera is checked to work as well on darker skin as on lighter skin.
@@ -98,29 +98,30 @@ Track ID prefix **SP** (Stage P, perception). Order: SP-01 … SP-04 first, in p
 
 | ID | Task | Depends on | Tier |
 |---|---|---|---|
-| SP-01 | Pick the vision library and prove it runs on the target kiosk and phones (speed, model size, offline) | P-D1 | deep |
-| SP-02 | Choose and test the kiosk camera against §7's criteria; buy one | P-D2 | standard |
-| SP-03 | Build the evaluation-set tool and consent form; recruit the first 60 people | P-D4, S0-08 (consent wording) | standard |
-| SP-04 | Stylist rule tables v1 (tone and shape × garment type), reviewed and signed | P-D3 | deep |
-| SP-05 | Skin tone v2 on the kiosk (§3) — replaces draft S5-15 | SP-01, SP-02 | deep |
-| SP-06 | Swatch-plus-quiz fallback (§3 fallbacks) — replaces draft S5-16 | — | standard |
-| SP-07 | Body type from a phone photo (§4), behind a switch that stays off | SP-01, D-11 | deep |
+| SP-01 | Prove MediaPipe Tasks-Vision (DEC-35) runs on the target kiosk and phones: speed, model size, offline | P-D1 (decided, DEC-35) | deep |
+| SP-02 | Choose and test the kiosk camera against §7's criteria; buy one. Runs before SP-03 / SP-10, not before SP-01 (DEC-36) | P-D2 (decided, DEC-36) | standard |
+| SP-03 | Build the evaluation-set tool and consent form; recruit 200 people (first 60 as an internal checkpoint) | P-D4 (decided, DEC-38), S0-08 (consent wording) | standard |
+| SP-04 | Stylist rule tables v1 (tone and shape × garment type): Claude drafts from published guidance, a stylist reviews and signs, an owner approves (DEC-37) | P-D3 (decided, DEC-37); a stylist reviewer (owners to find) | deep |
+| SP-05 | Skin tone v2 on the kiosk (§3) — replaced draft S5-15 (removed) | SP-01, SP-02 | deep |
+| SP-06 | Swatch-plus-quiz fallback (§3 fallbacks) — replaced draft S5-16 (removed) | — | standard |
+| SP-07 | Body type from a phone photo (§4), behind a switch that stays off | SP-01, D-11 and D-25 (decided, DEC-39, DEC-40) | deep |
 | SP-08 | Measured garment colour from product photos (§5.1) — takes over S5-03 | SP-01 | standard |
 | SP-09 | Confidence-aware scoring and neutral reasons (§5.3, §5.4); tone and shape may be "unknown", replacing the silent Tone 2 / Hourglass defaults (§2) | SP-04, SP-05 | deep |
 | SP-10 | Run the evaluation (§6) and write the report; Ravindra decides whether each scan may be switched on | SP-03, SP-05, SP-07 | deep |
 | SP-11 (owner) | Accept the perception track: review the report against the §1 bars | SP-10, S0-08 | none |
+| SP-12 (owner) | Find a stylist who knows Indian wear to review and sign SP-04 (added 23 Nov) | DEC-37 | none |
 
 ## 9. Decisions needed before building
 
-**P-D1 — Vision library.** A) MediaPipe Tasks-Vision (Google; free; runs in the browser; face, pose and segmentation in one package; what MASTER_PLAN assumes). B) TensorFlow.js models (more do-it-yourself). C) A cloud vision API (simpler but sends images off the device, which breaks the privacy promise). *Recommendation: A.*
+**P-D1 — Vision library. DECIDED 22 Nov 2026 (DEC-35): A, MediaPipe Tasks-Vision in the browser**, pinned version, model files hosted by FitFirst, images never leave the device. A single weak piece may later be swapped for another browser model (B style); a kiosk-only shop server (C) is reconsidered only if SP-01 shows kiosk scans over about 3 s; a cloud API (D) is ruled out for shopper images.
 
-**P-D2 — Kiosk camera budget and model.** A shortlist with prices after SP-02's tests. *Recommendation:* decide the budget first (roughly ₹4,000–15,000 for a webcam plus light).
+**P-D2 — Kiosk camera budget and model. DECIDED 22 Nov 2026 (DEC-36):** built-in cameras for development now; before the evaluation with real people (SP-03 / SP-10) or shop use, a mid-range lockable webcam, panel light and grey card (about ₹8,000–12,000 per kiosk). Accuracy is judged only on that kit.
 
-**P-D3 — Who writes the stylist rule tables?** A) A stylist you hire or partner with. B) The pilot shop's senior staff. C) Start from published colour-analysis guidance and have a stylist review it. *Recommendation: C, then the pilot shop's staff refine it.*
+**P-D3 — Who writes the stylist rule tables? DECIDED 22 Nov 2026 (DEC-37): C.** Claude drafts v1 from published guidance, adapted for Indian skin and garments, with sources and a fairness check; a stylist who knows Indian wear reviews and signs it; an owner approves; the pilot shop's staff refine it later. No stylist is known yet: finding one is an owner action, and nothing goes live unreviewed.
 
-**P-D4 — Accuracy bars and evaluation size.** Accept §1's numbers and §6's 60 → 200 people, or set your own.
+**P-D4 — Accuracy bars and evaluation size. DECIDED 23 Nov 2026 (DEC-38): A.** §1's bars as written, 200 people, every depth group passing on its own; no shopper sees a scan until then.
 
-**D-11 — Body words and shape set** (already open). A) Fit goals only, shape hidden. B) Named shapes shown (hourglass, pear…) plus fit goals. C) Silhouette drawings with no names, plus fit goals. *Recommendation: C*: the shopper sees and confirms a drawing; the system uses the shape; the screen speaks in fit goals.
+**D-11 — Body words. DECIDED 23 Nov 2026 (DEC-39): C.** Unnamed silhouette drawings; the shopper confirms the closest one; the system keeps the shape code; the screen speaks only in fit goals. **D-25 — Shape set. DECIDED 23 Nov 2026 (DEC-40):** five women's shapes (adding a fuller middle) and a separate three-shape men's set.
 
 **Order against Stage 2.** DEC-32 puts this track before Stage 2. If a pilot shop wants to start within 2–3 weeks, Stage 2's stock and sales work may need to run alongside (D-04).
 
