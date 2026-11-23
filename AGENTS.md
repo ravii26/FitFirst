@@ -60,7 +60,7 @@ Then wait. Record the answer in `docs/DECISIONS.md` with the date and **which ow
 
 ## 3. Scope rule — one task at a time
 
-- Work the **first unchecked item of the current stage**, unless an owner names another.
+- Work **your own next task** from the "Work split (DEC-41)" table in `docs/END_TO_END_CHECKLIST.md` (`npm run brief` prints it), unless an owner names another. **Never start a task assigned to the other owner** without that owner's written OK. Unassigned tasks: the first unchecked item of the current stage.
 - If a task turns out to be bigger than one session, split it in the checklist (add sub-IDs) and confirm which part to do.
 - If you notice an unrelated problem, **write it down** in `docs/PROJECT_STATUS.md` under "Noticed, not actioned". Do not fix it silently.
 - Keep diffs small and in the existing style. Prefer the smallest change that can be tested.
@@ -215,7 +215,7 @@ The two owners and any collaborator (each with their own AI, in their own tool) 
 **Before starting a task**
 
 1. `git pull`, then `npm run brief`.
-2. Tell the other owner (or, as a collaborator, an owner) the **task ID** you intend to take (e.g. "taking S2-C03"), and note it in `docs/PROJECT_STATUS.md` so everyone can see who is on what; two people on one task is the main way work gets lost.
+2. Take the next task **assigned to you** (`npm run brief` shows it; DEC-41). Tasks are pre-assigned so two people never pick the same one. To take an unassigned task, or one assigned to someone else, get that person's OK in writing and change the task's **Assigned:** tag in the same commit. The shared result format between the two chains changes only with both owners' OK.
 3. If the task is `[?]`, the decision must be recorded in `docs/DECISIONS.md` **first**. A decision made in your chat but not written down does not exist for anyone else.
 4. One task per branch: `task/S2-C03-inventory-lots`. Never commit straight to `main`.
 

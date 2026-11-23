@@ -1,6 +1,6 @@
 # Perception track plan — skin tone, body type and the recommendations built on them
 
-> **Status:** DRAFT (21 Nov 2026); every §9 decision answered 22–23 Nov (DEC-35 … DEC-40). Nothing is built yet. The §8 tasks were approved into the checklist as Stage P on 23 Nov 2026 (SP-01 … SP-12); the checklist is now the source of truth for them.
+> **Status:** DRAFT (21 Nov 2026); every §9 decision answered 22–23 Nov (DEC-35 … DEC-40). Nothing is built yet. The §8 tasks were approved into the checklist as Stage P on 23 Nov 2026 (SP-01 … SP-12); the checklist is now the source of truth for them, including who does each (DEC-41, "Work split").
 >
 > **Why this exists:** DEC-32 makes perception FitFirst's core track: understanding a shopper's skin tone and body type and recommending from them is "the main whole purpose of this app". The S1-08 owner check (20 Nov 2026) showed the Stage 1 camera is not good enough: in a backlit room it gave a clearly lighter tone.
 
@@ -105,7 +105,7 @@ Track ID prefix **SP** (Stage P, perception). Order: SP-01 … SP-04 first, in p
 | SP-05 | Skin tone v2 on the kiosk (§3) — replaced draft S5-15 (removed) | SP-01, SP-02 | deep |
 | SP-06 | Swatch-plus-quiz fallback (§3 fallbacks) — replaced draft S5-16 (removed) | — | standard |
 | SP-07 | Body type from a phone photo (§4), behind a switch that stays off | SP-01, D-11 and D-25 (decided, DEC-39, DEC-40) | deep |
-| SP-08 | Measured garment colour from product photos (§5.1) — takes over S5-03 | SP-01 | standard |
+| SP-08 | Measured garment colour from product photos (§5.1) — takes over S5-03 | — (Pillow in the AI service, DEC-41) | standard |
 | SP-09 | Confidence-aware scoring and neutral reasons (§5.3, §5.4); tone and shape may be "unknown", replacing the silent Tone 2 / Hourglass defaults (§2) | SP-04, SP-05 | deep |
 | SP-10 | Run the evaluation (§6) and write the report; Ravindra decides whether each scan may be switched on | SP-03, SP-05, SP-07 | deep |
 | SP-11 (owner) | Accept the perception track: review the report against the §1 bars | SP-10, S0-08 | none |
