@@ -5,7 +5,6 @@ import sensible from "@fastify/sensible";
 import fastifyStatic from "@fastify/static";
 import multipart from "@fastify/multipart";
 import { PrismaClient } from "@prisma/client";
-import dotenv from "dotenv";
 import path from "path";
 import fs from "fs";
 
@@ -19,11 +18,25 @@ import { uploadRoutes } from "./routes/upload";
 import { scanGarmentRoutes } from "./routes/scanGarment";
 import { requireStaffSession, authRoutes } from "./authGuard";
 import { registerErrorHandling } from "./lib/errors";
+import { ConfigError, loadConfig } from "./lib/config";
 
-dotenv.config();
+// Validate the whole environment before anything else starts. A bad value
+// stops the boot here, naming the variable, rather than failing mid-request.
+// A configuration problem is the operator's to fix, so it prints as a plain
+// message with no stack trace: the fix is in the message, not in the code.
+const config = (() => {
+  try {
+    return loadConfig();
+  } catch (err) {
+    if (err instanceof ConfigError) {
+      console.error(err.message);
+      process.exit(1);
+    }
+    throw err;
+  }
+})();
 
 const prisma = new PrismaClient();
-const PORT = parseInt(process.env.PORT ?? "3008", 10);
 
 const uploadsDir = path.join(process.cwd(), "uploads");
 if (!fs.existsSync(uploadsDir)) {
@@ -31,15 +44,21 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 async function main() {
-  const app = Fastify({ logger: { redact: ["req.headers.cookie", "req.headers.authorization"] } });
-  if (!/^\d{4}$/.test(process.env.DASHBOARD_PIN ?? "")) throw new Error("Configure a four-digit DASHBOARD_PIN on the backend");
+  const app = Fastify({
+    logger: {
+      redact: [
+        "req.headers.cookie",
+        "req.headers.authorization",
+        'req.headers["x-kiosk-key"]',
+        'req.headers["x-dashboard-pin"]',
+        "req.body.pin",
+      ],
+    },
+  });
 
   // ── Plugins ────────────────────────────────────────────────────────────────
   await app.register(cors, {
-    origin: [
-      process.env.KIOSK_URL ?? "http://localhost:5174",
-      process.env.DASHBOARD_URL ?? "http://localhost:5173",
-    ],
+    origin: [config.KIOSK_URL, config.DASHBOARD_URL],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   });
 
@@ -83,8 +102,8 @@ async function main() {
   app.get("/health", async () => ({ status: "ok", timestamp: new Date().toISOString() }));
 
   // ── Start ──────────────────────────────────────────────────────────────────
-  await app.listen({ port: PORT, host: "0.0.0.0" });
-  app.log.info(`FitFirst API running on port ${PORT}`);
+  await app.listen({ port: config.PORT, host: "0.0.0.0" });
+  app.log.info(`FitFirst API running on port ${config.PORT}`);
 
   // Graceful shutdown
   const shutdown = async () => {

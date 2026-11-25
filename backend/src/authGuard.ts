@@ -3,6 +3,7 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
 import { AppError, ErrorCode } from "./lib/errors";
+import { isProduction, staffPin } from "./lib/config";
 
 const COOKIE = "fitfirst_staff";
 const SESSION_SECONDS = 8 * 60 * 60;
@@ -11,7 +12,7 @@ function tokenFrom(request: FastifyRequest) {
   return request.headers.cookie?.split(";").map(v => v.trim()).find(v => v.startsWith(`${COOKIE}=`))?.slice(COOKIE.length + 1);
 }
 function cookie(token: string, age: number) {
-  return `${COOKIE}=${token}; Path=/api; HttpOnly; SameSite=Strict; Max-Age=${age}${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
+  return `${COOKIE}=${token}; Path=/api; HttpOnly; SameSite=Strict; Max-Age=${age}${isProduction() ? "; Secure" : ""}`;
 }
 export async function requireStaffSession(request: FastifyRequest, reply: FastifyReply) {
   if (!["GET", "HEAD", "OPTIONS"].includes(request.method) && request.headers["x-fitfirst-request"] !== "1") return reply.forbidden("Missing request protection header");
@@ -37,7 +38,7 @@ export async function authRoutes(app: FastifyInstance) {
     limit.count++;
     attempts.set(request.ip, limit);
     const input = z.object({ pin: z.string().regex(/^\d{4}$/) }).safeParse(request.body);
-    const expected = process.env.DASHBOARD_PIN;
+    const expected = staffPin();
     if (!expected) return reply.serviceUnavailable("Staff access has not been configured");
     if (!input.success || !timingSafeEqual(Buffer.from(hashToken(input.data.pin)), Buffer.from(hashToken(expected)))) return reply.unauthorized("Incorrect passcode");
     attempts.delete(request.ip);

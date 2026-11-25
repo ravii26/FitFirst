@@ -1,8 +1,7 @@
 import { FastifyInstance } from "fastify";
 import FormData from "form-data";
 import { sniffImageMime } from "../imageSniff";
-
-const AI_SERVICE_URL = process.env.AI_SERVICE_URL ?? "http://localhost:8000";
+import { aiServiceUrl } from "../lib/config";
 
 export async function scanGarmentRoutes(app: FastifyInstance) {
   // GET /api/scan-garment/health — is AI tagging actually working? The
@@ -10,7 +9,7 @@ export async function scanGarmentRoutes(app: FastifyInstance) {
   // quietly fall back to guesses.
   app.get("/scan-garment/health", async (_request, reply) => {
     try {
-      const aiResponse = await fetch(`${AI_SERVICE_URL}/health`, {
+      const aiResponse = await fetch(`${aiServiceUrl()}/health`, {
         signal: AbortSignal.timeout(5000),
       });
       if (!aiResponse.ok) {
@@ -49,7 +48,7 @@ export async function scanGarmentRoutes(app: FastifyInstance) {
         contentType: sniffedMime,
       });
 
-      const aiResponse = await fetch(`${AI_SERVICE_URL}/scan`, {
+      const aiResponse = await fetch(`${aiServiceUrl()}/scan`, {
         method: "POST",
         // Send the encoded multipart bytes: Node's built-in fetch cannot read a
         // `form-data` object and would send the text "[object FormData]".
