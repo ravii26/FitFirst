@@ -4,13 +4,13 @@
 
 ## Right now
 
-- **Last updated:** 23 November 2026
+- **Last updated:** 26 November 2026
 - **Target design:** `prototype_v2/` (DEC-26, 17 Nov). Its screens that had no task were added to the checklist as 34 **V2 draft** tasks (116 → 150) for the owners' review; they do not change the order of work below. Each stage gate now needs a V2 comparison first
 - **AI model per task:** tasks in Stages 0, 0.5, 1, 2 and 7 carry a tier (deep / standard / light / none); pick the model from `AGENTS.md` §4b (DEC-27)
 - **Stage:** Stage 0.5 complete (20 Nov); **Stage 1 accepted 21 Nov 2026** (D-03, DEC-33). Next is the **perception track** (DEC-32), before Stage 2
 - **Focus:** the owners (Ravindra, Het Thakkar) review the draft [PERCEPTION_PLAN.md](PERCEPTION_PLAN.md) (tasks SP-01 … SP-12 approved into the checklist 23 Nov as Stage P; every perception decision answered 22–23 Nov: P-D1 MediaPipe in the browser, DEC-35; P-D2 built-in camera for now, webcam kit before real testing, DEC-36; P-D3 rules drafted from published guidance and reviewed by a stylist, DEC-37, with no stylist found yet; P-D4 full bar on 200 people before any shopper sees a scan, DEC-38; D-11 body shape as unnamed drawings with fit-goal words, DEC-39; D-25 five women's shapes plus a men's set, DEC-40). Stage 7 (S7-02 … S7-06) is unblocked by DEC-33; when it runs relative to the perception track is the owners' call. The early S7-04 error-shape commit `caa85a7` counts as that task's first piece
 - **Maturity:** single-store pilot prototype
-- **Branch:** `architecture-changes`, two commits ahead of `feature/stage-1-pilot-stabilization`; `main` has none of the Stage 0.5 or Stage 1 work (verify with `git status` before relying on it)
+- **Branch:** `architecture-changes` is the shared integration branch (DEC-42): each owner works on their own task branch and merges through a PR the other owner reviews; catch up with `git fetch` + merge at the start of every session. Het's `origin/feature/s7` (`d4c3aca`, 25 Nov, S7-04 validated config module) is pushed but not yet merged or reviewed. `main` has none of the Stage 0.5, Stage 1 or Stage P work (verify with `git status` before relying on it)
 - **Blocked on owner decision:** yes — the perception plan review (none left; SP-01 waits only for Ravindra to say start; work split agreed, DEC-41); D-04 / D-05 (pilot shop, POS path) before any pitch
 - **Calendar pressure:** MASTER_PLAN §11 targeted an October pitch and an early-December go-live. October has passed with the pitch kit (Stage 0, S0-10) not started and no pilot shop confirmed, so whether early December still holds is an open question for Ravindra
 

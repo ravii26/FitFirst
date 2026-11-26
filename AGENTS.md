@@ -10,6 +10,8 @@
 
 **Shortcut:** `npm run brief` prints the current stage, the next three actions, the decisions waiting on the owners and the hard dates, straight from the status file. It works in any tool, and Claude Code runs it automatically at session start.
 
+0. **Catch up with the other owner first (DEC-42).** `git fetch origin`, then, on your own task branch, `git merge origin/architecture-changes`. Report what the other owner merged since your last session (`git log --oneline HEAD@{1}..HEAD` after the merge, or "nothing new"). If the merge conflicts, stop and show the conflicting files; do not resolve them by guessing. Never commit straight to `architecture-changes`: work reaches it only through a pull request the other owner reviews.
+
 1. Read `docs/PROJECT_STATUS.md` — where the project stands today, and the next approved task.
 2. Read `docs/END_TO_END_CHECKLIST.md` — the task list, with IDs and gates.
 3. Read `docs/PROJECT_CONTEXT.md` — the product, repo map, commands, glossary and landmines.
@@ -214,7 +216,7 @@ The two owners and any collaborator (each with their own AI, in their own tool) 
 
 **Before starting a task**
 
-1. `git pull`, then `npm run brief`.
+1. Catch up (DEC-42): `git fetch origin`, merge `origin/architecture-changes` into your task branch, then `npm run brief`.
 2. Take the next task **assigned to you** (`npm run brief` shows it; DEC-41). Tasks are pre-assigned so two people never pick the same one. To take an unassigned task, or one assigned to someone else, get that person's OK in writing and change the task's **Assigned:** tag in the same commit. The shared result format between the two chains changes only with both owners' OK.
 3. If the task is `[?]`, the decision must be recorded in `docs/DECISIONS.md` **first**. A decision made in your chat but not written down does not exist for anyone else.
 4. One task per branch: `task/S2-C03-inventory-lots`. Never commit straight to `main`.
@@ -229,7 +231,7 @@ The two owners and any collaborator (each with their own AI, in their own tool) 
 
 - Run the handoff update (§5) in **your own** session, then `npm run docs:check`.
 - Tick nothing. Mark your work `[~]` with the evidence and the date; an owner promotes it to `[x]` when they accept it. (An owner may accept their own work, but should ask the other owner to run the check when it is practical.)
-- Open the pull request with the task ID in the title and the per-task completion record from the bottom of the checklist in the description.
+- Open the pull request **into `architecture-changes`** with the task ID in the title and the per-task completion record from the bottom of the checklist in the description. The other owner reviews it before merge (DEC-42). Merge finished tasks or working pieces at least every 2–3 days rather than letting a branch grow for a week.
 
 **When the docs conflict in git**
 

@@ -4,6 +4,7 @@
 
 ## Boot sequence (every new session)
 
+0. Catch up (DEC-42, `AGENTS.md` §1 step 0): `git fetch origin`; if the working tree is clean and you are on the owner's own task branch, merge `origin/architecture-changes` and report what the other owner merged. If the tree is dirty or you are on `architecture-changes` itself, only report what is new on the remote and ask before merging or switching branches.
 1. `docs/PROJECT_STATUS.md` — where we are, next approved task
 2. `docs/END_TO_END_CHECKLIST.md` — tasks with IDs and gates
 3. `docs/PROJECT_CONTEXT.md` — product, repo map, commands, landmines
