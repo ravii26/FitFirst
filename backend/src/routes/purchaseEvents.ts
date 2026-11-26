@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { PrismaClient } from "@prisma/client";
-import { fromZodError } from "../lib/errors";
+import { parseBody } from "../lib/validate";
 
 export const PurchaseEventSchema = z.object({
   requestKey: z.string().uuid(),
@@ -13,9 +13,7 @@ export const PurchaseEventSchema = z.object({
 export async function purchaseEventsRoutes(app: FastifyInstance) {
   const prisma: PrismaClient = (app as any).prisma;
   app.post("/purchase-events", async (request, reply) => {
-    const result = PurchaseEventSchema.safeParse(request.body);
-    if (!result.success) throw fromZodError(result.error);
-    const { requestKey, sessionId, productId, amount } = result.data;
+    const { requestKey, sessionId, productId, amount } = parseBody(PurchaseEventSchema, request);
     try {
       const result = await prisma.$transaction(async tx => {
         // Serialise identical requests before checking their stored outcome.

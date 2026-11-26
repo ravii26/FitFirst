@@ -2,7 +2,8 @@ import { normalizeSize } from "../scoring/sizes";
 import { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { PrismaClient, Category, Gender, ColorFamily, Pattern, FitType } from "@prisma/client";
-import { badRequest, fromZodError } from "../lib/errors";
+import { badRequest } from "../lib/errors";
+import { booleanParam, parseBody, parseIdParams, parseQuery } from "../lib/validate";
 
 const ProductCreateSchema = z.object({
   sku: z.string().min(1),
@@ -26,17 +27,28 @@ const ProductCreateSchema = z.object({
 
 const ProductUpdateSchema = ProductCreateSchema.partial();
 
+/**
+ * The catalogue filters. Every value arrives as text, and an unknown enum used
+ * to reach Prisma and surface as a 500; now it is a 400 naming the filter.
+ */
+const ProductFilterSchema = z.object({
+  category: z.nativeEnum(Category).optional(),
+  gender: z.nativeEnum(Gender).optional(),
+  isActive: booleanParam.optional(),
+  search: z.string().trim().max(200).optional(),
+});
+
 export async function productsRoutes(app: FastifyInstance) {
   const prisma: PrismaClient = (app as any).prisma;
 
   // GET /api/products — list all products
-  app.get("/products", async (request: any) => {
-    const { category, gender, isActive, search } = request.query as any;
+  app.get("/products", async (request) => {
+    const { category, gender, isActive, search } = parseQuery(ProductFilterSchema, request);
     return prisma.product.findMany({
       where: {
-        ...(category && { category: category as any }),
-        ...(gender && { gender: gender as any }),
-        ...(isActive !== undefined && { isActive: isActive === "true" }),
+        ...(category && { category }),
+        ...(gender && { gender }),
+        ...(isActive !== undefined && { isActive }),
         ...(search && { OR: [{ name: { contains: search, mode: "insensitive" as const } }, { sku: { contains: search, mode: "insensitive" as const } }] }),
       },
       orderBy: { daysInStock: "desc" },
@@ -45,8 +57,9 @@ export async function productsRoutes(app: FastifyInstance) {
 
   // GET /api/products/:id
   app.get<{ Params: { id: string } }>("/products/:id", async (request, reply) => {
+    const { id } = parseIdParams(request, "Product not found");
     const product = await prisma.product.findUnique({
-      where: { id: request.params.id },
+      where: { id },
       include: {
         _count: { select: { recommendations: true, purchaseEvents: true } },
       },
@@ -57,31 +70,33 @@ export async function productsRoutes(app: FastifyInstance) {
 
   // POST /api/products — create new product
   app.post("/products", async (request, reply) => {
-    const result = ProductCreateSchema.safeParse(request.body);
-    if (!result.success) throw fromZodError(result.error);
-    const product = await prisma.product.create({ data: result.data as any });
+    const data = parseBody(ProductCreateSchema, request);
+    const product = await prisma.product.create({ data: data as any });
     return reply.code(201).send(product);
   });
 
   // PUT /api/products/:id — update product details
   app.put<{ Params: { id: string } }>("/products/:id", async (request) => {
-    const result = ProductUpdateSchema.safeParse(request.body);
-    if (!result.success) throw fromZodError(result.error);
+    const data = parseBody(ProductUpdateSchema, request);
+    const { id } = parseIdParams(request, "Product not found");
     // A missing id surfaces as Prisma P2025, which the error handler maps to NOT_FOUND.
     return prisma.product.update({
-      where: { id: request.params.id },
-      data: result.data as any,
+      where: { id },
+      data: data as any,
     });
   });
 
   // PATCH /api/products/:id/image — update product image URL
   app.patch<{ Params: { id: string } }>("/products/:id/image", async (request, reply) => {
-    const parsed = z.object({ imageUrl: z.string().max(2000) }).safeParse(request.body);
-    if (!parsed.success) return reply.badRequest("A valid image URL is required");
-    const { imageUrl } = parsed.data;
+    const { imageUrl } = parseBody(
+      z.object({ imageUrl: z.string().max(2000) }),
+      request,
+      "A valid image URL is required",
+    );
+    const { id } = parseIdParams(request, "Product not found");
     try {
       return await prisma.product.update({
-        where: { id: request.params.id },
+        where: { id },
         data: { imageUrl },
       });
     } catch (error) {
@@ -91,12 +106,15 @@ export async function productsRoutes(app: FastifyInstance) {
 
   // PATCH /api/products/:id/stock — quick stock update
   app.patch<{ Params: { id: string } }>("/products/:id/stock", async (request, reply) => {
-    const parsed = z.object({ stockQty: z.number().int().min(0).max(2147483647) }).safeParse(request.body);
-    if (!parsed.success) return reply.badRequest("Stock must be a nonnegative whole number");
-    const { stockQty } = parsed.data;
+    const { stockQty } = parseBody(
+      z.object({ stockQty: z.number().int().min(0).max(2147483647) }),
+      request,
+      "Stock must be a nonnegative whole number",
+    );
+    const { id } = parseIdParams(request, "Product not found");
     try {
       return await prisma.product.update({
-        where: { id: request.params.id },
+        where: { id },
         data: { stockQty },
       });
     } catch (error) {
@@ -106,9 +124,10 @@ export async function productsRoutes(app: FastifyInstance) {
 
   // DELETE /api/products/:id — soft delete (sets isActive = false)
   app.delete<{ Params: { id: string } }>("/products/:id", async (request, reply) => {
+    const { id } = parseIdParams(request, "Product not found");
     try {
       await prisma.product.update({
-        where: { id: request.params.id },
+        where: { id },
         data: { isActive: false },
       });
       return reply.code(204).send();
@@ -119,10 +138,14 @@ export async function productsRoutes(app: FastifyInstance) {
 
   // POST /api/products/bulk — bulk import products via CSV text
   app.post("/products/bulk", async (request, reply) => {
-    const { csvText } = request.body as { csvText: string };
-    if (!csvText) {
-      return reply.badRequest("csvText is required in body");
-    }
+    // Was `request.body as { csvText: string }`: a non-string csvText reached
+    // `.split()` and became a 500. No maximum length is set here — that is a
+    // product limit, not a type check (see the import limits note in S7-04).
+    const { csvText } = parseBody(
+      z.object({ csvText: z.string().min(1) }),
+      request,
+      "csvText is required in body",
+    );
 
     const lines = csvText.split(/\r?\n/).filter(line => line.trim().length > 0);
     if (lines.length < 2) {

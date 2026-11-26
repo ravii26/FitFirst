@@ -4,20 +4,21 @@
 
 ## Right now
 
-- **Last updated:** 23 November 2026
+- **Last updated:** 26 November 2026
 - **Target design:** `prototype_v2/` (DEC-26, 17 Nov). Its screens that had no task were added to the checklist as 34 **V2 draft** tasks (116 → 150) for the owners' review; they do not change the order of work below. Each stage gate now needs a V2 comparison first
 - **AI model per task:** tasks in Stages 0, 0.5, 1, 2 and 7 carry a tier (deep / standard / light / none); pick the model from `AGENTS.md` §4b (DEC-27)
 - **Stage:** Stage 0.5 complete (20 Nov); **Stage 1 accepted 21 Nov 2026** (D-03, DEC-33). Next is the **perception track** (DEC-32), before Stage 2
-- **Focus:** the owners (Ravindra, Het Thakkar) review the draft [PERCEPTION_PLAN.md](PERCEPTION_PLAN.md) (tasks SP-01 … SP-12 approved into the checklist 23 Nov as Stage P; every perception decision answered 22–23 Nov: P-D1 MediaPipe in the browser, DEC-35; P-D2 built-in camera for now, webcam kit before real testing, DEC-36; P-D3 rules drafted from published guidance and reviewed by a stylist, DEC-37, with no stylist found yet; P-D4 full bar on 200 people before any shopper sees a scan, DEC-38; D-11 body shape as unnamed drawings with fit-goal words, DEC-39; D-25 five women's shapes plus a men's set, DEC-40). Stage 7 (S7-02 … S7-06) is unblocked by DEC-33; when it runs relative to the perception track is the owners' call. The early S7-04 error-shape commit `caa85a7` counts as that task's first piece
+- **Focus:** the owners (Ravindra, Het Thakkar) review the draft [PERCEPTION_PLAN.md](PERCEPTION_PLAN.md) (tasks SP-01 … SP-12 approved into the checklist 23 Nov as Stage P; every perception decision answered 22–23 Nov: P-D1 MediaPipe in the browser, DEC-35; P-D2 built-in camera for now, webcam kit before real testing, DEC-36; P-D3 rules drafted from published guidance and reviewed by a stylist, DEC-37, with no stylist found yet; P-D4 full bar on 200 people before any shopper sees a scan, DEC-38; D-11 body shape as unnamed drawings with fit-goal words, DEC-39; D-25 five women's shapes plus a men's set, DEC-40). Stage 7 (S7-02 … S7-06) is unblocked by DEC-33; when it runs relative to the perception track is the owners' call. Het implemented all four pieces of S7-04 on 25 Nov (error shape `caa85a7`, config module, shared validation, structured logging); it awaits an owner's acceptance
 - **Maturity:** single-store pilot prototype
-- **Branch:** `architecture-changes`, two commits ahead of `feature/stage-1-pilot-stabilization`; `main` has none of the Stage 0.5 or Stage 1 work (verify with `git status` before relying on it)
+- **Branch:** `feature/s7` (Het's Stage 7 chain, pushed 25 Nov), one commit ahead of `architecture-changes`: `d4c3aca` is the S7-04 config module, its tests, `backend/.env.example` and the `.gitignore` fix. `architecture-changes` holds the Stage 0.5 and Stage 1 work and is two commits ahead of `feature/stage-1-pilot-stabilization`; `main` has none of it (verify with `git status` before relying on it). The `backend/.env` port fix is local only — `.env` is not in git
 - **Blocked on owner decision:** yes — the perception plan review (none left; SP-01 waits only for Ravindra to say start; work split agreed, DEC-41); D-04 / D-05 (pilot shop, POS path) before any pitch
 - **Calendar pressure:** MASTER_PLAN §11 targeted an October pitch and an early-December go-live. October has passed with the pitch kit (Stage 0, S0-10) not started and no pilot shop confirmed, so whether early December still holds is an open question for Ravindra
 
 ## Start here (the next three actions)
 
 1. **Review the perception plan** ([PERCEPTION_PLAN.md](PERCEPTION_PLAN.md), draft 21 Nov): Stage P is approved (SP-01 … SP-12) and **split between the owners** (DEC-41; the "Work split" table in the checklist; `npm run brief` shows your next task). Day 1: both owners agree the shared result format (30 min); then Ravindra starts SP-01 and Het starts S7-04. Previously: an owner says "start SP-01" (the MediaPipe test page, the first code change); in parallel Claude drafts the SP-04 rule tables and the owners look for a stylist (SP-12). Start looking for a stylist who knows Indian wear to review the rule tables (DEC-37).
-2. **Pilot-shop conversation (D-04 / D-05)** in parallel: it is the main business step, and the shop's camera hardware feeds P-D2; `docs/TEAM_GUIDE.md` lists the questions for team discussion.
+2. **Accept or reject S7-04** (either owner): all four pieces are implemented and unit-tested, but `npm run test:integration` has not run against them and the dashboard's error messages have not been seen in a browser. Then **S7-02** (shared types), which starts with the Day-1 result format. D-26 asks whether the five unlimited list queries are fixed in S7-04 or left to S7-03.
+3. **Pilot-shop conversation (D-04 / D-05)** in parallel: it is the main business step, and the shop's camera hardware feeds P-D2; `docs/TEAM_GUIDE.md` lists the questions for team discussion.
 
 ## Progress at a glance
 
@@ -32,7 +33,7 @@
 | 4 — Measurement and deployment | 0 | 0 | 13 | 13 | Planned |
 | 5 — Recommendation evidence and AI | 0 | 0 | 14 | 14 | Planned |
 | 6 — Multi-store and commercial | 0 | 0 | 20 | 20 | Planned |
-| 7 — Engineering foundations (parallel) | 0 | 2 | 4 | 6 | S7-01 implemented (CI green on GitHub since 20 Nov), not accepted; S7-02 … S7-06 unblocked by DEC-33; S7-04's error-shape piece (`caa85a7`) done, the rest not started |
+| 7 — Engineering foundations (parallel) | 0 | 2 | 4 | 6 | S7-01 implemented (CI green on GitHub since 20 Nov), not accepted; S7-02 … S7-06 unblocked by DEC-33; **S7-04 fully implemented 25 Nov** (error shape `caa85a7`, config module, shared validation, structured logging), awaiting acceptance |
 | **Total** | **25** | **3** | **134** | **162** | |
 
 Update these counts whenever you tick an item in [END_TO_END_CHECKLIST.md](END_TO_END_CHECKLIST.md).
@@ -47,6 +48,7 @@ Full list and trade-offs in [DECISIONS.md](DECISIONS.md).
 | D-06 / D-07 | v2 migration strategy; how stock is split into sizes | Before Stage 2 coding |
 | D-20 | When do `orgId` / `storeId` go into the database? | Before Stage 2 schema work |
 | D-21 … D-24 | Raised from the V2 target: staff-text language in assisted mode; near-miss alternatives in the staff view; staff incentives; exchange window and kiosk idle timing | With the stage that needs each |
+| D-26 | Five list queries fetch every row with no limit: fix inside S7-04, or leave to S7-03? | Before real sales volume |
 | (review) | Review the 34 **V2 draft** tasks in the checklist: keep, edit, merge or delete | Before Stage 2 is decomposed |
 
 ## Hard dates
@@ -74,6 +76,13 @@ Full list and trade-offs in [DECISIONS.md](DECISIONS.md).
 - The try-on prototype defaults to `google/gemini-3.1-flash-image` in code, README and `.env.example` (S05-05, 24 Oct 2026): its 13 tests pass. A live try-on call with that model is not verified.
 - The three provider keys (Gemini, OpenRouter, AICredits) were rotated and spend caps set (DEC-21; reported by Ravindra, 22 Oct 2026; not checked by AI, by design).
 - Backend unit tests pass on `architecture-changes` with the new error shape (8 Nov 2026): `npm test` → 55 passed (46 before, plus 9 in `src/lib/errors.test.ts`).
+- The S7-04 config module (25 Nov 2026): `npm test` → 64 passed (plus 9 in `src/lib/config.test.ts`); root lint 0 errors (71 warnings); backend build passes. Boot with a 2-digit `DASHBOARD_PIN` and a non-numeric `PORT` printed both problems, named neither value and exited 1; boot with valid settings served `/health` on port 3008. No `process.env` read remains in `backend/src` outside `lib/config.ts`.
+- The S7-04 structured logging (25 Nov 2026): `npm test` → 77 passed (7 in `src/lib/logger.test.ts`); lint 0 errors (69 warnings); backend build passes. On a real boot, a request carrying `x-request-id: kiosk-smoke-1` got that id back in the response header and wrote exactly one log line with it; a request without one got a generated uuid; an unknown path logged one line at 404. A test logs the request headers outright and no cookie, kiosk key, PIN header or body PIN survives redaction.
+- The S7-04 shared validation (25 Nov 2026): `npm test` → 70 passed (6 in `src/lib/validate.test.ts`); lint 0 errors (69 warnings); backend build passes. Every route now validates its `params`, `query` and `body`; no `request.params`, `request.query` or route-level `safeParse` remains in `backend/src/routes`. Ids are **cuids**, not uuids — checked against `schema.prisma` before writing the validator. A malformed `:id` answers the route's own 404, so no caller sees a status it did not see before (DEC-42).
+- `backend/.env` had `PORT=3000` against DEC-31, so the dashboard and kiosk proxies pointed at nothing; set to 3008 and the server re-checked on that port (25 Nov 2026, Het's machine only — `.env` is not in git).
+
+- `npm run test:integration` passes against all four S7-04 pieces (26 Nov 2026): migrations, session retry, snapshot consistency, answer edits, access control, purchase retry, last-unit concurrency, rollback, stock validation and metrics. Run against a throwaway Postgres 15 on 5434 created for the session, with the 47-product demo seed.
+- The live API was exercised on 26 Nov 2026 with all three apps running: a kiosk session returned 8 recommendations; a malformed session id gave 404 and a wrong kiosk key 401; and the three inputs that used to return 500 now return 400 with the bad field named (`?category=NOT_A_CATEGORY`, `?isActive=maybe`, a numeric `csvText`).
 
 **Not verified:**
 - Commit `caa85a7` (the API's new error shape) beyond unit tests: builds, `npm run test:integration` and the dashboard's error messages in a browser were not run after it.
@@ -111,7 +120,6 @@ Real findings from code review that are **not** yet tasks. Raise them to the che
 | `CATEGORY_PATTERN_AFFINITY` is written but never imported | `backend/src/scoring/tables.ts:138-173` |
 | A fresh checkout needs `npx prisma generate` before `npm test`, or 3 scoring tests fail with "Cannot convert undefined or null to object" | `backend/` |
 | Inventory low-stock and ageing highlights use a CSS variable that is not defined, so they never show colour | `dashboard/src/pages/Inventory.tsx` |
-| `.gitignore` ends with a bare `.env.example` line after `!.env.example`, so any new `.env.example` (e.g. a sub-folder's) is ignored; the root one is tracked only because it was added earlier | `.gitignore` (last line) |
 | The CI workflow still runs `npm install` with a comment saying the lock file is git-ignored; since S05-06 it is committed, so CI could use `npm ci` (S05-09) | `.github/workflows/ci.yml:18-19` |
 | Shutdown disconnects Prisma before closing the server, so requests in progress can fail during a restart (read from the code, not run) | `backend/src/index.ts:90-94` |
 | `Product.sku` and `DailyBaseline.date` are unique across the whole database, so adding a store needs these constraints changed too; `ARCHITECTURE.md` §7 calls tenancy "one migration and a query filter", which understates it (see D-20) | `backend/prisma/schema.prisma:97,179` |

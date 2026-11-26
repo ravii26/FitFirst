@@ -19,6 +19,7 @@ import { scanGarmentRoutes } from "./routes/scanGarment";
 import { requireStaffSession, authRoutes } from "./authGuard";
 import { registerErrorHandling } from "./lib/errors";
 import { ConfigError, loadConfig } from "./lib/config";
+import { loggerOptions, registerRequestLogging, serverOptions } from "./lib/logger";
 
 // Validate the whole environment before anything else starts. A bad value
 // stops the boot here, naming the variable, rather than failing mid-request.
@@ -44,17 +45,8 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 async function main() {
-  const app = Fastify({
-    logger: {
-      redact: [
-        "req.headers.cookie",
-        "req.headers.authorization",
-        'req.headers["x-kiosk-key"]',
-        'req.headers["x-dashboard-pin"]',
-        "req.body.pin",
-      ],
-    },
-  });
+  const app = Fastify({ ...serverOptions, logger: loggerOptions });
+  registerRequestLogging(app);
 
   // ── Plugins ────────────────────────────────────────────────────────────────
   await app.register(cors, {

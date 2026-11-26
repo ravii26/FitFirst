@@ -2,16 +2,18 @@ import { FastifyInstance } from "fastify";
 import { PrismaClient, Prisma } from "@prisma/client";
 import { scoreProducts, explainScore } from "../scoring/engine";
 import { getAdjacentSizes, matchingSize, selectedSizes } from "../scoring/sizes";
+import { parseIdParams } from "../lib/validate";
 
 export async function recommendationsRoutes(app: FastifyInstance) {
   const prisma: PrismaClient = (app as any).prisma;
   app.get<{ Params: { id: string } }>("/sessions/:id/recommendations", async (request, reply) => {
-    const authorized = await prisma.customerSession.findUnique({ where: { id: request.params.id } });
+    const { id } = parseIdParams(request, "Session not found");
+    const authorized = await prisma.customerSession.findUnique({ where: { id } });
     if (!authorized) return reply.notFound("Session not found");
     if (!authorized.requestKey || request.headers["x-kiosk-key"] !== authorized.requestKey) return reply.unauthorized("This kiosk session is unavailable. Please start again.");
     return prisma.$transaction(async tx => {
-      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${request.params.id}))`;
-      const session = await tx.customerSession.findUniqueOrThrow({ where: { id: request.params.id } });
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${id}))`;
+      const session = await tx.customerSession.findUniqueOrThrow({ where: { id } });
       if (session.recommendationSnapshot) return session.recommendationSnapshot;
       const candidates = await tx.product.findMany({ where: { isActive: true, stockQty: { gt: 0 } }, orderBy: { id: "asc" } });
       const sizes = selectedSizes(session.sizeInput);
